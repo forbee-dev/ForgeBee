@@ -1,4 +1,4 @@
-# DevKit — Batteries included for Claude Code
+# ClaudeDevKit — Batteries included for Claude Code
 
 A drop-in framework that extends Claude Code with production-ready hooks, slash commands, and specialist agent definitions. Install once, works in any project.
 
