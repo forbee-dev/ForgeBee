@@ -34,8 +34,8 @@ Then:
 | Category | Count | What it does |
 |----------|-------|--------------|
 | Hooks | 7 | Shell scripts wired to Claude Code lifecycle events |
-| Commands | 21 | Slash commands that activate specialized workflows |
-| Agents | 16 | Specialist agent definitions for multi-agent teams |
+| Commands | 22 | Slash commands that activate specialized workflows |
+| Agents | 18 | Specialist agent definitions for multi-agent teams |
 
 ---
 
@@ -58,6 +58,12 @@ Hooks run automatically — no invocation needed. They fire on Claude Code lifec
 ## Commands
 
 Invoke any command with a slash in Claude Code: `/review`, `/debug`, `/test`, etc.
+
+### Planning (BMAD-inspired)
+
+| Command | What it does |
+|---------|--------------|
+| `/plan` | Phased planning workflow: Brief → Requirements → Architecture → Sprint Stories. Enforces artifact-first development with complexity routing (trivial changes skip ceremony, critical features get the full chain). Outputs versioned artifacts to `docs/planning/`. |
 
 ### Development
 
@@ -113,6 +119,13 @@ Specialist agent definitions for Claude Code's Agent Teams feature. Invoke them 
 | `devops-engineer` | CI/CD, infrastructure, containers, deployments |
 | `performance-optimizer` | Profiling, bottlenecks, caching strategies |
 | `debugger-detective` | Root cause analysis, tracing, log investigation |
+
+**Design & Planning**
+
+| Agent | Specialty |
+|-------|-----------|
+| `ux-designer` | User flows, wireframes, interaction patterns, usability heuristics, accessibility |
+| `scrum-master` | Sprint planning, story decomposition, backlog grooming, estimation, dependency mapping |
 
 **Research & Content**
 
@@ -172,9 +185,9 @@ your-project/
     │   ├── task-sync.sh
     │   └── context-guard.sh
     ├── commands/
-    │   └── *.md                       # 21 slash command definitions
+    │   └── *.md                       # 22 slash command definitions
     ├── agents/
-    │   └── *.md                       # 16 specialist agent definitions
+    │   └── *.md                       # 18 specialist agent definitions
     ├── sessions/                      # Session snapshots (auto-managed)
     ├── session-cache/                 # Permissions cache, skill manifest
     └── learnings/

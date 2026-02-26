@@ -71,6 +71,9 @@ npm run deploy:production # Deploy to production
 
 ## DevKit Commands
 
+**Planning (BMAD-inspired):**
+- `/plan` — Phased planning workflow: Brief → Requirements → Architecture → Sprint Stories
+
 **Development:**
 - `/review` — Code review (structural, security, performance)
 - `/debug` — Systematic debugging (reproduce, isolate, fix)
@@ -99,7 +102,7 @@ npm run deploy:production # Deploy to production
 - `/idea` — Idea-to-product validation and MVP planning
 
 **Specialist Agents** (for Agent Teams):
-frontend, backend, database, security, testing, devops, perf, debug, research, content, seo, supabase, ios, flutter, n8n, session-librarian
+frontend, backend, database, security, testing, devops, perf, debug, research, content, seo, supabase, ios, flutter, n8n, session-librarian, ux-designer, scrum-master
 
 ---
 
