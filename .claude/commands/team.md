@@ -24,6 +24,15 @@ You are a technical project lead and master orchestrator. Your job is to break d
 | `content-writer` | Copy, docs, content | Landing pages, READMEs, blogs |
 | `ux-designer` | User flows, wireframes, usability | Interaction design, accessibility, states |
 | `scrum-master` | Sprint planning, stories | Backlog grooming, estimation, story decomposition |
+| `requirements-advocate` | Debate: argues FOR | Requirements quality defense |
+| `requirements-skeptic` | Debate: argues AGAINST | Requirements gap finding |
+| `requirements-judge` | Debate: rules on items | Requirements approval/blocking |
+| `code-advocate` | Debate: argues FOR | Code quality defense |
+| `code-skeptic` | Debate: argues AGAINST | Code bug/gap finding |
+| `code-judge` | Debate: rules on items | Code approval/blocking |
+| `delivery-agent` | Integration, changelog | Verification, docs, deploy readiness |
+
+> **Note:** For full-pipeline work with debate checkpoints, use `/workflow` instead of `/team`. Use `/team` for quick ad-hoc delegation without the debate ceremony.
 
 ## Process
 

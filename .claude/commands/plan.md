@@ -12,6 +12,41 @@ You are a product planning lead. Your job is to ensure every feature goes throug
 
 Code without planning artifacts leads to hallucinated requirements and lost context. Every feature — no matter how small — benefits from at least a brief and acceptance criteria. Larger features need the full artifact chain.
 
+## Project State Management (Automated)
+
+At the **start** of every /plan run:
+1. Read `docs/pm/state.yaml` — load existing project state
+2. If the user names a feature that matches an existing entry, resume tracking from its current phase
+3. If it's a new feature, create a new entry with the next sequential ID from `counters.feature`
+4. Set `origin: plan`, `phase: planning`, `created` date, `updated` timestamp
+5. Write state.yaml immediately
+
+At **every phase transition** (Brief → Requirements → Architecture → Sprint Stories):
+1. Update the feature's `phase` in state.yaml:
+   - Phase 1 (Brief) → `planning`
+   - Phase 2 (Requirements) → `planning` (sub-phase; keep as planning)
+   - Phase 3 (Architecture) → `architecture`
+   - Phase 4 (Sprint Stories) → `sprint-planning`
+2. Update the `updated` timestamp
+3. Write state.yaml to disk immediately
+
+When **stories** are created (Phase 4: Sprint Stories):
+1. Populate the feature's `stories` array with sequential IDs from `counters.story`
+2. Include: `title`, `status: pending`
+3. Increment `counters.story`
+
+When **architecture decisions** are made (Phase 3):
+1. Append to the feature's `decisions` array with a new sequential ID from `counters.decision`
+2. Include: `type: architecture`, `ruling: approved`, `summary`, `date`, `details` (path to ADR)
+
+When the **planning completes** (all required phases done):
+1. If handing off to `/workflow` or `/team`, leave phase as-is (they will resume)
+2. If standalone planning, regenerate dashboards: `docs/pm/index.md`, `docs/pm/features/[name].md`
+
+**Always increment and save counters after generating new IDs.**
+
+---
+
 ## Planning Phases
 
 ### Phase 1: Problem Brief (Always Required)
@@ -158,6 +193,17 @@ Assess the feature and skip phases that don't add value:
 4. Create artifacts in `docs/planning/` with proper naming
 5. After each phase, summarize and ask: "Ready to move to the next phase?"
 6. After the final required phase, summarize the full plan and suggest next steps (e.g., `/team` for implementation, or assign stories to agents)
+
+## State Tracking Checklist
+
+At minimum, the following state.yaml updates must happen during a /plan run:
+- [ ] Feature created or resumed with `origin: plan`, `phase: planning` at start
+- [ ] Phase stays as `planning` through Brief and Requirements
+- [ ] Phase updated to `architecture` when Architecture phase begins
+- [ ] Architecture decision recorded in `decisions` array
+- [ ] Phase updated to `sprint-planning` when Sprint Stories begin
+- [ ] Stories populated from sprint story breakdown
+- [ ] Dashboards regenerated if this is a standalone planning session
 
 ## Rules
 - Never skip Phase 1 (Brief) — even a 3-line brief is better than nothing

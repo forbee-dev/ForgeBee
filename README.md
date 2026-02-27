@@ -33,9 +33,9 @@ Then:
 
 | Category | Count | What it does |
 |----------|-------|--------------|
-| Hooks | 7 | Shell scripts wired to Claude Code lifecycle events |
-| Commands | 22 | Slash commands that activate specialized workflows |
-| Agents | 18 | Specialist agent definitions for multi-agent teams |
+| Hooks | 8 | Shell scripts wired to Claude Code lifecycle events |
+| Commands | 24 | Slash commands that activate specialized workflows |
+| Agents | 26 | Specialist agent definitions for multi-agent teams |
 
 ---
 
@@ -51,6 +51,7 @@ Hooks run automatically — no invocation needed. They fire on Claude Code lifec
 | `session-save.sh` | `Stop` | Persists session state to a JSON snapshot in `.claude/sessions/` |
 | `self-improve.sh` | `Stop` | Auto-captures patterns and learnings from the session into `.claude/learnings/learnings.md` |
 | `task-sync.sh` | `SessionStart` + `Stop` | Bidirectional sync with `TASKS.md` — loads active tasks on start, archives completed ones on stop |
+| `pm-sync.sh` | `SessionStart` + `Stop` | Loads PM state, reports active features and blockers, detects stale features |
 | `context-guard.sh` | `PreCompact` | Backs up critical context before compaction so nothing is lost |
 
 ---
@@ -63,7 +64,7 @@ Invoke any command with a slash in Claude Code: `/review`, `/debug`, `/test`, et
 
 | Command | What it does |
 |---------|--------------|
-| `/plan` | Phased planning workflow: Brief → Requirements → Architecture → Sprint Stories. Enforces artifact-first development with complexity routing (trivial changes skip ceremony, critical features get the full chain). Outputs versioned artifacts to `docs/planning/`. |
+| `/plan` | Phased planning workflow: Brief → Requirements → Architecture → Sprint Stories. Enforces artifact-first development with complexity routing (trivial changes skip ceremony, critical features get the full chain). Outputs versioned artifacts to `docs/planning/`. Auto-tracks in PM system. |
 
 ### Development
 
@@ -98,8 +99,10 @@ Invoke any command with a slash in Claude Code: `/review`, `/debug`, `/test`, et
 
 | Command | What it does |
 |---------|--------------|
-| `/team` | Master orchestrator: breaks tasks into parallel workstreams and delegates to specialist agents |
-| `/idea` | Idea-to-product: validate → define MVP → pick stack → create roadmap |
+| `/workflow` | Full pipeline orchestrator with adversarial debate: Plan → Debate → Architect → Scrum → Execute → Debate → Deliver. Main agent never executes — only delegates, connects, and ships requirements. Includes blind Advocate/Skeptic/Judge review at requirements and code checkpoints. Auto-tracks in PM system. |
+| `/team` | Lightweight orchestrator: breaks tasks into parallel workstreams and delegates to specialist agents (ad-hoc, without debate ceremony) |
+| `/idea` | Idea-to-product: validate → debate → define MVP → debate → pick stack → create roadmap. Auto-tracks in PM system. |
+| `/pm` | Automated project management — reads `state.yaml`, syncs `TASKS.md`, regenerates markdown dashboards, surfaces blockers and stale features |
 
 ---
 
@@ -126,6 +129,24 @@ Specialist agent definitions for Claude Code's Agent Teams feature. Invoke them 
 |-------|-----------|
 | `ux-designer` | User flows, wireframes, interaction patterns, usability heuristics, accessibility |
 | `scrum-master` | Sprint planning, story decomposition, backlog grooming, estimation, dependency mapping |
+
+**Adversarial Debate (used by `/workflow`)**
+
+| Agent | Specialty |
+|-------|-----------|
+| `requirements-advocate` | Argues FOR planning artifacts — defends quality, feasibility, completeness |
+| `requirements-skeptic` | Argues AGAINST planning artifacts — finds gaps, risks, flawed assumptions |
+| `requirements-judge` | Rules on each debated item — approve, block, or flag with escalation |
+| `code-advocate` | Argues FOR implementation — defends code quality, test coverage, correctness |
+| `code-skeptic` | Argues AGAINST implementation — finds bugs, security holes, missed requirements |
+| `code-judge` | Rules on each code item — approve, block, or flag with escalation |
+
+**Delivery**
+
+| Agent | Specialty |
+|-------|-----------|
+| `delivery-agent` | Integration verification, changelog generation, doc updates, deployment readiness |
+| `dashboard-generator` | Reads `state.yaml` and regenerates all PM markdown dashboards |
 
 **Research & Content**
 
@@ -158,7 +179,7 @@ Claude Code supports lifecycle hooks — shell scripts or prompts that fire at s
 - **Stop** — runs when the session ends
 - **TaskCompleted / TeammateIdle** — quality gates for multi-agent teams
 
-DevKit wires all seven hooks to these events via `.claude/settings.json`. No manual setup required after installation.
+DevKit wires all eight hooks to these events via `.claude/settings.json`. No manual setup required after installation.
 
 Slash commands are markdown files in `.claude/commands/`. Claude Code reads them natively — each file is a structured prompt that activates a specialized workflow.
 
@@ -174,6 +195,16 @@ After running `install.sh`, your project gets:
 your-project/
 ├── CLAUDE.md                          # Project memory (stack, conventions, people, patterns)
 ├── TASKS.md                           # Auto-managed task tracking
+├── docs/
+│   ├── pm/                            # Project management (auto-managed)
+│   │   ├── state.yaml                 # Machine-readable project state
+│   │   ├── index.md                   # Project dashboard (auto-generated)
+│   │   ├── decisions.md               # Decision log (auto-generated)
+│   │   └── features/                  # Per-feature detail pages
+│   └── planning/                      # Planning artifacts from /plan
+│       ├── briefs/
+│       ├── requirements/
+│       └── stories/
 └── .claude/
     ├── settings.json                  # Hook wiring and environment config
     ├── hooks/
@@ -183,11 +214,12 @@ your-project/
     │   ├── session-save.sh
     │   ├── self-improve.sh
     │   ├── task-sync.sh
+    │   ├── pm-sync.sh
     │   └── context-guard.sh
     ├── commands/
-    │   └── *.md                       # 22 slash command definitions
+    │   └── *.md                       # 24 slash command definitions
     ├── agents/
-    │   └── *.md                       # 18 specialist agent definitions
+    │   └── *.md                       # 26 specialist agent definitions
     ├── sessions/                      # Session snapshots (auto-managed)
     ├── session-cache/                 # Permissions cache, skill manifest
     └── learnings/
@@ -203,6 +235,21 @@ If a `.claude/settings.json` already exists, the installer backs it up to `setti
 The installed `CLAUDE.md` is a structured template Claude Code reads at the start of every session. Fill in your stack, conventions, key components, common commands, and team contacts.
 
 The `self-improve` hook appends captured patterns to the `Learned Patterns` section automatically over time.
+
+---
+
+## Project Management System
+
+DevKit includes an automated PM layer that tracks features across sessions. The system uses a hybrid YAML + Markdown approach:
+
+- **`docs/pm/state.yaml`** — Machine-readable project state (features, stories, decisions, risks, counters)
+- **`docs/pm/index.md`** — Auto-generated project dashboard
+- **`docs/pm/features/*.md`** — Per-feature detail pages
+- **`docs/pm/decisions.md`** — Append-only decision log from all debates
+
+The PM system is fully automated — `/workflow`, `/idea`, and `/plan` all read and write `state.yaml` at every phase transition. The `pm-sync` hook loads state on session start and reports active features, blockers, and stale items. Run `/pm` at any time for a full status report with regenerated dashboards.
+
+Features enter the lifecycle at different points depending on their origin: `/idea` starts at the `idea` phase, `/plan` starts at `planning`, and `/workflow` starts at `planning` or resumes an existing feature.
 
 ---
 

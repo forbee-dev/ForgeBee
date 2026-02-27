@@ -98,11 +98,13 @@ npm run deploy:production # Deploy to production
 - `/analytics` — Event tracking, dashboards, and metrics
 
 **Meta:**
-- `/team` — Multi-agent orchestration (coordinates specialist agents)
-- `/idea` — Idea-to-product validation and MVP planning
+- `/workflow` — Full pipeline orchestrator: Plan → Debate → Architect → Scrum → Execute → Debate → Deliver (with adversarial review). Auto-tracks in PM system.
+- `/team` — Lightweight multi-agent orchestration (ad-hoc delegation without debate ceremony)
+- `/idea` — Idea-to-product validation and MVP planning (with debate). Auto-tracks in PM system.
+- `/pm` — Automated project management: reads state.yaml, syncs TASKS.md, regenerates dashboards, surfaces blockers
 
 **Specialist Agents** (for Agent Teams):
-frontend, backend, database, security, testing, devops, perf, debug, research, content, seo, supabase, ios, flutter, n8n, session-librarian, ux-designer, scrum-master
+frontend, backend, database, security, testing, devops, perf, debug, research, content, seo, supabase, ios, flutter, n8n, session-librarian, ux-designer, scrum-master, requirements-advocate, requirements-skeptic, requirements-judge, code-advocate, code-skeptic, code-judge, delivery-agent, dashboard-generator
 
 ---
 
