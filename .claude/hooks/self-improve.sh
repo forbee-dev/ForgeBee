@@ -4,6 +4,10 @@
 
 set -euo pipefail
 
+# ── Bootstrap: resolve paths for both plugin and legacy installs ──────
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/_common.sh"
+
 INPUT=$(cat)
 
 # Prevent infinite loop
@@ -12,22 +16,10 @@ if [[ "$STOP_HOOK_ACTIVE" == "true" ]]; then
   exit 0
 fi
 
-PROJECT_DIR="${CLAUDE_PROJECT_DIR:-.}"
 LEARNINGS_DIR="$PROJECT_DIR/.claude/learnings"
 LEARNINGS_FILE="$LEARNINGS_DIR/learnings.md"
 
-mkdir -p "$LEARNINGS_DIR"
 
-# Initialize learnings file if it doesn't exist
-if [[ ! -f "$LEARNINGS_FILE" ]]; then
-  cat > "$LEARNINGS_FILE" << 'HEADER'
-# Project Learnings
-
-Auto-captured patterns, insights, and useful commands from Claude Code sessions.
-
----
-
-HEADER
 fi
 
 TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M UTC")

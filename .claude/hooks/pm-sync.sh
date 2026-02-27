@@ -5,7 +5,10 @@
 # On SessionStart: validates state.yaml exists, reports active feature count
 # On Stop: updates timestamps and flags stale features
 
-PROJECT_DIR="${CLAUDE_PROJECT_DIR:-.}"
+# ── Bootstrap: resolve paths for both plugin and legacy installs ──────
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/_common.sh"
+
 STATE_FILE="$PROJECT_DIR/docs/pm/state.yaml"
 INDEX_FILE="$PROJECT_DIR/docs/pm/index.md"
 DECISIONS_FILE="$PROJECT_DIR/docs/pm/decisions.md"
@@ -26,13 +29,13 @@ BLOCKED_STORIES=$(grep -c "status: blocked" "$STATE_FILE" 2>/dev/null || echo "0
 
 # Report summary (this output is shown to Claude at session start/stop)
 if [[ "$ACTIVE_FEATURES" -gt 0 ]]; then
-  echo "📊 PM State: $ACTIVE_FEATURES active feature(s), $DONE_FEATURES done"
+  echo "PM State: $ACTIVE_FEATURES active feature(s), $DONE_FEATURES done"
   if [[ "$BLOCKED_STORIES" -gt 0 ]]; then
-    echo "⚠️  $BLOCKED_STORIES blocked story/stories — run /pm for details"
+    echo "WARNING: $BLOCKED_STORIES blocked story/stories — run /pm for details"
   fi
 else
   if [[ "$TOTAL_FEATURES" -gt 0 ]]; then
-    echo "📊 PM State: All $TOTAL_FEATURES feature(s) completed"
+    echo "PM State: All $TOTAL_FEATURES feature(s) completed"
   fi
 fi
 
@@ -48,12 +51,9 @@ if date -d "2020-01-01" +%s &>/dev/null 2>&1; then
     if [[ -n "$UPDATED" ]]; then
       UPDATED_TS=$(date -d "$UPDATED" +%s 2>/dev/null || echo "0")
       if [[ "$UPDATED_TS" -lt "$SEVEN_DAYS_AGO" && "$UPDATED_TS" -gt 0 ]]; then
-        echo "⏰ Stale feature detected (not updated in 7+ days) — run /pm to review"
+        echo "NOTICE: Stale feature detected (not updated in 7+ days) — run /pm to review"
         break
       fi
     fi
   done < <(grep "updated:" "$STATE_FILE" 2>/dev/null)
 fi
-
-# Ensure PM directories exist
-mkdir -p "$PROJECT_DIR/docs/pm/features" 2>/dev/null || true

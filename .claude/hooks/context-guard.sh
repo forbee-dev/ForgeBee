@@ -5,12 +5,14 @@
 
 set -euo pipefail
 
-INPUT=$(cat)
-HOOK_EVENT=$(echo "$INPUT" | jq -r '.hook_event_name // empty')
-PROJECT_DIR="${CLAUDE_PROJECT_DIR:-.}"
-BACKUP_DIR="$PROJECT_DIR/.claude/session-cache/context-backups"
+# ── Bootstrap: resolve paths for both plugin and legacy installs ──────
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/_common.sh"
 
-mkdir -p "$BACKUP_DIR"
+INPUT=$(cat)
+BACKUP_DIR="$PROJECT_DIR/.claude/session-cache/context-backups"
+HOOK_EVENT=$(echo "$INPUT" | jq -r '.hook_event_name // empty')
+
 
 # ── PRE-COMPACTION: Backup critical context ───────────────────────────
 if [[ "$HOOK_EVENT" == "PreCompact" ]]; then

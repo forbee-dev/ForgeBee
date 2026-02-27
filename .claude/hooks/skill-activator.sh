@@ -5,6 +5,10 @@
 
 set -euo pipefail
 
+# ── Bootstrap: resolve paths for both plugin and legacy installs ──────
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/_common.sh"
+
 INPUT=$(cat)
 PROMPT=$(echo "$INPUT" | jq -r '.prompt // empty')
 
@@ -12,7 +16,6 @@ if [[ -z "$PROMPT" ]]; then
   exit 0
 fi
 
-PROJECT_DIR="${CLAUDE_PROJECT_DIR:-.}"
 CACHE_FILE="$PROJECT_DIR/.claude/session-cache/skill-manifest.json"
 CACHE_TTL=300  # 5 minutes
 
@@ -30,16 +33,8 @@ fi
 if [[ "$REBUILD_CACHE" == "true" ]]; then
   SKILLS_JSON="[]"
 
-  # Scan all skill directories
-  SKILL_DIRS=(
-    "$PROJECT_DIR/.claude/skills"
-    "$HOME/.claude/skills"
-  )
-
-  # Also scan common plugin/skill locations
-  if [[ -d "$PROJECT_DIR/.skills/skills" ]]; then
-    SKILL_DIRS+=("$PROJECT_DIR/.skills/skills")
-  fi
+  # Use dynamic skill directory resolution (works for both plugin and legacy)
+  IFS=' ' read -ra SKILL_DIRS <<< "$(find_skills_dirs)"
 
   for SKILL_DIR in "${SKILL_DIRS[@]}"; do
     if [[ ! -d "$SKILL_DIR" ]]; then

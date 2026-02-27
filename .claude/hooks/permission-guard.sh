@@ -9,7 +9,12 @@
 
 set -euo pipefail
 
+# ── Bootstrap: resolve paths for both plugin and legacy installs ──────
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/_common.sh"
+
 INPUT=$(cat)
+CACHE_FILE="$PROJECT_DIR/.claude/session-cache/permissions.json"
 TOOL_NAME=$(echo "$INPUT" | jq -r '.tool_name // empty')
 COMMAND=$(echo "$INPUT" | jq -r '.tool_input.command // empty')
 
@@ -18,13 +23,7 @@ if [[ "$TOOL_NAME" != "Bash" ]] || [[ -z "$COMMAND" ]]; then
   exit 0
 fi
 
-PROJECT_DIR="${CLAUDE_PROJECT_DIR:-.}"
-CACHE_FILE="$PROJECT_DIR/.claude/session-cache/permissions.json"
 
-# Initialize cache if missing
-if [[ ! -f "$CACHE_FILE" ]]; then
-  echo '{}' > "$CACHE_FILE"
-fi
 
 # ── TIER 1: ALLOWLIST (instant approve) ──────────────────────────────
 # Safe read-only and standard dev commands

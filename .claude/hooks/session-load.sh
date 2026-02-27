@@ -4,7 +4,10 @@
 
 set -euo pipefail
 
-PROJECT_DIR="${CLAUDE_PROJECT_DIR:-.}"
+# ── Bootstrap: resolve paths for both plugin and legacy installs ──────
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/_common.sh"
+
 SESSIONS_DIR="$PROJECT_DIR/.claude/sessions"
 LATEST="$SESSIONS_DIR/latest.json"
 

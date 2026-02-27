@@ -5,6 +5,10 @@
 
 set -euo pipefail
 
+# ── Bootstrap: resolve paths for both plugin and legacy installs ──────
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/_common.sh"
+
 INPUT=$(cat)
 
 # Prevent infinite loop
@@ -13,7 +17,7 @@ if [[ "$STOP_HOOK_ACTIVE" == "true" ]]; then
   exit 0
 fi
 
-PROJECT_DIR="${CLAUDE_PROJECT_DIR:-.}"
+TASKS_FILE="$PROJECT_DIR/TASKS.md"
 TASKS_FILE="$PROJECT_DIR/TASKS.md"
 HOOK_EVENT=$(echo "$INPUT" | jq -r '.hook_event_name // empty')
 
@@ -33,25 +37,6 @@ if [[ "$HOOK_EVENT" == "SessionStart" ]]; then
   exit 0
 fi
 
-# ── ON STOP: Update TASKS.md with session activity ───────────────────
-# Initialize TASKS.md if it doesn't exist
-if [[ ! -f "$TASKS_FILE" ]]; then
-  cat > "$TASKS_FILE" << 'HEADER'
-# Tasks
-
-## Active
-<!-- Current work items -->
-
-## Waiting On
-<!-- Blocked items -->
-
-## Someday
-<!-- Future ideas -->
-
-## Done
-<!-- Completed items (auto-archived after 7 days) -->
-
-HEADER
 fi
 
 # Get git info for context

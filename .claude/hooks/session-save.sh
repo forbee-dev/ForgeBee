@@ -4,6 +4,10 @@
 
 set -euo pipefail
 
+# ── Bootstrap: resolve paths for both plugin and legacy installs ──────
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/_common.sh"
+
 INPUT=$(cat)
 
 # Prevent infinite loop if stop_hook_active
@@ -12,9 +16,7 @@ if [[ "$STOP_HOOK_ACTIVE" == "true" ]]; then
   exit 0
 fi
 
-PROJECT_DIR="${CLAUDE_PROJECT_DIR:-.}"
 SESSIONS_DIR="$PROJECT_DIR/.claude/sessions"
-mkdir -p "$SESSIONS_DIR"
 
 TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 FILENAME=$(date +"%Y-%m-%d-%H%M%S")
