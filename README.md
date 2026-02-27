@@ -6,7 +6,29 @@ No runtime. No dependencies. No build step. Just shell scripts and markdown that
 
 ---
 
-## Quick Start
+## Installation
+
+### Option 1: Plugin (Recommended)
+
+Download the latest `claude-devkit.plugin` from [Releases](https://github.com/forbee-dev/ClaudeDevKit/releases), then:
+
+```bash
+claude plugin install claude-devkit.plugin
+```
+
+Or install directly from the repo:
+
+```bash
+# Clone and install as plugin
+git clone git@github.com:forbee-dev/ClaudeDevKit.git
+claude plugin install ClaudeDevKit/claude-devkit.plugin
+```
+
+The plugin registers all commands, agents, and hooks automatically. Run `/devkit-setup` to initialize your project with CLAUDE.md and the PM system.
+
+### Option 2: Manual Install (Legacy)
+
+For users who prefer direct file installation or aren't using the plugin system:
 
 ```bash
 # Clone DevKit
@@ -19,13 +41,13 @@ bash ClaudeDevKit/install.sh /path/to/your/project
 cd your-project && bash /path/to/ClaudeDevKit/install.sh .
 ```
 
-Then:
+### After Installation
 
 1. Edit `CLAUDE.md` with your project details (stack, conventions, key people)
 2. Open Claude Code in your project directory
-3. Start working — the hooks activate automatically, commands are available immediately
+3. Start working — hooks activate automatically, commands are available immediately
 
-**Requires:** Bash 4+, Claude Code. `jq` is optional (used for settings validation).
+**Requires:** Bash 4+, Claude Code. `jq` is optional (used for settings validation). Agent Teams features require `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`.
 
 ---
 

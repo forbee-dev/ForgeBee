@@ -1,14 +1,24 @@
 #!/bin/bash
 # DevKit Installer — Drop-in Claude Code development framework
 # Usage: bash install.sh [target-directory]
+#
+# NOTE: This is the legacy manual installer. The recommended way to install
+# DevKit is as a plugin via the Claude Code plugin system:
+#   claude plugin install claude-devkit.plugin
+#
+# This script remains for users who prefer git clone + manual installation
+# or who are not using the plugin system.
 
 set -euo pipefail
 
 TARGET="${1:-.}"
 DEVKIT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-echo "🔧 DevKit Installer"
-echo "==================="
+echo "🔧 DevKit Installer (Legacy)"
+echo "=============================="
+echo ""
+echo "💡 Tip: DevKit is also available as a plugin. Install with:"
+echo "   claude plugin install claude-devkit.plugin"
 echo ""
 echo "Installing to: $TARGET"
 echo ""
