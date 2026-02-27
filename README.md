@@ -8,25 +8,34 @@ No runtime. No dependencies. No build step. Just shell scripts and markdown that
 
 ## Installation
 
-### Option 1: Plugin (Recommended)
+### Option 1: Plugin via Marketplace (Recommended)
 
-Download the latest `claude-devkit.plugin` from [Releases](https://github.com/forbee-dev/ClaudeDevKit/releases), then:
+Add this repo as a plugin marketplace in Claude Code, then install:
 
 ```bash
-claude plugin install claude-devkit.plugin
+# Inside Claude Code, run:
+/plugin marketplace add forbee-dev/ClaudeDevKit
+
+# Then install the plugin:
+/plugin install claude-devkit@ClaudeDevKit
 ```
 
-Or install directly from the repo:
+You can choose the installation scope when prompted: **User** (all projects), **Project** (shared with collaborators), or **Local** (just you, this repo).
+
+### Option 2: Plugin from Local Directory
+
+Clone the repo and load the plugin directly:
 
 ```bash
-# Clone and install as plugin
 git clone git@github.com:forbee-dev/ClaudeDevKit.git
-claude plugin install ClaudeDevKit/claude-devkit.plugin
+
+# Launch Claude Code with the plugin loaded
+claude --plugin-dir ./ClaudeDevKit/claude-devkit
 ```
 
-The plugin registers all commands, agents, and hooks automatically. Run `/devkit-setup` to initialize your project with CLAUDE.md and the PM system.
+To load it permanently, install via the marketplace method above.
 
-### Option 2: Manual Install (Legacy)
+### Option 3: Manual Install (Legacy)
 
 For users who prefer direct file installation or aren't using the plugin system:
 
@@ -47,7 +56,7 @@ cd your-project && bash /path/to/ClaudeDevKit/install.sh .
 2. Open Claude Code in your project directory
 3. Start working — hooks activate automatically, commands are available immediately
 
-**Requires:** Bash 4+, Claude Code. `jq` is optional (used for settings validation). Agent Teams features require `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`.
+**Requires:** Claude Code 1.0.33+, Bash 4+. `jq` is optional (used for settings validation). Agent Teams features require `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`.
 
 ---
 

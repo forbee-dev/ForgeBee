@@ -4,7 +4,8 @@
 #
 # NOTE: This is the legacy manual installer. The recommended way to install
 # DevKit is as a plugin via the Claude Code plugin system:
-#   claude plugin install claude-devkit.plugin
+#   /plugin marketplace add forbee-dev/ClaudeDevKit
+#   /plugin install claude-devkit@ClaudeDevKit
 #
 # This script remains for users who prefer git clone + manual installation
 # or who are not using the plugin system.
@@ -17,8 +18,9 @@ DEVKIT_DIR="$(cd "$(dirname "$0")" && pwd)"
 echo "🔧 DevKit Installer (Legacy)"
 echo "=============================="
 echo ""
-echo "💡 Tip: DevKit is also available as a plugin. Install with:"
-echo "   claude plugin install claude-devkit.plugin"
+echo "💡 Tip: DevKit is also available as a plugin. In Claude Code, run:"
+echo "   /plugin marketplace add forbee-dev/ClaudeDevKit"
+echo "   /plugin install claude-devkit@ClaudeDevKit"
 echo ""
 echo "Installing to: $TARGET"
 echo ""
