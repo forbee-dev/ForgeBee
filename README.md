@@ -65,8 +65,8 @@ cd your-project && bash /path/to/ClaudeDevKit/install.sh .
 | Category | Count | What it does |
 |----------|-------|--------------|
 | Hooks | 8 | Shell scripts wired to Claude Code lifecycle events |
-| Commands | 24 | Slash commands that activate specialized workflows |
-| Agents | 26 | Specialist agent definitions for multi-agent teams |
+| Commands | 26 | Slash commands that activate specialized workflows |
+| Agents | 42 | Specialist agent definitions for multi-agent teams |
 
 ---
 
@@ -117,14 +117,16 @@ Invoke any command with a slash in Claude Code: `/review`, `/debug`, `/test`, et
 
 | Command | What it does |
 |---------|--------------|
+| `/growth` | **Growth OS orchestrator** — 9-phase marketing pipeline with adversarial debate: Brand → Intel → Audience → Content Architecture → Hooks → Debate → Calendar → Creation → Distribution → Measure. Main agent only delegates to 18 specialist agents. Auto-tracks in PM system. |
+| `/content` | Quick content production — single piece or small batch without full pipeline. Delegates to content agents with brand context. |
 | `/gtm` | Go-to-market planning with launch checklists and timeline |
 | `/seo` | Technical SEO audit, keyword research, on-page optimization |
-| `/social` | Social media strategy with platform playbooks and content calendars |
+| `/social` | Social media strategy with platform playbooks, hook formulas, engagement psychology, and content calendars |
 | `/launch` | Product Hunt / Hacker News / press launch execution |
-| `/competitive` | Competitive intelligence with battlecards |
+| `/competitive` | Competitive intelligence with Fact-Impact-Act battlecards, niche intelligence, and market trends |
 | `/landing` | Conversion-optimized landing page builder (single HTML + Tailwind) |
 | `/payments` | Stripe / LemonSqueezy / Paddle integration with webhook handlers |
-| `/analytics` | Event tracking setup, dashboard specs, metrics framework |
+| `/analytics` | Event tracking setup, marketing performance dashboards, metrics framework |
 
 ### Meta
 
@@ -161,7 +163,7 @@ Specialist agent definitions for Claude Code's Agent Teams feature. Invoke them 
 | `ux-designer` | User flows, wireframes, interaction patterns, usability heuristics, accessibility |
 | `scrum-master` | Sprint planning, story decomposition, backlog grooming, estimation, dependency mapping |
 
-**Adversarial Debate (used by `/workflow`)**
+**Dev Debate (used by `/workflow`)**
 
 | Agent | Specialty |
 |-------|-----------|
@@ -171,6 +173,14 @@ Specialist agent definitions for Claude Code's Agent Teams feature. Invoke them 
 | `code-advocate` | Argues FOR implementation — defends code quality, test coverage, correctness |
 | `code-skeptic` | Argues AGAINST implementation — finds bugs, security holes, missed requirements |
 | `code-judge` | Rules on each code item — approve, block, or flag with escalation |
+
+**Strategy Debate (used by `/growth`)**
+
+| Agent | Specialty |
+|-------|-----------|
+| `strategy-advocate` | Argues FOR marketing strategy — defends positioning, audience targeting, content architecture |
+| `strategy-skeptic` | Argues AGAINST marketing strategy — finds weak positioning, audience gaps, flawed assumptions |
+| `strategy-judge` | Rules on each strategy item — approve, block, or flag with escalation |
 
 **Delivery**
 
@@ -184,9 +194,27 @@ Specialist agent definitions for Claude Code's Agent Teams feature. Invoke them 
 | Agent | Specialty |
 |-------|-----------|
 | `deep-researcher` | Technical research, documentation synthesis |
-| `content-writer` | Technical writing, docs, landing copy |
-| `seo-specialist` | Search optimization, keyword strategy |
+| `content-writer` | Technical writing, docs, landing copy, marketing templates |
+| `seo-specialist` | Search optimization, keyword strategy, pillar/cluster SEO |
 | `session-librarian` | Session history retrieval and context management |
+
+**Growth OS (used by `/growth`)**
+
+| Agent | Specialty |
+|-------|-----------|
+| `brand-strategist` | Brand positioning, archetypes, voice, messaging pillars |
+| `market-intel` | Competitive intelligence, niche analysis, FIA battlecards |
+| `audience-architect` | ICP definition, personas, buyer journey, Jobs-to-be-Done |
+| `content-architect` | Content pillars, topic clusters, hub-and-spoke, content pyramid |
+| `hook-engineer` | Stop-scrolling hooks, viral formulas, Cialdini principles, pattern interrupts |
+| `idea-machine` | Content idea generation, angle mining, repurposing chains, trend surfing |
+| `engagement-strategist` | Community building, comment strategy, reciprocity loops, DM flows |
+| `content-creator` | Platform-native content (posts, threads, carousels, scripts, emails) |
+| `growth-hacker` | Growth loops, flywheels, audience growth, funnel optimization |
+| `calendar-builder` | Content calendar architecture, batching, distribution planning |
+| `performance-analyst` | Marketing KPIs, campaign analysis, attribution, A/B testing |
+| `conversion-optimizer` | CRO audits, funnel optimization, A/B test design, behavioral psychology |
+| `email-strategist` | Email automation flows, segmentation, deliverability, lifecycle sequences |
 
 **Platform**
 
@@ -232,6 +260,20 @@ your-project/
 │   │   ├── index.md                   # Project dashboard (auto-generated)
 │   │   ├── decisions.md               # Decision log (auto-generated)
 │   │   └── features/                  # Per-feature detail pages
+│   ├── marketing/                     # Growth OS outputs (auto-managed)
+│   │   ├── brand/                    # Brand strategy, voice, archetypes
+│   │   ├── intel/                    # Competitive intelligence, battlecards
+│   │   ├── audience/                 # ICPs, personas, buyer journeys
+│   │   ├── content-architecture/     # Pillars, clusters, content pyramid
+│   │   ├── hooks/                    # Hook libraries, formulas
+│   │   ├── ideas/                    # Content ideas, repurposing chains
+│   │   ├── engagement/               # Community playbooks
+│   │   ├── growth/                   # Growth loops, flywheels
+│   │   ├── analytics/                # KPI dashboards, test plans
+│   │   ├── calendar/                 # Content calendars, batching
+│   │   ├── cro/                      # CRO audits, A/B tests, funnel analysis
+│   │   ├── email/                    # Email flows, segmentation, tests
+│   │   └── debate/                   # Strategy debate outputs
 │   └── planning/                      # Planning artifacts from /plan
 │       ├── briefs/
 │       ├── requirements/
@@ -248,9 +290,9 @@ your-project/
     │   ├── pm-sync.sh
     │   └── context-guard.sh
     ├── commands/
-    │   └── *.md                       # 24 slash command definitions
+    │   └── *.md                       # 26 slash command definitions
     ├── agents/
-    │   └── *.md                       # 26 specialist agent definitions
+    │   └── *.md                       # 42 specialist agent definitions
     ├── sessions/                      # Session snapshots (auto-managed)
     ├── session-cache/                 # Permissions cache, skill manifest
     └── learnings/
@@ -278,9 +320,9 @@ DevKit includes an automated PM layer that tracks features across sessions. The 
 - **`docs/pm/features/*.md`** — Per-feature detail pages
 - **`docs/pm/decisions.md`** — Append-only decision log from all debates
 
-The PM system is fully automated — `/workflow`, `/idea`, and `/plan` all read and write `state.yaml` at every phase transition. The `pm-sync` hook loads state on session start and reports active features, blockers, and stale items. Run `/pm` at any time for a full status report with regenerated dashboards.
+The PM system is fully automated — `/workflow`, `/growth`, `/idea`, and `/plan` all read and write `state.yaml` at every phase transition. The `pm-sync` hook loads state on session start and reports active features, blockers, and stale items. Run `/pm` at any time for a full status report with regenerated dashboards.
 
-Features enter the lifecycle at different points depending on their origin: `/idea` starts at the `idea` phase, `/plan` starts at `planning`, and `/workflow` starts at `planning` or resumes an existing feature.
+Features enter the lifecycle at different points depending on their origin: `/idea` starts at the `idea` phase, `/plan` starts at `planning`, `/workflow` starts at `planning` or resumes an existing feature, and `/growth` starts at `brand-foundation` for marketing initiatives.
 
 ---
 

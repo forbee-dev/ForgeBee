@@ -35,13 +35,23 @@ For each competitor, gather:
 | Target | [who] | [who] | [who] | [who] |
 ```
 
-### 4. Build Battlecards
-For each competitor:
+### 4. Build Battlecards (Fact-Impact-Act Framework)
+
+For each competitor, use the FIA framework:
+
 ```markdown
 ## [Competitor Name] Battlecard
 
-### Their pitch
-[What they say about themselves]
+### Quick Reference
+- **Their pitch:** [What they say about themselves]
+- **Our counter-pitch:** [Why we're different/better for our ICP]
+- **Threat level:** High | Medium | Low
+
+### Fact-Impact-Act Analysis
+| Fact (What they do) | Impact (How it affects us) | Act (What we do about it) |
+|---------------------|---------------------------|---------------------------|
+| [Feature/pricing/move] | [Threat/opportunity level] | [Messaging/product/pricing response] |
+| [Recent launch] | [Market impact] | [Counter-strategy] |
 
 ### Their strengths
 [Be honest — know what they do well]
@@ -58,10 +68,36 @@ For each competitor:
 ### Objection handling
 | They say | We respond |
 |----------|-----------|
-| "[claim]" | "[counter]" |
+| "[specific claim]" | "[specific counter with proof]" |
+
+### Competitive Landmines
+[Traps to set early in conversations that make switching to them harder]
 
 ### Key differentiators
-1. [Why we're better for specific use case]
+1. [Why we're better for specific use case — with proof]
+```
+
+### 5. Niche Intelligence
+
+Identify underserved market segments:
+```markdown
+### Underserved Segment: [Name]
+- **Size estimate:** [TAM/SAM]
+- **Pain points:** [What they struggle with]
+- **Current solutions:** [What they use today — why it's inadequate]
+- **Opportunity:** [How we can serve them better]
+- **Entry strategy:** [Content, features, or partnerships needed]
+```
+
+### 6. Market Trend Tracking
+
+```markdown
+### Trend: [Name]
+- **Signal strength:** Strong | Emerging | Weak
+- **Impact timeline:** Now | 6 months | 12+ months
+- **Opportunity:** [How to capitalize]
+- **Threat:** [How it could hurt us]
+- **Action required:** [Specific next steps]
 ```
 
 ### 5. Strategic Recommendations

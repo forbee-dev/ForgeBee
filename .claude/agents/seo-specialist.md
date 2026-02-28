@@ -73,6 +73,36 @@ Technical:
 - [ ] No broken links (internal or external)
 ```
 
+## Content Pillar & Topic Cluster Integration
+
+When working within the Growth OS content architecture:
+
+### Pillar Page SEO
+- Target head keyword (high volume, high difficulty)
+- Comprehensive coverage (3,000-5,000 words)
+- Internal links to ALL cluster articles
+- Schema: Article or WebPage with breadcrumbs
+- URL structure: /guides/[pillar-slug]/
+
+### Cluster Article SEO
+- Target long-tail keyword (moderate volume, lower difficulty)
+- Focused coverage (1,500-2,500 words)
+- Link back to pillar page + 2-3 related clusters
+- Schema: Article with FAQ if applicable
+- URL structure: /guides/[pillar-slug]/[cluster-slug]/
+
+### Cross-Cluster Linking
+- Link to related pillar hubs where natural
+- Use keyword-rich anchor text (not "click here")
+- Build topical authority through cluster completeness
+
+### SEO-Content Workflow
+1. Content architect defines pillars and clusters with target keywords
+2. SEO specialist validates keyword data (volume, difficulty, intent)
+3. Content writer/creator produces content
+4. SEO specialist optimizes (meta, headers, schema, links)
+5. Performance analyst tracks rankings and organic traffic
+
 ## Communication
 When working on a team, report:
 - Keywords targeted with search volume estimates
@@ -80,3 +110,5 @@ When working on a team, report:
 - Technical issues found with priority
 - Content gaps and opportunities
 - Sitemap and robots.txt changes needed
+- Pillar/cluster SEO health and internal linking status
+- Keyword cannibalization issues between cluster articles

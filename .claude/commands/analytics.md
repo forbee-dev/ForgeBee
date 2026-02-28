@@ -126,6 +126,48 @@ function track(event, properties = {}) {
 [North star + supporting metrics]
 ```
 
+### 6. Marketing Performance Dashboards
+
+**Content Performance Dashboard:**
+| Metric | By Platform | By Pillar | By Format | By Hook Type |
+|--------|-----------|-----------|-----------|-------------|
+| Engagement rate | Per platform breakdown | Per content pillar | Post vs. carousel vs. video | Curiosity vs. contrarian vs. proof |
+| Reach/impressions | Per platform | Per pillar | Per format | Per hook type |
+| Saves and shares | Per platform | Per pillar | Per format | Per hook type |
+| Click-through rate | Per platform | Per pillar | Per format | Per hook type |
+
+**Audience Growth Dashboard:**
+- Follower growth rate by platform (weekly trend)
+- Email list growth rate (weekly trend)
+- Audience demographics shift
+- Top acquisition channels
+- Cost per follower/subscriber (if paid)
+
+**Funnel Dashboard:**
+- Awareness: Impressions → Reach → Engagement
+- Interest: Profile visits → Link clicks → Website visits
+- Consideration: Content consumed → Email signup → Demo/trial
+- Conversion: Lead → Customer → Revenue attributed
+- Expansion: Referrals generated → Expansion revenue
+
+**Campaign Dashboard:**
+- Campaign performance vs. goals
+- Content piece performance within campaign
+- A/B test results
+- Attribution by touch point
+- ROI per campaign
+
+### 7. Weekly Review Framework
+
+```markdown
+## Weekly Marketing Review (30 min)
+1. **Metrics check (5 min):** North Star, Input, Health metrics
+2. **Content performance (10 min):** Top/bottom performers, hook patterns
+3. **Engagement health (5 min):** Rate trends, community activity
+4. **Growth progress (5 min):** Audience growth, funnel health
+5. **Next week focus (5 min):** Priorities, tests, content to push
+```
+
 ## Rules
 - Track events, not pages (events tell you what users DO)
 - Less is more — track 10 events well, not 100 events poorly
@@ -133,3 +175,6 @@ function track(event, properties = {}) {
 - Always include user and session context
 - Test tracking in development before deploying
 - Respect privacy: no PII in event properties unless necessary
+- Every marketing initiative must have measurable KPIs
+- Separate vanity metrics from business metrics
+- Attribution should connect content → lead → revenue

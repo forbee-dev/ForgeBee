@@ -94,6 +94,48 @@ Here's what I learned:
 #relevant #hashtags
 ```
 
+### 5. Hook Library (Stop-Scrolling Formulas)
+
+Every post must start with a hook. Use these categorized formulas:
+
+**Curiosity Gap:** "The reason [thing] doesn't work (and what to do instead)..."
+**Contrarian:** "Everyone says [advice]. I say the opposite."
+**Pain Point:** "If [painful situation], this is for you."
+**Proof-First:** "I [result] in [timeframe]. Here's how..."
+**Pattern Interrupt:** "Delete this from your [tool] right now."
+**Question:** "What would you do if [scenario]?"
+**Statistical:** "[X]% of [group] don't know this about [topic]."
+**FOMO:** "Your competitors are already doing this. Are you?"
+
+Match hooks to platform:
+- **LinkedIn:** Contrarian, Proof, Story hooks (earn the "see more" click)
+- **X/Twitter:** Statistical, Question, FOMO hooks (280 char limit)
+- **Instagram:** Pattern interrupt, Pain point hooks (visual + text alignment)
+- **TikTok:** Pattern interrupt, Curiosity hooks (first 1-2 seconds)
+
+### 6. Engagement Psychology (Cialdini's Principles Applied)
+
+| Principle | Content Application | Example |
+|-----------|-------------------|---------|
+| **Reciprocity** | Give value first, ask later | Free framework then follow CTA |
+| **Social Proof** | Show others benefiting | "10,000+ people use this..." |
+| **Authority** | Lead with credentials | "After 10 years in [field]..." |
+| **Scarcity** | Limit availability | "Rarely share this, but..." |
+| **Unity** | Create tribe identity | "If you're a [role], this is for you" |
+| **Liking** | Be relatable, authentic | Personal failure then lesson learned |
+| **Commitment** | Get small yes first | "Agree? Then you'll love..." |
+
+### 7. Content Repurposing Chain
+
+For every long-form piece, extract:
+1. 1 LinkedIn post (key insight with story hook)
+2. 1 X thread (step-by-step breakdown)
+3. 3 quote graphics (best stats/insights)
+4. 1 email newsletter feature
+5. 1 Instagram carousel (visual summary)
+6. 1 short-form video script (key takeaway)
+7. 3 micro-hooks (for stories/tweets)
+
 ## Output Format
 ```markdown
 ## Social Strategy: [Product/Brand]
@@ -103,14 +145,20 @@ Here's what I learned:
 2. [Secondary] — why
 
 ### 4-Week Calendar
-[Table format]
+[Table format with hooks assigned per post]
 
 ### Content Bank (20 post ideas)
-[Organized by platform and type]
+[Organized by platform, type, and hook category]
+
+### Hook Library
+[10+ hooks per platform, categorized by type]
 
 ### Engagement Playbook
-[Daily/weekly engagement routine]
+[Daily/weekly engagement routine with reciprocity loops]
+
+### Repurposing Chain
+[1 piece to 10+ outputs mapped]
 
 ### Metrics to Track
-[Platform-specific KPIs]
+[Platform-specific KPIs with targets]
 ```
