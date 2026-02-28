@@ -1,0 +1,53 @@
+# DevKit Project Management State
+# Auto-managed by /workflow, /idea, /plan, and pm-sync hook
+# Manual edits are allowed but may be overwritten by automated updates
+
+project:
+  name: ""
+  updated: ""
+
+# Feature lifecycle phases (in order):
+# idea → idea-debate → mvp-definition → mvp-debate → planning → requirements-debate →
+# architecture → sprint-planning → execution → code-debate → delivery → done
+#
+# Features enter at different points depending on origin:
+#   /idea    → starts at "idea"
+#   /plan    → starts at "planning"
+#   /workflow → starts at "planning" (or loads existing feature)
+
+features: []
+# Each feature follows this schema:
+# - id: feat-001                        # Auto-generated sequential ID
+#   name: "Feature Name"                # Human-readable name
+#   phase: planning                     # Current lifecycle phase
+#   created: "2026-02-27"               # Date created
+#   updated: "2026-02-27T12:00:00Z"     # Last state change
+#   origin: workflow | idea | plan      # Which command created this feature
+#   stories: []                         # Story-level tracking
+#     - id: story-001
+#       title: "Story Title"
+#       status: pending | in-progress | done | blocked
+#       agent: ""                       # Assigned agent (if any)
+#       blocked_by: ""                  # Blocker description (if blocked)
+#   decisions: []                       # Decision audit trail
+#     - id: dec-001
+#       type: idea-debate | requirements-debate | code-debate | architecture | user-override
+#       ruling: approved | blocked | flagged | proceed | pivot | kill | trim
+#       summary: ""                     # One-line summary of the decision
+#       date: ""
+#       details: ""                     # Reference to full debate report or ADR file
+#   risks: []                           # Tracked risks from Skeptic/Judge
+#     - description: ""
+#       severity: low | medium | high | critical
+#       source: requirements-debate | code-debate | idea-debate
+#       status: open | mitigated | accepted
+#   blocked: []                         # Current blockers
+#     - description: ""
+#       since: ""
+#       waiting_on: ""                  # What needs to happen to unblock
+
+# Counters for auto-generating IDs
+counters:
+  feature: 0
+  story: 0
+  decision: 0
