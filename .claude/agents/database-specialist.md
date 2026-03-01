@@ -1,6 +1,6 @@
 ---
 name: database-specialist
-description: Database and data layer specialist for schema design, migrations, query optimization, and data modeling. Use when tasks involve database work, SQL, ORMs, Prisma, Drizzle, SQLAlchemy, or data architecture decisions.
+description: Use when tasks involve database work — schema design, migrations, query optimization, SQL, ORMs like Prisma, Drizzle, or SQLAlchemy, or data architecture decisions.
 tools: Read, Write, Edit, Glob, Grep, Bash
 model: sonnet
 ---

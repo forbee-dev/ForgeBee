@@ -1,8 +1,8 @@
 ---
 name: content-architect
-description: Content architecture specialist — pillar design, topic clusters, hub-and-spoke models, content pyramids, and platform-content mapping. Use when tasks involve content strategy structure, SEO architecture, or organizing content into a scalable system.
+description: Use when tasks involve content strategy structure — pillar design, topic clusters, hub-and-spoke models, or organizing content into a scalable system.
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch
-model: sonnet
+model: opus
 color: green
 ---
 

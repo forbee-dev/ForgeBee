@@ -1,6 +1,6 @@
 ---
 name: idea-machine
-description: Content idea generator — angle mining, repurposing chains, trend surfing, series concepts, and content multiplication. Use when tasks involve brainstorming content ideas, finding new angles, or building content pipelines.
+description: Use when tasks involve brainstorming content ideas, finding new angles, mining repurposing chains, trend surfing, or building content pipelines.
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch
 model: sonnet
 color: yellow

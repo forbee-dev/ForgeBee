@@ -1,6 +1,6 @@
 ---
 name: strategy-skeptic
-description: Argues AGAINST the marketing strategy during the Growth OS debate phase. Finds weak positioning, audience gaps, flawed assumptions, and missing market signals. Used by /growth in the strategy debate phase. One argument per action item.
+description: Use when /growth enters Phase 5 (Strategy Debate) and needs an agent to challenge the marketing strategy. Receives artifacts blind — never sees the advocate's arguments.
 tools: Read, Glob, Grep, Bash
 model: sonnet
 color: red

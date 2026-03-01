@@ -2,6 +2,7 @@
 # skill-activator.sh — Analyze user prompts and recommend relevant skills
 # Runs on UserPromptSubmit event
 # Outputs additionalContext with skill recommendations
+# v2: Added intent detection — intercepts build/implement intent to suggest /plan or /workflow
 
 set -euo pipefail
 
@@ -75,8 +76,40 @@ if [[ "$REBUILD_CACHE" == "true" ]]; then
   echo "$SKILLS_JSON" > "$CACHE_FILE"
 fi
 
-# ── Match prompt against skills ───────────────────────────────────────
+# ── Intent Detection — intercept build/implement requests ─────────────
 PROMPT_LOWER=$(echo "$PROMPT" | tr '[:upper:]' '[:lower:]')
+INTENT_CONTEXT=""
+
+# Detect implementation intent (build, implement, create feature, add feature, etc.)
+# Skip if the user is already using a command (starts with /)
+if [[ ! "$PROMPT" =~ ^/ ]]; then
+
+  # Strong implementation signals — suggest /workflow
+  BUILD_PATTERNS="build a |build the |implement |create a new |add a new feature|develop a |ship a |code a |make a new |architect a |set up a new |scaffold "
+  if echo "$PROMPT_LOWER" | grep -qE "$BUILD_PATTERNS"; then
+    INTENT_CONTEXT="🎯 **Implementation intent detected.** Before jumping into code, consider:\n- \`/workflow\` — Full pipeline with planning, debate, and delivery\n- \`/plan\` — Lightweight planning (brief → requirements → architecture → stories)\n- \`/team\` — Quick multi-agent delegation without ceremony\n\nPlanning first catches design issues before they become code rewrites.\n"
+  fi
+
+  # Debug/fix signals — suggest /debug
+  DEBUG_PATTERNS="fix this bug|debug |broken |not working|crashes when|error when|fails to |throwing an error|can.t figure out why"
+  if [[ -z "$INTENT_CONTEXT" ]] && echo "$PROMPT_LOWER" | grep -qE "$DEBUG_PATTERNS"; then
+    INTENT_CONTEXT="🔍 **Debug intent detected.** Consider using \`/debug\` for systematic debugging (reproduce → isolate → diagnose → fix) instead of ad-hoc investigation.\n"
+  fi
+
+  # Refactor signals — suggest /refactor
+  REFACTOR_PATTERNS="refactor |clean up |restructure |reorganize |simplify |extract |decouple |split this "
+  if [[ -z "$INTENT_CONTEXT" ]] && echo "$PROMPT_LOWER" | grep -qE "$REFACTOR_PATTERNS"; then
+    INTENT_CONTEXT="🔧 **Refactor intent detected.** Consider using \`/refactor\` for safe refactoring with test verification and behavior preservation checks.\n"
+  fi
+
+  # TDD signals — suggest tdd-enforcer
+  TDD_PATTERNS="test.first|test.driven|tdd|write tests before|red.green.refactor"
+  if echo "$PROMPT_LOWER" | grep -qE "$TDD_PATTERNS"; then
+    INTENT_CONTEXT="${INTENT_CONTEXT}🧪 **TDD mode available.** The \`tdd-enforcer\` agent can enforce RED-GREEN-REFACTOR discipline throughout implementation.\n"
+  fi
+fi
+
+# ── Match prompt against skills ───────────────────────────────────────
 MATCHED_SKILLS=""
 
 while IFS= read -r SKILL; do
@@ -111,8 +144,17 @@ while IFS= read -r SKILL; do
 done < <(jq -c '.[]' "$CACHE_FILE" 2>/dev/null)
 
 # ── Output recommendations ────────────────────────────────────────────
+CONTEXT=""
+
+if [[ -n "$INTENT_CONTEXT" ]]; then
+  CONTEXT="$INTENT_CONTEXT"
+fi
+
 if [[ -n "$MATCHED_SKILLS" ]]; then
-  CONTEXT="📌 Skill Recommendations:\n$MATCHED_SKILLS"
+  CONTEXT="${CONTEXT}📌 Skill Recommendations:\n$MATCHED_SKILLS"
+fi
+
+if [[ -n "$CONTEXT" ]]; then
   echo "{\"additionalContext\": \"$(echo -e "$CONTEXT" | sed 's/"/\\"/g' | tr '\n' ' ')\"}"
 fi
 

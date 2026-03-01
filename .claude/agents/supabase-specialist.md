@@ -1,6 +1,6 @@
 ---
 name: supabase-specialist
-description: Supabase specialist for database schemas, Row Level Security policies, Edge Functions, Auth configuration, Realtime subscriptions, and Storage buckets. Use when tasks involve Supabase, PostgreSQL with RLS, or serverless functions on Supabase.
+description: Use when tasks involve Supabase — database schemas, Row Level Security policies, Edge Functions, Auth configuration, Realtime subscriptions, or Storage buckets.
 tools: Read, Write, Edit, Glob, Grep, Bash
 model: sonnet
 ---

@@ -1,6 +1,6 @@
 ---
 name: ios-expert
-description: iOS and SwiftUI specialist for native Apple platform development. Use when tasks involve Swift, SwiftUI, UIKit, Xcode project configuration, Core Data, CloudKit, or App Store submission.
+description: Use when tasks involve Swift, SwiftUI, UIKit, Xcode project configuration, Core Data, CloudKit, or App Store submission.
 tools: Read, Write, Edit, Glob, Grep, Bash
 model: sonnet
 ---

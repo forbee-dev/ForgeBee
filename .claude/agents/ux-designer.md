@@ -1,6 +1,6 @@
 ---
 name: ux-designer
-description: UX design specialist for user flows, wireframes, interaction patterns, and usability analysis. Use when tasks involve user experience decisions, interface design, navigation structure, or accessibility audits. Proactively handles UX-related implementation.
+description: Use when tasks involve user experience decisions — user flows, wireframes, interaction patterns, interface design, navigation structure, or accessibility audits.
 tools: Read, Write, Edit, Glob, Grep, Bash
 model: sonnet
 ---

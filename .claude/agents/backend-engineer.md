@@ -1,6 +1,6 @@
 ---
 name: backend-engineer
-description: Backend development specialist for APIs, server logic, middleware, authentication, and business logic. Use when tasks involve Express, FastAPI, Django, Rails, Go, Rust, or any server-side work. Proactively handles backend implementation.
+description: Use when tasks involve server-side work — APIs, middleware, authentication, business logic, Express, FastAPI, Django, Rails, Go, or Rust.
 tools: Read, Write, Edit, Glob, Grep, Bash
 model: sonnet
 ---

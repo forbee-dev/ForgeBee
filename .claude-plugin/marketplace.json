@@ -1,15 +1,15 @@
 {
-  "name": "ClaudeDevKit",
+  "name": "ForgeBee",
   "owner": {
     "name": "Forbee Dev",
     "url": "https://github.com/forbee-dev"
   },
   "plugins": [
     {
-      "name": "claude-devkit",
-      "source": "./claude-devkit",
-      "description": "Batteries-included development and growth framework — 26 slash commands, 42 specialist agents, 8 lifecycle hooks, adversarial debate system, Growth OS 9-phase marketing pipeline with CRO and email automation, and automated project management.",
-      "version": "2.2.0"
+      "name": "forgebee",
+      "source": "./forgebee",
+      "description": "Batteries-included development and growth framework — 26 slash commands, 44 specialist agents, 9 lifecycle hooks, adversarial debate system, Growth OS 9-phase marketing pipeline, evidence-based verification, TDD enforcement, and automated project management. Compatible with Claude Code and OpenClaw.",
+      "version": "2.3.0"
     }
   ]
 }

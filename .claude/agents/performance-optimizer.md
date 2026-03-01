@@ -1,6 +1,6 @@
 ---
 name: performance-optimizer
-description: Performance optimization specialist for profiling, bundle analysis, query optimization, and render performance. Use proactively when code may have performance implications or when investigating slowness.
+description: Use proactively when code may have performance implications — profiling, bundle analysis, query optimization, render performance, or investigating slowness.
 tools: Read, Glob, Grep, Bash
 model: sonnet
 ---

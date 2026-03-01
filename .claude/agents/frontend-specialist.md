@@ -1,6 +1,6 @@
 ---
 name: frontend-specialist
-description: Frontend development specialist for UI components, styling, state management, and client-side logic. Use when tasks involve React, Vue, Svelte, Angular, CSS, HTML, or any frontend framework work. Proactively delegates frontend-specific implementation.
+description: Use when tasks involve frontend work — React, Vue, Svelte, Angular, CSS, HTML, UI components, styling, state management, or client-side logic.
 tools: Read, Write, Edit, Glob, Grep, Bash
 model: sonnet
 ---

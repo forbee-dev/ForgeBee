@@ -1,11 +1,11 @@
 #!/bin/bash
-# DevKit Installer — Drop-in Claude Code development framework
+# ForgeBee Installer — Drop-in development framework for Claude Code and OpenClaw
 # Usage: bash install.sh [target-directory]
 #
 # NOTE: This is the legacy manual installer. The recommended way to install
 # DevKit is as a plugin via the Claude Code plugin system:
-#   /plugin marketplace add forbee-dev/ClaudeDevKit
-#   /plugin install claude-devkit@ClaudeDevKit
+#   /plugin marketplace add forbee-dev/ForgeBee
+#   /plugin install forgebee@ForgeBee
 #
 # This script remains for users who prefer git clone + manual installation
 # or who are not using the plugin system.
@@ -15,12 +15,12 @@ set -euo pipefail
 TARGET="${1:-.}"
 DEVKIT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-echo "🔧 DevKit Installer (Legacy)"
+echo "🔧 ForgeBee Installer (Legacy)"
 echo "=============================="
 echo ""
-echo "💡 Tip: DevKit is also available as a plugin. In Claude Code, run:"
-echo "   /plugin marketplace add forbee-dev/ClaudeDevKit"
-echo "   /plugin install claude-devkit@ClaudeDevKit"
+echo "💡 Tip: ForgeBee is also available as a plugin. In Claude Code, run:"
+echo "   /plugin marketplace add forbee-dev/ForgeBee"
+echo "   /plugin install forgebee@ForgeBee"
 echo ""
 echo "Installing to: $TARGET"
 echo ""
@@ -139,10 +139,11 @@ echo "   • Dev:    /review /debug /architect /refactor /test /docs /security /
 echo "   • Growth: /growth /content /gtm /seo /social /launch /competitive /landing /payments /analytics"
 echo "   • Meta:   /workflow /team /idea /pm"
 echo ""
-echo "   AGENTS (42 specialists for Agent Teams):"
+echo "   AGENTS (44 specialists for Agent Teams):"
 echo "   • Design:     ux-designer, scrum-master"
 echo "   • Dev Debate:  requirements-advocate/skeptic/judge, code-advocate/skeptic/judge"
 echo "   • Mkt Debate:  strategy-advocate/skeptic/judge"
+echo "   • Quality:     verification-enforcer, tdd-enforcer"
 echo "   • Delivery:    delivery-agent, dashboard-generator"
 echo "   • Dev:         frontend, backend, database, security, testing, devops, perf, debug"
 echo "   • Research:    deep-researcher, content-writer, seo, session-librarian"
@@ -154,7 +155,8 @@ echo "   • Platform:    supabase, ios, flutter, n8n"
 echo ""
 echo "   INFRASTRUCTURE:"
 echo "   • Agent Teams enabled (multi-agent orchestration)"
-echo "   • TaskCompleted + TeammateIdle quality gate hooks"
+echo "   • TaskCompleted evidence-based verification gate"
+echo "   • Intent detection hook (suggests /workflow, /plan, /debug before ad-hoc coding)"
 echo "   • CLAUDE.md project memory template"
 echo "   • TASKS.md auto-managed task tracking"
 echo "   • docs/pm/ project management system (state.yaml + markdown dashboards)"

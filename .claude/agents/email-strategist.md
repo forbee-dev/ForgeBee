@@ -1,6 +1,6 @@
 ---
 name: email-strategist
-description: Email marketing specialist — automation flows, segmentation, subject lines, deliverability, list hygiene, and lifecycle sequences. Designs welcome, nurture, cart recovery, re-engagement, and win-back flows.
+description: Use when tasks involve email marketing — automation flows, welcome sequences, cart recovery, nurture campaigns, deliverability audits, or list segmentation strategy.
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch
 model: sonnet
 color: magenta

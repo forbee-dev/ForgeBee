@@ -1,6 +1,6 @@
 ---
 name: deep-researcher
-description: Research specialist for investigating documentation, GitHub issues, library APIs, and technical questions. Use when you need verified answers with sources — no hallucinating. Proactively researches before making architecture decisions.
+description: Use when you need verified answers with sources — documentation lookup, GitHub issues, library APIs, or technical questions. Use proactively before architecture decisions.
 tools: Read, Glob, Grep, Bash, WebSearch, WebFetch
 model: sonnet
 ---

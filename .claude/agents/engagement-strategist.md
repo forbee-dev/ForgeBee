@@ -1,6 +1,6 @@
 ---
 name: engagement-strategist
-description: Engagement and community specialist — community building, comment strategies, reciprocity loops, DM flows, and engagement systems. Use when tasks involve growing engagement, building communities, or creating engagement playbooks.
+description: Use when tasks involve growing engagement, building communities, designing comment strategies, reciprocity loops, DM flows, or engagement playbooks.
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch
 model: sonnet
 color: green

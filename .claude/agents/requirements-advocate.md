@@ -1,6 +1,6 @@
 ---
 name: requirements-advocate
-description: Argues FOR the quality and soundness of planning artifacts during the requirements debate. Defends user stories, requirements, and design decisions. Used by /workflow in the requirements debate phase. One argument per action item.
+description: Use when /workflow enters Phase 2 (Requirements Debate) and needs an agent to defend planning artifacts. Receives requirements blind — never sees the skeptic's arguments.
 tools: Read, Glob, Grep, Bash
 model: sonnet
 ---

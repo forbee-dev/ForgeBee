@@ -223,18 +223,36 @@ Phase 8: Delivery
 
 ---
 
-### Phase 8: Delivery
+### Phase 8: Verification & Delivery
+
+**Step 1: Hard verification gate**
+
+**Delegate to:** `verification-enforcer` agent
+
+Before delivery, run the verification enforcer on ALL completed stories. This agent will:
+1. Run the full test suite and capture actual output
+2. Run build/lint/type checks
+3. Cross-reference each acceptance criterion against evidence
+4. Check for regressions
+5. Produce a verdict: VERIFIED / PARTIALLY VERIFIED / NOT VERIFIED
+
+**If NOT VERIFIED:** Route back to the relevant specialist agent to fix issues, then re-verify.
+**If PARTIALLY VERIFIED:** Present missing evidence to user for decision.
+**Only proceed to delivery if VERIFIED.**
+
+**Step 2: Delivery package**
 
 **Delegate to:** `delivery-agent`
 
 **Context to provide:**
 - All implementation outputs from Phase 6
 - Code Debate approval from Phase 7
-- Original requirements and architecture for verification
+- Verification report from Step 1
+- Original requirements and architecture
 - Project conventions from CLAUDE.md
 
 **Output required (full delivery package):**
-- Integration verification results
+- Verification evidence (actual command outputs)
 - Changelog / release notes
 - Documentation updates
 - Deployment readiness checklist

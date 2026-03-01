@@ -1,6 +1,6 @@
 ---
 name: code-skeptic
-description: Argues AGAINST the implementation during the code debate. Finds bugs, missed requirements, security holes, and tech debt. Used by /workflow in the code debate phase. One argument per action item.
+description: Use when /workflow enters Phase 7 (Code Debate) and needs an agent to challenge the implementation. Receives code changes blind — never sees the advocate's arguments.
 tools: Read, Glob, Grep, Bash
 model: sonnet
 ---

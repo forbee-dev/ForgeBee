@@ -1,6 +1,6 @@
 ---
 name: session-librarian
-description: Session and context management specialist. Use proactively to organize session history, summarize past work, manage CLAUDE.md memory, and help resume interrupted work. Maintains the project's institutional knowledge.
+description: Use proactively to organize session history, summarize past work, manage CLAUDE.md memory, and help resume interrupted work.
 tools: Read, Write, Edit, Glob, Grep, Bash
 model: haiku
 memory: project

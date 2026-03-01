@@ -1,8 +1,8 @@
 ---
 name: conversion-optimizer
-description: CRO specialist — audits funnels, optimizes landing pages/forms/checkout, designs A/B tests, and applies behavioral psychology to increase conversion rates. Uses ResearchXL and Invesp Conversion Framework.
+description: Use when tasks involve improving conversion rates — landing pages, forms, checkout flows, pricing pages, or A/B test design. Use proactively when funnel drop-off or low conversion is suspected.
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch
-model: sonnet
+model: opus
 color: red
 ---
 

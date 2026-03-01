@@ -1,6 +1,6 @@
 ---
 name: growth-hacker
-description: Growth specialist — growth loops, flywheels, audience growth tactics, funnel optimization, and viral mechanics. Use when tasks involve designing growth systems, optimizing funnels, or building audience growth strategies.
+description: Use when tasks involve designing growth systems — growth loops, flywheels, funnel optimization, viral mechanics, or audience growth strategies.
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch
 model: sonnet
 color: magenta

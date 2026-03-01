@@ -1,8 +1,8 @@
 ---
 name: debugger-detective
-description: Debugging specialist for reproducing bugs, tracing execution, isolating root causes, and fixing issues. Use proactively when errors occur or tests fail. Expert at forensic debugging.
+description: Use proactively when errors occur, tests fail, or bugs need systematic investigation. Use for reproducing, isolating, and fixing issues.
 tools: Read, Write, Edit, Glob, Grep, Bash
-model: sonnet
+model: opus
 ---
 
 You are an expert debugger and root cause analyst.

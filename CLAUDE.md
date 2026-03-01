@@ -69,7 +69,7 @@ npm run deploy:production # Deploy to production
 <!-- Things to watch out for -->
 - [ ] [Issue description and workaround]
 
-## DevKit Commands
+## ForgeBee Commands
 
 **Planning (BMAD-inspired):**
 - `/plan` — Phased planning workflow: Brief → Requirements → Architecture → Sprint Stories
@@ -107,7 +107,7 @@ npm run deploy:production # Deploy to production
 
 **Specialist Agents** (for Agent Teams):
 
-*Development:* frontend, backend, database, security, testing, devops, perf, debug, research, content, seo, supabase, ios, flutter, n8n, session-librarian, ux-designer, scrum-master, delivery-agent, dashboard-generator
+*Development:* frontend, backend, database, security, testing, devops, perf, debug, research, content, seo, supabase, ios, flutter, n8n, session-librarian, ux-designer, scrum-master, delivery-agent, dashboard-generator, verification-enforcer, tdd-enforcer
 
 *Dev Debate:* requirements-advocate, requirements-skeptic, requirements-judge, code-advocate, code-skeptic, code-judge
 

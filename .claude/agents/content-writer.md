@@ -1,6 +1,6 @@
 ---
 name: content-writer
-description: Technical content writer for landing pages, documentation, blog posts, README files, changelogs, and launch copy. Use when tasks require writing that converts — docs, marketing copy, or user-facing text.
+description: Use when tasks require writing that converts — landing pages, documentation, blog posts, README files, changelogs, or launch copy.
 tools: Read, Write, Edit, Glob, Grep, Bash
 model: sonnet
 ---

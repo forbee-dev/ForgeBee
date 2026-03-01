@@ -1,6 +1,6 @@
 ---
 name: strategy-advocate
-description: Argues FOR the marketing strategy during the Growth OS debate phase. Defends brand positioning, audience targeting, content architecture, and hook quality. Used by /growth in the strategy debate phase. One argument per action item.
+description: Use when /growth enters Phase 5 (Strategy Debate) and needs an agent to defend the marketing strategy. Receives artifacts blind — never sees the skeptic's arguments.
 tools: Read, Glob, Grep, Bash
 model: sonnet
 color: green

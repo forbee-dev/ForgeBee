@@ -1,6 +1,6 @@
 ---
 name: delivery-agent
-description: Final delivery specialist — verifies integration, generates changelog and release notes, updates documentation, and produces deployment readiness checklist. Used by /workflow as the final phase.
+description: Use when /workflow reaches Phase 8 (Delivery) or when any significant implementation needs final packaging. Use after code debate approval and verification pass.
 tools: Read, Write, Edit, Glob, Grep, Bash
 model: sonnet
 ---

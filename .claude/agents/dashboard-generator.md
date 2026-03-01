@@ -1,7 +1,8 @@
 ---
 name: dashboard-generator
-description: Reads docs/pm/state.yaml and regenerates all markdown dashboard views — project index, per-feature detail pages, and decision log
+description: Use when project dashboards need regenerating — after /workflow completes a phase, after state.yaml changes, or when /pm is invoked. Reads state.yaml as input.
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
+model: haiku
 ---
 
 # Dashboard Generator Agent

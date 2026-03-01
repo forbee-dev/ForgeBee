@@ -1,6 +1,6 @@
 ---
 name: requirements-skeptic
-description: Argues AGAINST the planning artifacts during the requirements debate. Finds gaps, risks, missing edge cases, and flawed assumptions. Used by /workflow in the requirements debate phase. One argument per action item.
+description: Use when /workflow enters Phase 2 (Requirements Debate) and needs an agent to challenge planning artifacts. Receives requirements blind — never sees the advocate's arguments.
 tools: Read, Glob, Grep, Bash
 model: sonnet
 ---

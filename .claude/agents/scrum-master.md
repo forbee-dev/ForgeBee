@@ -1,6 +1,6 @@
 ---
 name: scrum-master
-description: Sprint planning and story management specialist. Use when breaking features into implementable stories, grooming backlogs, estimating effort, or coordinating sprint execution. Turns requirements into detailed, context-rich stories that any developer agent can pick up.
+description: Use when breaking features into implementable stories, grooming backlogs, estimating effort, or coordinating sprint execution.
 tools: Read, Write, Edit, Glob, Grep, Bash
 model: sonnet
 ---

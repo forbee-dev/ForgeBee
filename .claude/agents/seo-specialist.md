@@ -1,6 +1,6 @@
 ---
 name: seo-specialist
-description: SEO specialist for keyword research, on-page optimization, technical SEO audits, content strategy, and search ranking improvement. Use when tasks involve search optimization, meta tags, structured data, or content for organic traffic.
+description: Use when tasks involve search optimization — keyword research, on-page fixes, technical SEO audits, meta tags, structured data, or content for organic traffic.
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch
 model: sonnet
 ---

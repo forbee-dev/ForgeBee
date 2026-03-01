@@ -1,6 +1,6 @@
 ---
 name: market-intel
-description: Market intelligence specialist — competitive analysis, niche intelligence, market trends, and Fact-Impact-Act battlecards. Use when tasks involve competitive research, market positioning, battlecard creation, or niche analysis.
+description: Use when tasks involve competitive research, market positioning, niche analysis, battlecard creation, or market trend analysis.
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch
 model: sonnet
 color: cyan

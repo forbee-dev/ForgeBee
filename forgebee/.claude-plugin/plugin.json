@@ -1,0 +1,42 @@
+{
+  "name": "forgebee",
+  "version": "2.3.0",
+  "description": "Batteries-included development and growth framework for Claude Code — 26 slash commands, 44 specialist agents, 9 lifecycle hooks, adversarial debate system (dev + strategy), evidence-based verification gates, TDD enforcement, intent detection, Growth OS 9-phase marketing pipeline with CRO and email automation, and automated project management.",
+  "author": {
+    "name": "Forbee Dev"
+  },
+  "homepage": "https://github.com/forbee-dev/ForgeBee",
+  "repository": "https://github.com/forbee-dev/ForgeBee",
+  "license": "MIT",
+  "hooks": "./hooks/hooks.json",
+  "keywords": [
+    "development",
+    "workflow",
+    "planning",
+    "code-review",
+    "debugging",
+    "testing",
+    "security",
+    "performance",
+    "deployment",
+    "agents",
+    "debate",
+    "project-management",
+    "seo",
+    "marketing",
+    "launch",
+    "growth",
+    "brand-strategy",
+    "content-marketing",
+    "audience",
+    "hooks",
+    "engagement",
+    "competitive-intelligence",
+    "cro",
+    "conversion-optimization",
+    "email-marketing",
+    "tdd",
+    "verification",
+    "quality-gates"
+  ]
+}

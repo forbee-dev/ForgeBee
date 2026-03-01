@@ -1,6 +1,6 @@
 ---
 name: hook-engineer
-description: Stop-scrolling hook specialist — viral hook formulas, pattern interrupts, engagement triggers, and platform-specific hook libraries. Use when tasks involve creating hooks, improving engagement, or building hook databases for content.
+description: Use when tasks involve creating hooks for content, improving scroll-stopping engagement, building hook databases, or designing pattern interrupts.
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch
 model: sonnet
 color: yellow

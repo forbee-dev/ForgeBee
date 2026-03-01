@@ -1,6 +1,6 @@
 ---
 name: test-engineer
-description: Testing specialist for writing unit tests, integration tests, e2e tests, and ensuring test coverage. Use when tasks require test generation, test fixing, or coverage improvement. Proactively tests after code changes.
+description: Use when tasks require test generation, test fixing, or coverage improvement — unit, integration, e2e. Use proactively after code changes.
 tools: Read, Write, Edit, Glob, Grep, Bash
 model: sonnet
 ---

@@ -1,6 +1,6 @@
 ---
 name: content-creator
-description: Platform-native content producer — LinkedIn posts, X threads, Instagram carousels, email sequences, video scripts, and social media content. Use when tasks involve creating ready-to-publish social content, adapting content for platforms, or producing content at scale.
+description: Use when tasks involve creating ready-to-publish social content — LinkedIn posts, X threads, Instagram carousels, email copy, video scripts, or platform-native content at scale.
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch
 model: sonnet
 color: blue

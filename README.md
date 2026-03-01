@@ -1,331 +1,413 @@
-# ClaudeDevKit — Batteries included for Claude Code
+<p align="center">
+  <img src="https://img.shields.io/badge/Claude_Code-Plugin-7C3AED?style=for-the-badge&logoColor=white" alt="Claude Code" />
+  <img src="https://img.shields.io/badge/OpenClaw-Compatible-FF6B35?style=for-the-badge&logoColor=white" alt="OpenClaw" />
+  <img src="https://img.shields.io/badge/version-2.3.0-blue?style=for-the-badge" alt="Version" />
+  <img src="https://img.shields.io/badge/license-MIT-green?style=for-the-badge" alt="License" />
+</p>
 
-A drop-in framework that extends Claude Code with production-ready hooks, slash commands, and specialist agent definitions. Install once, works in any project.
+<p align="center">
+  <img src="https://img.shields.io/badge/agents-44-orange?style=for-the-badge" alt="Agents" />
+  <img src="https://img.shields.io/badge/commands-26-red?style=for-the-badge" alt="Commands" />
+  <img src="https://img.shields.io/badge/hooks-9-blueviolet?style=for-the-badge" alt="Hooks" />
+</p>
 
-No runtime. No dependencies. No build step. Just shell scripts and markdown that Claude Code reads natively.
+<h1 align="center">ForgeBee</h1>
 
----
+<p align="center">
+  <strong>A colony of AI agents forging your product</strong><br/>
+  44 specialist agents. 26 slash commands. 9 lifecycle hooks.<br/>
+  Adversarial debate. Growth OS. Project management. Zero dependencies.<br/>
+  <em>Works with Claude Code and OpenClaw.</em>
+</p>
 
-## Installation
-
-### Option 1: Plugin via Marketplace (Recommended)
-
-Add this repo as a plugin marketplace in Claude Code, then install:
-
-```bash
-# Inside Claude Code, run:
-/plugin marketplace add forbee-dev/ClaudeDevKit
-
-# Then install the plugin:
-/plugin install claude-devkit@ClaudeDevKit
-```
-
-You can choose the installation scope when prompted: **User** (all projects), **Project** (shared with collaborators), or **Local** (just you, this repo).
-
-### Option 2: Plugin from Local Directory
-
-Clone the repo and load the plugin directly:
-
-```bash
-git clone git@github.com:forbee-dev/ClaudeDevKit.git
-
-# Launch Claude Code with the plugin loaded
-claude --plugin-dir ./ClaudeDevKit/claude-devkit
-```
-
-To load it permanently, install via the marketplace method above.
-
-### Option 3: Manual Install (Legacy)
-
-For users who prefer direct file installation or aren't using the plugin system:
-
-```bash
-# Clone DevKit
-git clone git@github.com:forbee-dev/ClaudeDevKit.git
-
-# Install into your project
-bash ClaudeDevKit/install.sh /path/to/your/project
-
-# Or install into the current directory
-cd your-project && bash /path/to/ClaudeDevKit/install.sh .
-```
-
-### After Installation
-
-1. Edit `CLAUDE.md` with your project details (stack, conventions, key people)
-2. Open Claude Code in your project directory
-3. Start working — hooks activate automatically, commands are available immediately
-
-**Requires:** Claude Code 1.0.33+, Bash 4+. `jq` is optional (used for settings validation). Agent Teams features require `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`.
+<p align="center">
+  <a href="#quick-start">Quick Start</a> &nbsp;&bull;&nbsp;
+  <a href="#commands">Commands</a> &nbsp;&bull;&nbsp;
+  <a href="#agents">Agents</a> &nbsp;&bull;&nbsp;
+  <a href="#hooks">Hooks</a> &nbsp;&bull;&nbsp;
+  <a href="#growth-os">Growth OS</a> &nbsp;&bull;&nbsp;
+  <a href="#project-management">PM System</a> &nbsp;&bull;&nbsp;
+  <a href="#openclaw">OpenClaw</a>
+</p>
 
 ---
 
-## What's Included
+## Why ForgeBee?
 
-| Category | Count | What it does |
-|----------|-------|--------------|
-| Hooks | 8 | Shell scripts wired to Claude Code lifecycle events |
-| Commands | 26 | Slash commands that activate specialized workflows |
-| Agents | 42 | Specialist agent definitions for multi-agent teams |
+Claude Code and OpenClaw are powerful out of the box. ForgeBee makes them **opinionated and structured** — so your agent plans before it codes, debates before it ships, and verifies before it marks anything "done."
+
+| Without ForgeBee | With ForgeBee |
+|:--|:--|
+| Agent jumps straight into coding | Agent plans, debates requirements, then codes |
+| "It should work" | Evidence-based verification with actual test output |
+| Single-agent, single-pass | 44 specialists working in parallel with blind review |
+| Manual project tracking | Automated state.yaml + markdown dashboards |
+| No marketing workflow | Full 9-phase Growth OS with 18 marketing agents |
 
 ---
 
-## Hooks
+## Quick Start
 
-Hooks run automatically — no invocation needed. They fire on Claude Code lifecycle events defined in `.claude/settings.json`.
+**Two commands. That's it.**
 
-| Hook | Lifecycle Event | What it does |
-|------|----------------|--------------|
-| `permission-guard.sh` | `PreToolUse` (Bash) | 3-tier command safety: allowlist auto-approves safe commands (git status, npm test, etc.), blocklist blocks destructive patterns (rm -rf /, DROP TABLE, curl \| bash), cache remembers past decisions, then asks the user |
-| `skill-activator.sh` | `UserPromptSubmit` | Reads your prompt and recommends relevant commands from the skill manifest |
-| `session-load.sh` | `SessionStart` | Restores previous session context (branch, uncommitted changes, recent commits) so Claude remembers where you left off |
-| `session-save.sh` | `Stop` | Persists session state to a JSON snapshot in `.claude/sessions/` |
-| `self-improve.sh` | `Stop` | Auto-captures patterns and learnings from the session into `.claude/learnings/learnings.md` |
-| `task-sync.sh` | `SessionStart` + `Stop` | Bidirectional sync with `TASKS.md` — loads active tasks on start, archives completed ones on stop |
-| `pm-sync.sh` | `SessionStart` + `Stop` | Loads PM state, reports active features and blockers, detects stale features |
-| `context-guard.sh` | `PreCompact` | Backs up critical context before compaction so nothing is lost |
+```bash
+# Inside Claude Code:
+/plugin marketplace add forbee-dev/ForgeBee
+/plugin install forgebee@ForgeBee
+```
+
+Then edit `CLAUDE.md` with your project details and start working. Hooks activate automatically, commands are available immediately.
+
+<details>
+<summary><strong>Other installation methods</strong></summary>
+
+### Plugin from local directory
+
+```bash
+git clone git@github.com:forbee-dev/ForgeBee.git
+claude --plugin-dir ./ForgeBee/forgebee
+```
+
+### Manual install (legacy)
+
+```bash
+git clone git@github.com:forbee-dev/ForgeBee.git
+bash ForgeBee/install.sh /path/to/your/project
+```
+
+</details>
+
+<details>
+<summary><strong>Requirements</strong></summary>
+
+- Claude Code 1.0.33+
+- Bash 4+
+- `jq` optional (settings validation)
+- Agent Teams: set `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`
+
+</details>
 
 ---
 
 ## Commands
 
-Invoke any command with a slash in Claude Code: `/review`, `/debug`, `/test`, etc.
+Invoke with a slash: `/review`, `/debug`, `/workflow`, etc.
 
-### Planning (BMAD-inspired)
+### Planning
 
-| Command | What it does |
-|---------|--------------|
-| `/plan` | Phased planning workflow: Brief → Requirements → Architecture → Sprint Stories. Enforces artifact-first development with complexity routing (trivial changes skip ceremony, critical features get the full chain). Outputs versioned artifacts to `docs/planning/`. Auto-tracks in PM system. |
+| Command | Description |
+|:--------|:------------|
+| `/plan` | Phased planning: Brief &rarr; Requirements &rarr; Architecture &rarr; Sprint Stories |
 
 ### Development
 
-| Command | What it does |
-|---------|--------------|
-| `/review` | Multi-dimensional code review: structure, security, performance, correctness |
-| `/debug` | Systematic debugging: reproduce → isolate → diagnose → fix → prevent |
+| Command | Description |
+|:--------|:------------|
+| `/review` | Multi-dimensional code review (structure, security, perf, correctness) |
+| `/debug` | Systematic: reproduce &rarr; isolate &rarr; diagnose &rarr; fix &rarr; prevent |
 | `/architect` | Architecture decisions with trade-off matrices and ADR generation |
-| `/refactor` | Safe refactoring with mandatory test verification at each step |
-| `/test` | Test generation following the testing pyramid: unit → integration → e2e |
-| `/docs` | Documentation writer for API docs, READMEs, ADRs, and guides |
+| `/refactor` | Safe refactoring with test verification at each step |
+| `/test` | Test generation: unit &rarr; integration &rarr; e2e |
+| `/docs` | API docs, READMEs, ADRs, guides |
 | `/security` | OWASP Top 10 audit with threat modeling |
-| `/perf` | Performance optimization: baseline → profile → optimize → measure |
-| `/migrate` | Version or framework migration with rollback plans |
-| `/deploy` | Deployment coordinator with pre-flight checklist and post-deploy verification |
-| `/browser-debug` | Client-side debugging: console errors, network, rendering, Core Web Vitals |
+| `/perf` | Profile &rarr; optimize &rarr; measure |
+| `/migrate` | Version/framework migration with rollback plans |
+| `/deploy` | Pre-flight checks, rollout, post-deploy verification |
+| `/browser-debug` | Console, network, rendering, Core Web Vitals |
 
 ### Growth & Marketing
 
-| Command | What it does |
-|---------|--------------|
-| `/growth` | **Growth OS orchestrator** — 9-phase marketing pipeline with adversarial debate: Brand → Intel → Audience → Content Architecture → Hooks → Debate → Calendar → Creation → Distribution → Measure. Main agent only delegates to 18 specialist agents. Auto-tracks in PM system. |
-| `/content` | Quick content production — single piece or small batch without full pipeline. Delegates to content agents with brand context. |
-| `/gtm` | Go-to-market planning with launch checklists and timeline |
-| `/seo` | Technical SEO audit, keyword research, on-page optimization |
-| `/social` | Social media strategy with platform playbooks, hook formulas, engagement psychology, and content calendars |
-| `/launch` | Product Hunt / Hacker News / press launch execution |
-| `/competitive` | Competitive intelligence with Fact-Impact-Act battlecards, niche intelligence, and market trends |
-| `/landing` | Conversion-optimized landing page builder (single HTML + Tailwind) |
-| `/payments` | Stripe / LemonSqueezy / Paddle integration with webhook handlers |
-| `/analytics` | Event tracking setup, marketing performance dashboards, metrics framework |
+| Command | Description |
+|:--------|:------------|
+| `/growth` | **9-phase Growth OS** with adversarial debate (18 agents) |
+| `/content` | Quick content production without full pipeline |
+| `/gtm` | Go-to-market planning with launch checklists |
+| `/seo` | Technical SEO audit + keyword research |
+| `/social` | Platform playbooks, hook formulas, content calendars |
+| `/launch` | Product Hunt / HN / press launch execution |
+| `/competitive` | FIA battlecards + niche intelligence |
+| `/landing` | Conversion-optimized landing page (HTML + Tailwind) |
+| `/payments` | Stripe / LemonSqueezy / Paddle integration |
+| `/analytics` | Event tracking, dashboards, metrics framework |
 
 ### Meta
 
-| Command | What it does |
-|---------|--------------|
-| `/workflow` | Full pipeline orchestrator with adversarial debate: Plan → Debate → Architect → Scrum → Execute → Debate → Deliver. Main agent never executes — only delegates, connects, and ships requirements. Includes blind Advocate/Skeptic/Judge review at requirements and code checkpoints. Auto-tracks in PM system. |
-| `/team` | Lightweight orchestrator: breaks tasks into parallel workstreams and delegates to specialist agents (ad-hoc, without debate ceremony) |
-| `/idea` | Idea-to-product: validate → debate → define MVP → debate → pick stack → create roadmap. Auto-tracks in PM system. |
-| `/pm` | Automated project management — reads `state.yaml`, syncs `TASKS.md`, regenerates markdown dashboards, surfaces blockers and stale features |
+| Command | Description |
+|:--------|:------------|
+| `/workflow` | **Full pipeline**: Plan &rarr; Debate &rarr; Architect &rarr; Scrum &rarr; Execute &rarr; Debate &rarr; Verify &rarr; Deliver |
+| `/team` | Lightweight multi-agent orchestration (no debate ceremony) |
+| `/idea` | Idea &rarr; validate &rarr; debate &rarr; MVP &rarr; roadmap |
+| `/pm` | Project dashboard from `state.yaml` |
 
 ---
 
 ## Agents
 
-Specialist agent definitions for Claude Code's Agent Teams feature. Invoke them directly or let `/team` orchestrate them automatically.
+44 specialist agents for Claude Code's Agent Teams. Use them directly or let `/team` and `/workflow` orchestrate automatically.
 
-**Development**
+<details>
+<summary><strong>Development</strong> (8 agents)</summary>
 
-| Agent | Specialty |
-|-------|-----------|
-| `frontend-specialist` | UI, components, accessibility, performance |
-| `backend-engineer` | APIs, services, data modeling |
-| `database-specialist` | Schema design, queries, migrations, optimization |
-| `security-auditor` | Threat modeling, vulnerability assessment, hardening |
-| `test-engineer` | Test strategy, coverage, quality gates |
-| `devops-engineer` | CI/CD, infrastructure, containers, deployments |
-| `performance-optimizer` | Profiling, bottlenecks, caching strategies |
-| `debugger-detective` | Root cause analysis, tracing, log investigation |
+| Agent | Use when... |
+|:------|:------------|
+| `frontend-specialist` | React, Vue, Svelte, Angular, CSS, UI work |
+| `backend-engineer` | APIs, Express, FastAPI, Django, Go, Rust |
+| `database-specialist` | Schema, migrations, queries, ORMs |
+| `security-auditor` | Auth changes, data handling, OWASP reviews |
+| `test-engineer` | Test generation, coverage improvement |
+| `devops-engineer` | Docker, CI/CD, deployment, infrastructure |
+| `performance-optimizer` | Profiling, bottlenecks, bundle analysis |
+| `debugger-detective` | Errors, test failures, root cause analysis |
 
-**Design & Planning**
+</details>
 
-| Agent | Specialty |
-|-------|-----------|
-| `ux-designer` | User flows, wireframes, interaction patterns, usability heuristics, accessibility |
-| `scrum-master` | Sprint planning, story decomposition, backlog grooming, estimation, dependency mapping |
+<details>
+<summary><strong>Quality Gates</strong> (4 agents) &mdash; NEW in v2.3</summary>
 
-**Dev Debate (used by `/workflow`)**
+| Agent | Use when... |
+|:------|:------------|
+| `verification-enforcer` | Task completion &mdash; demands test output, build results, evidence |
+| `tdd-enforcer` | TDD discipline &mdash; blocks code written before tests |
+| `delivery-agent` | Final packaging after code debate + verification |
+| `dashboard-generator` | Regenerating PM dashboards from state.yaml |
 
-| Agent | Specialty |
-|-------|-----------|
-| `requirements-advocate` | Argues FOR planning artifacts — defends quality, feasibility, completeness |
-| `requirements-skeptic` | Argues AGAINST planning artifacts — finds gaps, risks, flawed assumptions |
-| `requirements-judge` | Rules on each debated item — approve, block, or flag with escalation |
-| `code-advocate` | Argues FOR implementation — defends code quality, test coverage, correctness |
-| `code-skeptic` | Argues AGAINST implementation — finds bugs, security holes, missed requirements |
-| `code-judge` | Rules on each code item — approve, block, or flag with escalation |
+</details>
 
-**Strategy Debate (used by `/growth`)**
+<details>
+<summary><strong>Dev Debate</strong> (6 agents)</summary>
 
-| Agent | Specialty |
-|-------|-----------|
-| `strategy-advocate` | Argues FOR marketing strategy — defends positioning, audience targeting, content architecture |
-| `strategy-skeptic` | Argues AGAINST marketing strategy — finds weak positioning, audience gaps, flawed assumptions |
-| `strategy-judge` | Rules on each strategy item — approve, block, or flag with escalation |
+| Agent | Role |
+|:------|:-----|
+| `requirements-advocate` | Defends planning artifacts (blind) |
+| `requirements-skeptic` | Challenges planning artifacts (blind) |
+| `requirements-judge` | Rules: approve / block / flag |
+| `code-advocate` | Defends implementation (blind) |
+| `code-skeptic` | Challenges implementation (blind) |
+| `code-judge` | Rules: approve / block / flag |
 
-**Delivery**
+</details>
 
-| Agent | Specialty |
-|-------|-----------|
-| `delivery-agent` | Integration verification, changelog generation, doc updates, deployment readiness |
-| `dashboard-generator` | Reads `state.yaml` and regenerates all PM markdown dashboards |
+<details>
+<summary><strong>Strategy Debate</strong> (3 agents)</summary>
 
-**Research & Content**
+| Agent | Role |
+|:------|:-----|
+| `strategy-advocate` | Defends marketing strategy (blind) |
+| `strategy-skeptic` | Challenges marketing strategy (blind) |
+| `strategy-judge` | Rules: approve / block / flag |
 
-| Agent | Specialty |
-|-------|-----------|
-| `deep-researcher` | Technical research, documentation synthesis |
-| `content-writer` | Technical writing, docs, landing copy, marketing templates |
-| `seo-specialist` | Search optimization, keyword strategy, pillar/cluster SEO |
-| `session-librarian` | Session history retrieval and context management |
+</details>
 
-**Growth OS (used by `/growth`)**
+<details>
+<summary><strong>Growth OS</strong> (13 agents)</summary>
 
-| Agent | Specialty |
-|-------|-----------|
-| `brand-strategist` | Brand positioning, archetypes, voice, messaging pillars |
-| `market-intel` | Competitive intelligence, niche analysis, FIA battlecards |
-| `audience-architect` | ICP definition, personas, buyer journey, Jobs-to-be-Done |
-| `content-architect` | Content pillars, topic clusters, hub-and-spoke, content pyramid |
-| `hook-engineer` | Stop-scrolling hooks, viral formulas, Cialdini principles, pattern interrupts |
-| `idea-machine` | Content idea generation, angle mining, repurposing chains, trend surfing |
-| `engagement-strategist` | Community building, comment strategy, reciprocity loops, DM flows |
-| `content-creator` | Platform-native content (posts, threads, carousels, scripts, emails) |
-| `growth-hacker` | Growth loops, flywheels, audience growth, funnel optimization |
-| `calendar-builder` | Content calendar architecture, batching, distribution planning |
-| `performance-analyst` | Marketing KPIs, campaign analysis, attribution, A/B testing |
-| `conversion-optimizer` | CRO audits, funnel optimization, A/B test design, behavioral psychology |
-| `email-strategist` | Email automation flows, segmentation, deliverability, lifecycle sequences |
+| Agent | Use when... |
+|:------|:------------|
+| `brand-strategist` | Brand positioning, archetypes, voice |
+| `market-intel` | Competitive research, battlecards |
+| `audience-architect` | ICPs, personas, buyer journeys |
+| `content-architect` | Pillars, topic clusters, hub-and-spoke |
+| `hook-engineer` | Scroll-stopping hooks, pattern interrupts |
+| `idea-machine` | Content ideas, angle mining, repurposing |
+| `engagement-strategist` | Community, reciprocity loops, DM flows |
+| `content-creator` | Platform-native posts, threads, scripts |
+| `growth-hacker` | Growth loops, flywheels, funnels |
+| `calendar-builder` | Content calendars, batching, distribution |
+| `performance-analyst` | Marketing KPIs, attribution, A/B testing |
+| `conversion-optimizer` | CRO audits, funnel optimization, pricing pages |
+| `email-strategist` | Automation flows, segmentation, deliverability |
 
-**Platform**
+</details>
 
-| Agent | Specialty |
-|-------|-----------|
-| `supabase-specialist` | Supabase auth, database, storage, edge functions |
+<details>
+<summary><strong>Design, Research & Platform</strong> (10 agents)</summary>
+
+| Agent | Use when... |
+|:------|:------------|
+| `ux-designer` | User flows, wireframes, accessibility |
+| `scrum-master` | Sprint planning, story decomposition |
+| `deep-researcher` | Documentation, APIs, technical questions |
+| `content-writer` | Landing copy, docs, blog posts |
+| `seo-specialist` | Keyword strategy, pillar/cluster SEO |
+| `session-librarian` | Session history, context management |
+| `supabase-specialist` | Supabase auth, RLS, edge functions |
 | `ios-expert` | Swift, SwiftUI, Xcode, App Store |
-| `flutter-expert` | Dart, Flutter, cross-platform mobile |
-| `n8n-builder` | n8n workflows, automation, integrations |
+| `flutter-expert` | Dart, Flutter, cross-platform |
+| `n8n-builder` | n8n workflows, API integrations |
+
+</details>
+
+---
+
+## Hooks
+
+Hooks run automatically on Claude Code lifecycle events. No invocation needed.
+
+| Hook | Event | What it does |
+|:-----|:------|:------------|
+| `permission-guard` | `PreToolUse` | 3-tier command safety: allowlist &rarr; blocklist &rarr; ask user |
+| `skill-activator` | `UserPromptSubmit` | Intent detection + skill recommendations |
+| `session-load` | `SessionStart` | Restores previous session context |
+| `session-save` | `Stop` | Persists session state to JSON snapshot |
+| `self-improve` | `Stop` | Captures patterns into learnings |
+| `task-sync` | `SessionStart` + `Stop` | Bidirectional sync with TASKS.md |
+| `pm-sync` | `SessionStart` + `Stop` | Loads PM state, reports blockers |
+| `context-guard` | `PreCompact` | Backs up critical context before compaction |
+
+**Quality gate hooks** (for Agent Teams):
+
+| Hook | Event | What it does |
+|:-----|:------|:------------|
+| `TaskCompleted` | Task marked done | Demands evidence-based verification before accepting |
+| `TeammateIdle` | Agent going idle | Checks for unclaimed tasks to pick up |
+
+---
+
+## Growth OS
+
+A 9-phase marketing pipeline with 18 specialist agents, invoked with `/growth`:
+
+```
+Brand Foundation ──► Market Intelligence ──► Content Architecture
+        │                    │                       │
+        ▼                    ▼                       ▼
+   Hook & Idea Engine ──► Strategy Debate ──► Execution Plan
+        │                    │                       │
+        ▼                    ▼                       ▼
+  Content Production ──► Distribution & CRO ──► Measure & Optimize
+```
+
+The strategy debate phase uses blind Advocate/Skeptic/Judge review — the same pattern as `/workflow`'s code debate, applied to marketing strategy. Catches weak positioning before you invest in execution.
+
+Includes dedicated agents for CRO (conversion rate optimization), email marketing automation, and competitive intelligence.
+
+---
+
+## Project Management
+
+ForgeBee tracks features across sessions with a hybrid YAML + Markdown system:
+
+```
+docs/pm/
+├── state.yaml        ← Machine-readable project state
+├── index.md          ← Auto-generated dashboard
+├── decisions.md      ← Decision log from all debates
+└── features/         ← Per-feature detail pages
+```
+
+Every `/workflow`, `/growth`, `/idea`, and `/plan` run reads and writes `state.yaml` at each phase transition. The `pm-sync` hook loads state on session start. Run `/pm` anytime for a full status report.
 
 ---
 
 ## How It Works
 
-Claude Code supports lifecycle hooks — shell scripts or prompts that fire at specific points in the agent's execution:
+ForgeBee is **just markdown and shell scripts**. No runtime, no dependencies, no build step.
 
-- **SessionStart** — runs when you open a project in Claude Code
-- **UserPromptSubmit** — runs each time you send a message
-- **PreToolUse** — runs before any tool call (Bash, file writes, etc.)
-- **PreCompact** — runs before Claude compacts its context window
-- **Stop** — runs when the session ends
-- **TaskCompleted / TeammateIdle** — quality gates for multi-agent teams
+- **Commands** are `.md` files in `.claude/commands/` — structured prompts that activate workflows
+- **Agents** are `.md` files in `.claude/agents/` — specialist definitions with trigger conditions
+- **Hooks** are `.sh` scripts wired to Claude Code lifecycle events via `hooks.json`
 
-DevKit wires all eight hooks to these events via `.claude/settings.json`. No manual setup required after installation.
+Claude Code reads them natively. The plugin system handles distribution.
 
-Slash commands are markdown files in `.claude/commands/`. Claude Code reads them natively — each file is a structured prompt that activates a specialized workflow.
-
-Agent definitions in `.claude/agents/` follow the same pattern. The `/team` command uses them as a delegation layer for parallel multi-agent work.
-
----
-
-## Installed Structure
-
-After running `install.sh`, your project gets:
+<details>
+<summary><strong>Full installed structure</strong></summary>
 
 ```
 your-project/
-├── CLAUDE.md                          # Project memory (stack, conventions, people, patterns)
+├── CLAUDE.md                          # Project memory
 ├── TASKS.md                           # Auto-managed task tracking
 ├── docs/
-│   ├── pm/                            # Project management (auto-managed)
-│   │   ├── state.yaml                 # Machine-readable project state
-│   │   ├── index.md                   # Project dashboard (auto-generated)
-│   │   ├── decisions.md               # Decision log (auto-generated)
-│   │   └── features/                  # Per-feature detail pages
-│   ├── marketing/                     # Growth OS outputs (auto-managed)
-│   │   ├── brand/                    # Brand strategy, voice, archetypes
-│   │   ├── intel/                    # Competitive intelligence, battlecards
-│   │   ├── audience/                 # ICPs, personas, buyer journeys
-│   │   ├── content-architecture/     # Pillars, clusters, content pyramid
-│   │   ├── hooks/                    # Hook libraries, formulas
-│   │   ├── ideas/                    # Content ideas, repurposing chains
-│   │   ├── engagement/               # Community playbooks
-│   │   ├── growth/                   # Growth loops, flywheels
-│   │   ├── analytics/                # KPI dashboards, test plans
-│   │   ├── calendar/                 # Content calendars, batching
-│   │   ├── cro/                      # CRO audits, A/B tests, funnel analysis
-│   │   ├── email/                    # Email flows, segmentation, tests
-│   │   └── debate/                   # Strategy debate outputs
-│   └── planning/                      # Planning artifacts from /plan
+│   ├── pm/                            # Project management
+│   │   ├── state.yaml
+│   │   ├── index.md
+│   │   ├── decisions.md
+│   │   └── features/
+│   ├── marketing/                     # Growth OS outputs
+│   │   ├── brand/
+│   │   ├── intel/
+│   │   ├── audience/
+│   │   ├── content-architecture/
+│   │   ├── hooks/
+│   │   ├── ideas/
+│   │   ├── engagement/
+│   │   ├── growth/
+│   │   ├── analytics/
+│   │   ├── calendar/
+│   │   ├── cro/
+│   │   ├── email/
+│   │   └── debate/
+│   └── planning/                      # Planning artifacts
 │       ├── briefs/
 │       ├── requirements/
 │       └── stories/
 └── .claude/
-    ├── settings.json                  # Hook wiring and environment config
+    ├── settings.json
     ├── hooks/
-    │   ├── permission-guard.sh
-    │   ├── skill-activator.sh
-    │   ├── session-load.sh
-    │   ├── session-save.sh
-    │   ├── self-improve.sh
-    │   ├── task-sync.sh
-    │   ├── pm-sync.sh
-    │   └── context-guard.sh
+    │   └── *.sh                       # 8 lifecycle hook scripts
     ├── commands/
-    │   └── *.md                       # 26 slash command definitions
+    │   └── *.md                       # 26 slash commands
     ├── agents/
-    │   └── *.md                       # 42 specialist agent definitions
-    ├── sessions/                      # Session snapshots (auto-managed)
-    ├── session-cache/                 # Permissions cache, skill manifest
+    │   └── *.md                       # 44 specialist agents
+    ├── sessions/                      # Session snapshots
+    ├── session-cache/                 # Permissions + skill manifest
     └── learnings/
-        └── learnings.md              # Auto-captured patterns (auto-managed)
+        └── learnings.md              # Auto-captured patterns
 ```
 
-If a `.claude/settings.json` already exists, the installer backs it up to `settings.json.bak` before writing the new one. `CLAUDE.md` is never overwritten if one already exists.
+</details>
 
 ---
 
-## CLAUDE.md — Project Memory
+## CLAUDE.md &mdash; Project Memory
 
-The installed `CLAUDE.md` is a structured template Claude Code reads at the start of every session. Fill in your stack, conventions, key components, common commands, and team contacts.
+The installed `CLAUDE.md` is a structured template Claude reads at the start of every session. Fill in your stack, conventions, key components, and team contacts.
 
-The `self-improve` hook appends captured patterns to the `Learned Patterns` section automatically over time.
+The `self-improve` hook appends patterns to the **Learned Patterns** section automatically over time — your agent gets smarter the more you use it.
 
 ---
 
-## Project Management System
+## OpenClaw
 
-DevKit includes an automated PM layer that tracks features across sessions. The system uses a hybrid YAML + Markdown approach:
+ForgeBee is fully compatible with [OpenClaw](https://github.com/openclaw/openclaw). All 44 agents and 26 commands convert to OpenClaw skills.
 
-- **`docs/pm/state.yaml`** — Machine-readable project state (features, stories, decisions, risks, counters)
-- **`docs/pm/index.md`** — Auto-generated project dashboard
-- **`docs/pm/features/*.md`** — Per-feature detail pages
-- **`docs/pm/decisions.md`** — Append-only decision log from all debates
+```bash
+# Clone ForgeBee
+git clone git@github.com:forbee-dev/ForgeBee.git
 
-The PM system is fully automated — `/workflow`, `/growth`, `/idea`, and `/plan` all read and write `state.yaml` at every phase transition. The `pm-sync` hook loads state on session start and reports active features, blockers, and stale items. Run `/pm` at any time for a full status report with regenerated dashboards.
+# Install for OpenClaw
+bash ForgeBee/openclaw/install-openclaw.sh
+```
 
-Features enter the lifecycle at different points depending on their origin: `/idea` starts at the `idea` phase, `/plan` starts at `planning`, `/workflow` starts at `planning` or resumes an existing feature, and `/growth` starts at `brand-foundation` for marketing initiatives.
+This converts every agent and command into `SKILL.md` files in `~/.openclaw/workspace/skills/forgebee-*`. Skills auto-trigger based on their descriptions — the same ones optimized from the [Superpowers trigger pattern](#why-forgebee).
+
+<details>
+<summary><strong>How the conversion works</strong></summary>
+
+- Each agent becomes `forgebee-<agent-name>/SKILL.md`
+- Each command becomes `forgebee-cmd-<command-name>/SKILL.md` (user-invocable)
+- YAML frontmatter maps: `name` + `description` + `metadata.openclaw`
+- Agent body instructions transfer directly (markdown is markdown)
+- Model preferences are noted but OpenClaw handles model selection through its own config
+
+</details>
+
+---
+
+## Contributing
+
+Contributions welcome! ForgeBee is markdown and shell scripts — easy to extend.
+
+1. Fork the repo
+2. Add your command (`.claude/commands/your-command.md`) or agent (`.claude/agents/your-agent.md`)
+3. Update counts in `install.sh` and `plugin.json`
+4. Open a PR
 
 ---
 
 ## License
 
-MIT
+[MIT](LICENSE) &mdash; use it however you want.
+
+<p align="center">
+  <sub>Built with Claude Code by <a href="https://github.com/forbee-dev">Forbee Dev</a> at <a href="https://raketech.com">Raketech</a></sub>
+</p>
