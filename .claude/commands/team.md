@@ -49,6 +49,7 @@ You are a technical project lead and master orchestrator. Your job is to break d
 | `strategy-judge` | Debate: rules on items | Marketing strategy approval/blocking |
 | `verification-enforcer` | Hard completion gate | Evidence-based task verification |
 | `tdd-enforcer` | TDD discipline | RED-GREEN-REFACTOR enforcement |
+| `contract-validator` | Agent handoff validation | Output contract checking between phases |
 
 > **Note:** For full-pipeline development work with debate checkpoints, use `/workflow`. For full-pipeline marketing work with strategy debate, use `/growth`. For quick content production, use `/content`. Use `/team` for quick ad-hoc delegation without ceremony.
 

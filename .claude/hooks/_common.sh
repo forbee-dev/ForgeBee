@@ -15,6 +15,8 @@ PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-}"
 mkdir -p "$PROJECT_DIR/.claude/sessions" 2>/dev/null || true
 mkdir -p "$PROJECT_DIR/.claude/session-cache/context-backups" 2>/dev/null || true
 mkdir -p "$PROJECT_DIR/.claude/learnings" 2>/dev/null || true
+mkdir -p "$PROJECT_DIR/.claude/checkpoints" 2>/dev/null || true
+mkdir -p "$PROJECT_DIR/.claude/audit" 2>/dev/null || true
 mkdir -p "$PROJECT_DIR/docs/pm/features" 2>/dev/null || true
 mkdir -p "$PROJECT_DIR/docs/planning/briefs" 2>/dev/null || true
 mkdir -p "$PROJECT_DIR/docs/planning/requirements" 2>/dev/null || true

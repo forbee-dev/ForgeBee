@@ -104,10 +104,11 @@ npm run deploy:production # Deploy to production
 - `/team` — Lightweight multi-agent orchestration (ad-hoc delegation without debate ceremony)
 - `/idea` — Idea-to-product validation and MVP planning (with debate). Auto-tracks in PM system.
 - `/pm` — Automated project management: reads state.yaml, syncs TASKS.md, regenerates dashboards, surfaces blockers
+- `/audit` — Governance audit trail: query permission decisions, debate rulings, verification results, escalations
 
 **Specialist Agents** (for Agent Teams):
 
-*Development:* frontend, backend, database, security, testing, devops, perf, debug, research, content, seo, supabase, ios, flutter, n8n, session-librarian, ux-designer, scrum-master, delivery-agent, dashboard-generator, verification-enforcer, tdd-enforcer
+*Development:* frontend, backend, database, security, testing, devops, perf, debug, research, content, seo, supabase, ios, flutter, n8n, session-librarian, ux-designer, scrum-master, delivery-agent, dashboard-generator, verification-enforcer, tdd-enforcer, contract-validator
 
 *Dev Debate:* requirements-advocate, requirements-skeptic, requirements-judge, code-advocate, code-skeptic, code-judge
 

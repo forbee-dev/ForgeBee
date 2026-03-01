@@ -23,6 +23,13 @@ if [[ "$TOOL_NAME" != "Bash" ]] || [[ -z "$COMMAND" ]]; then
   exit 0
 fi
 
+# ── Audit trail helper ────────────────────────────────────────────────
+log_permission() {
+  local decision="$1" tier="$2" reason="$3"
+  echo "{\"event_type\":\"permission\",\"command\":$(echo "$COMMAND" | jq -Rs '.'),\"decision\":\"$decision\",\"tier\":\"$tier\",\"reason\":\"$reason\"}" \
+    | bash "$SCRIPT_DIR/audit-trail.sh" 2>/dev/null &
+}
+
 
 
 # ── TIER 1: ALLOWLIST (instant approve) ──────────────────────────────
@@ -81,7 +88,7 @@ ALLOWLIST_PATTERNS=(
 
 for pattern in "${ALLOWLIST_PATTERNS[@]}"; do
   if echo "$COMMAND" | grep -qEi "$pattern"; then
-    # Auto-approve
+    log_permission "allow" "allowlist" "Matched safe pattern"
     echo '{"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"allow","permissionDecisionReason":"Allowlisted safe command"}}'
     exit 0
   fi
@@ -126,6 +133,7 @@ BLOCKLIST_PATTERNS=(
 
 for pattern in "${BLOCKLIST_PATTERNS[@]}"; do
   if echo "$COMMAND" | grep -qEi "$pattern"; then
+    log_permission "deny" "blocklist" "Matched dangerous pattern"
     echo "BLOCKED: Command matches dangerous pattern: $pattern" >&2
     exit 2
   fi
@@ -133,6 +141,7 @@ done
 
 # Special check: DELETE FROM without WHERE clause (can't express as ERE negative lookahead)
 if echo "$COMMAND" | grep -qEi "DELETE FROM" && ! echo "$COMMAND" | grep -qEi "DELETE FROM.*WHERE"; then
+  log_permission "deny" "blocklist" "DELETE FROM without WHERE"
   echo "BLOCKED: DELETE FROM without WHERE clause" >&2
   exit 2
 fi
@@ -164,5 +173,6 @@ fi
 
 # ── TIER 4: ASK USER ─────────────────────────────────────────────────
 # Command not in allowlist or blocklist — defer to user
+log_permission "ask" "user-prompt" "Unrecognized command"
 echo '{"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"ask","permissionDecisionReason":"Unrecognized command — requesting user approval"}}'
 exit 0

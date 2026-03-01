@@ -1,21 +1,21 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Claude_Code-Plugin-7C3AED?style=for-the-badge&logoColor=white" alt="Claude Code" />
   <img src="https://img.shields.io/badge/OpenClaw-Compatible-FF6B35?style=for-the-badge&logoColor=white" alt="OpenClaw" />
-  <img src="https://img.shields.io/badge/version-2.3.0-blue?style=for-the-badge" alt="Version" />
+  <img src="https://img.shields.io/badge/version-2.4.0-blue?style=for-the-badge" alt="Version" />
   <img src="https://img.shields.io/badge/license-MIT-green?style=for-the-badge" alt="License" />
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/agents-44-orange?style=for-the-badge" alt="Agents" />
-  <img src="https://img.shields.io/badge/commands-26-red?style=for-the-badge" alt="Commands" />
-  <img src="https://img.shields.io/badge/hooks-9-blueviolet?style=for-the-badge" alt="Hooks" />
+  <img src="https://img.shields.io/badge/agents-45-orange?style=for-the-badge" alt="Agents" />
+  <img src="https://img.shields.io/badge/commands-27-red?style=for-the-badge" alt="Commands" />
+  <img src="https://img.shields.io/badge/hooks-11-blueviolet?style=for-the-badge" alt="Hooks" />
 </p>
 
 <h1 align="center">ForgeBee</h1>
 
 <p align="center">
   <strong>A colony of AI agents forging your product</strong><br/>
-  44 specialist agents. 26 slash commands. 9 lifecycle hooks.<br/>
+  45 specialist agents. 27 slash commands. 11 lifecycle hooks.<br/>
   Adversarial debate. Growth OS. Project management. Zero dependencies.<br/>
   <em>Works with Claude Code and OpenClaw.</em>
 </p>
@@ -138,6 +138,7 @@ Invoke with a slash: `/review`, `/debug`, `/workflow`, etc.
 | `/team` | Lightweight multi-agent orchestration (no debate ceremony) |
 | `/idea` | Idea &rarr; validate &rarr; debate &rarr; MVP &rarr; roadmap |
 | `/pm` | Project dashboard from `state.yaml` |
+| `/audit` | Governance audit trail — permission decisions, debate rulings, verification results |
 
 ---
 
@@ -162,7 +163,7 @@ Invoke with a slash: `/review`, `/debug`, `/workflow`, etc.
 </details>
 
 <details>
-<summary><strong>Quality Gates</strong> (4 agents) &mdash; NEW in v2.3</summary>
+<summary><strong>Quality Gates</strong> (5 agents) &mdash; NEW in v2.3</summary>
 
 | Agent | Use when... |
 |:------|:------------|
@@ -170,6 +171,7 @@ Invoke with a slash: `/review`, `/debug`, `/workflow`, etc.
 | `tdd-enforcer` | TDD discipline &mdash; blocks code written before tests |
 | `delivery-agent` | Final packaging after code debate + verification |
 | `dashboard-generator` | Regenerating PM dashboards from state.yaml |
+| `contract-validator` | Agent handoffs — validates output contracts between pipeline phases |
 
 </details>
 
@@ -249,6 +251,8 @@ Hooks run automatically on Claude Code lifecycle events. No invocation needed.
 | `skill-activator` | `UserPromptSubmit` | Intent detection + skill recommendations |
 | `session-load` | `SessionStart` | Restores previous session context |
 | `session-save` | `Stop` | Persists session state to JSON snapshot |
+| `checkpoint` | Phase transitions | Saves pipeline state for crash recovery — resume from last phase |
+| `audit-trail` | All governance events | Append-only log of permissions, debates, verifications, escalations |
 | `self-improve` | `Stop` | Captures patterns into learnings |
 | `task-sync` | `SessionStart` + `Stop` | Bidirectional sync with TASKS.md |
 | `pm-sync` | `SessionStart` + `Stop` | Loads PM state, reports blockers |
@@ -306,6 +310,7 @@ ForgeBee is **just markdown and shell scripts**. No runtime, no dependencies, no
 - **Commands** are `.md` files in `.claude/commands/` — structured prompts that activate workflows
 - **Agents** are `.md` files in `.claude/agents/` — specialist definitions with trigger conditions
 - **Hooks** are `.sh` scripts wired to Claude Code lifecycle events via `hooks.json`
+- **Audit trail** is an append-only JSONL log in `.claude/audit/` — every permission, debate, and verification is recorded
 
 Claude Code reads them natively. The plugin system handles distribution.
 

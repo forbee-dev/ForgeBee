@@ -146,6 +146,16 @@ npm test 2>&1 | grep -E "FAIL|fail|Error" | head -20
 - "The user said it works" → **Rejected.** Run the commands yourself.
 - Skipping lint because "it's just a small change" → **Rejected.** Lint everything.
 
+## Audit Trail
+
+After rendering your verdict, log it for governance traceability:
+
+```bash
+echo '{"event_type":"verification","feature":"FEATURE_NAME","verdict":"VERIFIED|PARTIALLY_VERIFIED|NOT_VERIFIED","evidence":"brief summary of key evidence","agent":"verification-enforcer"}' | bash "$CLAUDE_PROJECT_DIR/.claude/hooks/audit-trail.sh"
+```
+
+This creates an immutable record of what was verified and when.
+
 ## Communication
 
 When working on a team, report:

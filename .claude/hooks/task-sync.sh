@@ -37,8 +37,6 @@ if [[ "$HOOK_EVENT" == "SessionStart" ]]; then
   exit 0
 fi
 
-fi
-
 # Get git info for context
 TIMESTAMP=$(date +"%Y-%m-%d %H:%M")
 BRANCH=""
