@@ -5,7 +5,7 @@
 # NOTE: This is the legacy manual installer. The recommended way to install
 # DevKit is as a plugin via the Claude Code plugin system:
 #   /plugin marketplace add forbee-dev/ForgeBee
-#   /plugin install forgebee@ForgeBee
+#   /plugin install forgebee@forbee-dev
 #
 # This script remains for users who prefer git clone + manual installation
 # or who are not using the plugin system.
@@ -20,7 +20,7 @@ echo "=============================="
 echo ""
 echo "💡 Tip: ForgeBee is also available as a plugin. In Claude Code, run:"
 echo "   /plugin marketplace add forbee-dev/ForgeBee"
-echo "   /plugin install forgebee@ForgeBee"
+echo "   /plugin install forgebee@forbee-dev"
 echo ""
 echo "Installing to: $TARGET"
 echo ""

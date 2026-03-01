@@ -21,5 +21,5 @@ For full documentation, see the [main README](../README.md).
 
 ```bash
 /plugin marketplace add forbee-dev/ForgeBee
-/plugin install forgebee@ForgeBee
+/plugin install forgebee@forbee-dev
 ```

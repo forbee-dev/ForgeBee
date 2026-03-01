@@ -53,7 +53,7 @@ Claude Code and OpenClaw are powerful out of the box. ForgeBee makes them **opin
 ```bash
 # Inside Claude Code:
 /plugin marketplace add forbee-dev/ForgeBee
-/plugin install forgebee@ForgeBee
+/plugin install forgebee@forbee-dev
 ```
 
 Then edit `CLAUDE.md` with your project details and start working. Hooks activate automatically, commands are available immediately.
