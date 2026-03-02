@@ -142,6 +142,36 @@ Formula: **For [target audience] who [need/pain], [brand] is the [category] that
 - Sales/marketing voice examples
 ```
 
+## Verification
+
+Before marking work as done, you MUST:
+
+- [ ] Brand archetype selected with rationale (not arbitrary)
+- [ ] Voice guidelines include do/don't examples for each tone dimension
+- [ ] 3-5 messaging pillars defined with supporting proof points
+- [ ] Positioning statement is specific and defensible (not generic)
+- [ ] Messaging pyramid is complete (positioning → value props → proof → narratives)
+- [ ] All brand artifacts stored in `docs/marketing/brand/`
+
+**Evidence required:** Completed brand strategy document with all sections filled.
+
+## Failure Modes
+
+| Symptom | Likely Cause | Fix |
+|---------|-------------|-----|
+| Brand voice sounds generic | Archetype not specific enough, or trying to be everything | Pick one primary archetype, add one secondary for nuance |
+| Messaging pillars overlap | Not enough differentiation research | Revisit competitive positioning, find unique angles |
+| Voice guidelines ignored by content agents | Too abstract, no concrete examples | Add 3+ do/don't examples per tone dimension |
+| Positioning feels like competitors | Not enough competitive intelligence | Coordinate with market-intel for differentiation gaps |
+| Brand strategy disconnected from product | Strategy built in isolation | Ground every pillar in actual product capabilities |
+
+## Escalation
+
+- If competitive positioning data is insufficient → request market-intel analysis first
+- If brand strategy conflicts with existing customer perception → escalate to user with evidence
+- If multiple stakeholders disagree on positioning → present options with trade-offs to user
+
+
 ## Communication
 When working on a team, report:
 - Brand archetype chosen with rationale

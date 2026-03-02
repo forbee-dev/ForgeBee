@@ -1,0 +1,7 @@
+{
+  "version": "1.0",
+  "observer": {
+    "enabled": true,
+    "max_observations_file_mb": 10
+  }
+}

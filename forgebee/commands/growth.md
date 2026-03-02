@@ -386,26 +386,34 @@ Assess complexity at the start and propose the appropriate pipeline depth to the
 
 ## Available Marketing Specialist Agents
 
-| Agent | Specialty | Best For |
-|-------|-----------|----------|
-| `brand-strategist` | Brand positioning, archetypes, voice | Brand identity, messaging pillars |
-| `market-intel` | Competitive intelligence, niche analysis | Battlecards, market gaps, trends |
-| `audience-architect` | ICP, personas, buyer journey | Audience definition, JTBD, segmentation |
-| `content-architect` | Content pillars, topic clusters | Content strategy, hub-and-spoke |
-| `hook-engineer` | Stop-scrolling hooks, viral formulas | Hook libraries, engagement triggers |
-| `idea-machine` | Content ideas, repurposing chains | Idea generation, angle mining |
-| `engagement-strategist` | Community, comments, reciprocity | Engagement systems, growth tactics |
-| `content-creator` | Platform-native content production | Social posts, threads, scripts |
-| `content-writer` | Long-form content, landing pages | Blog posts, guides, case studies |
-| `seo-specialist` | Keywords, technical SEO, optimization | Search rankings, content optimization |
-| `growth-hacker` | Growth loops, flywheels, funnels | Audience growth, viral mechanics |
-| `calendar-builder` | Content calendars, batching | Scheduling, distribution planning |
-| `performance-analyst` | Metrics, attribution, A/B testing | KPI dashboards, optimization |
-| `email-strategist` | Email flows, segmentation, deliverability | Welcome series, nurture, cart recovery |
-| `conversion-optimizer` | CRO, funnel optimization, A/B testing | Landing pages, forms, checkout, pricing |
-| `strategy-advocate` | Debate: argues FOR strategy | Defends positioning, audience, content |
-| `strategy-skeptic` | Debate: argues AGAINST strategy | Finds gaps, weak assumptions, blind spots |
-| `strategy-judge` | Debate: rules on each item | Approve, block, or flag with escalation |
+| Agent | Specialty | Best For | Auto-Delegates To |
+|-------|-----------|----------|-------------------|
+| `brand-strategist` | Brand positioning, archetypes, voice | Brand identity, messaging pillars | — |
+| `market-intel` | Competitive intelligence, niche analysis | Battlecards, market gaps, trends | — |
+| `audience-architect` | ICP, personas, buyer journey | Audience definition, JTBD, segmentation | — |
+| `content-architect` | Content pillars, topic clusters | Content strategy, hub-and-spoke | — |
+| `hook-engineer` | Stop-scrolling hooks, viral formulas | Hook libraries, engagement triggers | — |
+| `idea-machine` | Content ideas, repurposing chains | Idea generation, angle mining | — |
+| `engagement-strategist` | Community, comments, reciprocity | Engagement systems, growth tactics | — |
+| `content-creator` | Platform-native content production | Social posts, threads, scripts | — |
+| `content-writer` | Long-form content, landing pages | Blog posts, guides, case studies | → `wordpress-content`, `nextjs-content` |
+| `seo-specialist` | Keywords, technical SEO, optimization | Search rankings, content optimization | → `wordpress-seo`, `nextjs-seo` |
+| `growth-hacker` | Growth loops, flywheels, funnels | Audience growth, viral mechanics | — |
+| `calendar-builder` | Content calendars, batching | Scheduling, distribution planning | — |
+| `performance-analyst` | Metrics, attribution, A/B testing | KPI dashboards, optimization | — |
+| `email-strategist` | Email flows, segmentation, deliverability | Welcome series, nurture, cart recovery | — |
+| `conversion-optimizer` | CRO, funnel optimization, A/B testing | Landing pages, forms, checkout, pricing | → `woocommerce-cro`, `saas-cro` |
+| `strategy-advocate` | Debate: argues FOR strategy | Defends positioning, audience, content | — |
+| `strategy-skeptic` | Debate: argues AGAINST strategy | Finds gaps, weak assumptions, blind spots | — |
+| `strategy-judge` | Debate: rules on each item | Approve, block, or flag with escalation | — |
+| | | | |
+| **Tier 2 Growth Subagents** (auto-invoked by Tier 1 above): | | | |
+| `wordpress-seo` | WordPress SEO | Yoast/RankMath, WP sitemaps, WP schema | — |
+| `nextjs-seo` | Next.js SEO | Metadata API, sitemap.ts, OG images | — |
+| `woocommerce-cro` | WooCommerce CRO | Checkout, product pages, cart recovery | — |
+| `saas-cro` | SaaS CRO | Pricing pages, signup flows, React patterns | — |
+| `wordpress-content` | WordPress content | Gutenberg blocks, ACF content, WC products | — |
+| `nextjs-content` | Next.js content | MDX, Contentlayer, React content components | — |
 
 ## Output Directory Structure
 

@@ -9,17 +9,17 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/session-load.sh",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/session-load.js",
             "timeout": 5
           },
           {
             "type": "command",
-            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/task-sync.sh",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/task-sync.js",
             "timeout": 5
           },
           {
             "type": "command",
-            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/pm-sync.sh",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/pm-sync.js",
             "timeout": 5
           }
         ]
@@ -31,7 +31,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/skill-activator.sh",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/skill-activator.js",
             "timeout": 5
           }
         ]
@@ -43,7 +43,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/permission-guard.sh"
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/permission-guard.js"
           }
         ]
       }
@@ -54,7 +54,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/context-guard.sh",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/context-guard.js",
             "timeout": 10
           }
         ]
@@ -66,22 +66,22 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/session-save.sh",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/session-save.js",
             "timeout": 10
           },
           {
             "type": "command",
-            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/self-improve.sh",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/self-improve.js",
             "timeout": 10
           },
           {
             "type": "command",
-            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/task-sync.sh",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/task-sync.js",
             "timeout": 10
           },
           {
             "type": "command",
-            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/pm-sync.sh",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/pm-sync.js",
             "timeout": 10
           }
         ]
@@ -93,7 +93,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "notify-send 'Claude Code' 'Needs your attention' 2>/dev/null || osascript -e 'display notification \"Claude Code needs your attention\" with title \"Claude Code\"' 2>/dev/null || true"
+            "command": "node -e \"const{execSync:e}=require('child_process');try{e('notify-send \\'Claude Code\\' \\'Needs your attention\\'',{stdio:'ignore'})}catch{try{e('osascript -e \\'display notification \\\"Claude Code needs your attention\\\" with title \\\"Claude Code\\\"\\'')}catch{}}\""
           }
         ]
       }

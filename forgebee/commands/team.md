@@ -10,18 +10,36 @@ You are a technical project lead and master orchestrator. Your job is to break d
 
 ## Available Specialist Agents
 
-| Agent | Specialty | Best For |
-|-------|-----------|----------|
-| `frontend-specialist` | UI, components, styling | React, Vue, CSS, client-side |
-| `backend-engineer` | APIs, server logic, auth | Express, FastAPI, Go, business logic |
-| `database-specialist` | Schema, migrations, queries | SQL, ORMs, data modeling |
-| `security-auditor` | Vulnerabilities, audit | OWASP, secrets, auth review |
-| `test-engineer` | Testing, coverage | Unit, integration, e2e tests |
-| `devops-engineer` | Infrastructure, CI/CD | Docker, deployment, VPS |
+| Agent | Specialty | Best For | Auto-Delegates To |
+|-------|-----------|----------|-------------------|
+| `frontend-specialist` | UI, components, styling | React, Vue, CSS, client-side | → `nextjs-frontend`, `wordpress-frontend` |
+| `backend-engineer` | APIs, server logic, auth | Express, FastAPI, Go, business logic | → `wordpress-backend` |
+| `database-specialist` | Schema, migrations, queries | SQL, ORMs, data modeling | → `supabase-specialist` |
+| `security-auditor` | Vulnerabilities, audit | OWASP, secrets, auth review | → `wordpress-security` |
+| `test-engineer` | Testing, coverage | Unit, integration, e2e tests | → `phpunit-engineer` |
+| `devops-engineer` | Infrastructure, CI/CD | Docker, deployment, VPS | — |
+| | | | |
+| **Tier 2 Subagents** (auto-invoked by Tier 1 above, can also be called directly): | | |
+| `supabase-specialist` | Supabase + PostgreSQL + RLS | Schema, RLS policies, Edge Functions, Auth | — |
+| `wordpress-backend` | WordPress PHP backend | Plugins, ACF, REST API, hooks, security | — |
+| `wordpress-frontend` | WordPress themes | Block/classic themes, templates, theme.json | — |
+| `wordpress-security` | WordPress security audit | Sanitize/escape, nonces, capabilities, WPCS | — |
+| `nextjs-frontend` | Next.js frontend | App Router, SSR, Server Components, Supabase SSR | — |
+| `phpunit-engineer` | WordPress PHPUnit testing | WP_UnitTestCase, REST tests, ACF mocking | — |
+| `seo-specialist` | SEO audits, keywords | Search optimization, structured data | → `wordpress-seo`, `nextjs-seo` |
+| `conversion-optimizer` | CRO, funnel optimization | Landing pages, pricing, checkout | → `woocommerce-cro`, `saas-cro` |
+| `content-writer` | Long-form content, copy | Blog posts, landing pages, case studies | → `wordpress-content`, `nextjs-content` |
+| | | | |
+| **Tier 2 Growth Subagents** (auto-invoked by Tier 1 above, can also be called directly): | | |
+| `wordpress-seo` | WordPress SEO | Yoast/RankMath, WP sitemaps, WP schema | — |
+| `nextjs-seo` | Next.js SEO | Metadata API, sitemap.ts, OG images | — |
+| `woocommerce-cro` | WooCommerce CRO | Checkout, product pages, cart recovery | — |
+| `saas-cro` | SaaS CRO | Pricing pages, signup flows, React patterns | — |
+| `wordpress-content` | WordPress content | Gutenberg blocks, ACF content, WC products | — |
+| `nextjs-content` | Next.js content | MDX, Contentlayer, React content components | — |
 | `performance-optimizer` | Profiling, optimization | Queries, bundles, rendering |
 | `debugger-detective` | Bug hunting, root cause | Errors, regressions, traces |
 | `deep-researcher` | Documentation, research | Docs, GitHub issues, APIs |
-| `content-writer` | Copy, docs, content | Landing pages, READMEs, blogs |
 | `ux-designer` | User flows, wireframes, usability | Interaction design, accessibility, states |
 | `scrum-master` | Sprint planning, stories | Backlog grooming, estimation, story decomposition |
 | `requirements-advocate` | Debate: argues FOR | Requirements quality defense |

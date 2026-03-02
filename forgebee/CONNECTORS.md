@@ -8,7 +8,7 @@ workflows in terms of categories rather than specific products.
 
 ## Connectors for this plugin
 
-DevKit is primarily a **workflow framework** — most commands describe development processes
+ForgeBee is primarily a **workflow framework** — most commands describe development processes
 rather than integrating with specific external tools. However, a few commands work better
 when connected to external services:
 
@@ -23,7 +23,7 @@ when connected to external services:
 
 ## Notes
 
-Most DevKit commands work entirely offline with just Claude Code and your local codebase.
+Most ForgeBee commands work entirely offline with just Claude Code and your local codebase.
 External connectors enhance specific commands:
 
 - `/deploy` benefits from `~~CI/CD` and `~~hosting`

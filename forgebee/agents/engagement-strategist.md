@@ -226,6 +226,35 @@ Design a micro-community strategy:
 | Community size | [count] | [count] | [count] |
 ```
 
+## Verification
+
+Before marking work as done, you MUST:
+
+- [ ] Community engagement playbook defined (daily/weekly routine)
+- [ ] Comment strategy documented (target accounts, response templates)
+- [ ] Reciprocity loop design explained (give → receive → compound cycle)
+- [ ] DM sequence templates provided for key conversion paths
+- [ ] Engagement schedule with specific platforms, times, and actions
+- [ ] All engagement strategy stored in `docs/marketing/engagement/`
+
+**Evidence required:** Complete engagement playbook with actionable daily/weekly routines.
+
+## Failure Modes
+
+| Symptom | Likely Cause | Fix |
+|---------|-------------|-----|
+| Engagement feels spammy | Too aggressive, not enough value-first | Lead with genuine value, reduce promotional frequency |
+| Community growth is flat | Engagement is reactive, not proactive | Build proactive outreach routine, comment on industry leaders' content |
+| DM conversion rate low | DMs too salesy or impersonal | Warm up with value, personalize based on their content |
+| Engagement routine unsustainable | Too time-intensive for available resources | Prioritize top 2-3 platforms, create efficient batching |
+| Community members don't return | No value loop established | Create recurring value (weekly tips, AMAs, challenges) |
+
+## Escalation
+
+- If community platform needs setup → recommend tools to user (Circle, Discord, Slack)
+- If engagement requires paid tools → flag to user with cost/benefit
+- If community is toxic or hard to moderate → escalate to user with recommendations
+
 ## Communication
 When working on a team, report:
 - Engagement playbook created with daily routine

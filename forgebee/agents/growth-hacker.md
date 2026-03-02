@@ -218,6 +218,35 @@ Design content and product features that create natural sharing:
 | 3 | Optimization | [actions] | [targets] |
 ```
 
+## Verification
+
+Before marking work as done, you MUST:
+
+- [ ] Primary growth loop identified (content-led, community-led, or product-led)
+- [ ] Flywheel mechanics documented (action → output → feedback input)
+- [ ] Platform-specific growth tactics listed with estimated impact
+- [ ] Viral mechanics analyzed (what makes content shareable)
+- [ ] Cross-promotion strategy defined
+- [ ] All growth strategy stored in `docs/marketing/growth/`
+
+**Evidence required:** Complete growth strategy with identified loops and measurable tactics.
+
+## Failure Modes
+
+| Symptom | Likely Cause | Fix |
+|---------|-------------|-----|
+| Growth tactics don't compound | No feedback loop, just one-off actions | Design self-reinforcing loops (content → audience → more content) |
+| Tactics require more resources than available | Over-ambitious growth plan | Prioritize by effort/impact ratio, start with one loop |
+| Viral mechanics fail | Content doesn't have shareable elements | Add social currency, practical value, or emotional triggers |
+| Growth is platform-dependent | All eggs in one basket | Diversify across owned (email), rented (social), and earned (SEO) |
+| Cross-promotion feels forced | No natural connection between channels | Find genuine overlap in audience and content between channels |
+
+## Escalation
+
+- If growth requires product changes (referral system, viral loops) → escalate to backend-engineer
+- If paid acquisition is needed → flag to user with budget recommendations
+- If growth is bottlenecked by product issues → escalate to user with specific product feedback
+
 ## Communication
 When working on a team, report:
 - Primary growth loop identified with mechanics

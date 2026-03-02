@@ -6,17 +6,27 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/session-load.sh",
+            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/session-load.js",
             "timeout": 5
           },
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/task-sync.sh",
+            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/project-triage.js",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/load-context-rules.js",
             "timeout": 5
           },
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/pm-sync.sh",
+            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/task-sync.js",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/pm-sync.js",
             "timeout": 5
           }
         ]
@@ -28,7 +38,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/skill-activator.sh",
+            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/skill-activator.js",
             "timeout": 5
           }
         ]
@@ -36,11 +46,70 @@
     ],
     "PreToolUse": [
       {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ${CLAUDE_PLUGIN_ROOT}/skills/continuous-learning/scripts/observe.js",
+            "timeout": 3
+          }
+        ]
+      },
+      {
         "matcher": "Bash",
         "hooks": [
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/permission-guard.sh"
+            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/permission-guard.js"
+          },
+          {
+            "type": "command",
+            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/dev-server-blocker.js"
+          },
+          {
+            "type": "command",
+            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/git-push-reminder.js"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/suggest-compact.js"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ${CLAUDE_PLUGIN_ROOT}/skills/continuous-learning/scripts/observe.js",
+            "timeout": 3
+          }
+        ]
+      },
+      {
+        "matcher": "Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/post-edit-format.js",
+            "timeout": 15
+          },
+          {
+            "type": "command",
+            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/post-edit-typecheck.js",
+            "timeout": 30
+          },
+          {
+            "type": "command",
+            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/post-edit-console-warn.js",
+            "timeout": 5
           }
         ]
       }
@@ -51,7 +120,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/context-guard.sh",
+            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/context-guard.js",
             "timeout": 10
           }
         ]
@@ -63,22 +132,27 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/session-save.sh",
+            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/session-save.js",
             "timeout": 10
           },
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/self-improve.sh",
+            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/self-improve.js",
             "timeout": 10
           },
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/task-sync.sh",
+            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/console-log-audit.js",
             "timeout": 10
           },
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/pm-sync.sh",
+            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/task-sync.js",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/pm-sync.js",
             "timeout": 10
           }
         ]
@@ -90,7 +164,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "notify-send 'Claude Code' 'Needs your attention' 2>/dev/null || osascript -e 'display notification \"Claude Code needs your attention\" with title \"Claude Code\"' 2>/dev/null || true"
+            "command": "node -e \"try{require('child_process').execSync(process.platform==='darwin'?'osascript -e \\'display notification \\\"Claude Code needs your attention\\\" with title \\\"Claude Code\\\"\\'':'notify-send \\'Claude Code\\' \\'Needs your attention\\'',{stdio:'pipe'})}catch{}\""
           }
         ]
       }

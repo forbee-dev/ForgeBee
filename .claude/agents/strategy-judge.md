@@ -118,7 +118,7 @@ After ruling on all items, produce:
 After ruling on each item, log the decision for governance traceability:
 
 ```bash
-echo '{"event_type":"debate","debate_type":"strategy","item":"ITEM_TITLE","ruling":"APPROVE|BLOCK|FLAG","severity":"Low|Medium|High|Critical","judge":"strategy-judge","feature":"FEATURE_NAME"}' | bash "$CLAUDE_PROJECT_DIR/.claude/hooks/audit-trail.sh"
+echo '{"event_type":"debate","debate_type":"strategy","item":"ITEM_TITLE","ruling":"APPROVE|BLOCK|FLAG","severity":"Low|Medium|High|Critical","judge":"strategy-judge","feature":"FEATURE_NAME"}' | node "$CLAUDE_PROJECT_DIR/.claude/hooks/audit-trail.js"
 ```
 
 Log every ruling, not just blocks. This creates an immutable record of all governance decisions.

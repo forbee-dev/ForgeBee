@@ -1,22 +1,24 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Claude_Code-Plugin-7C3AED?style=for-the-badge&logoColor=white" alt="Claude Code" />
   <img src="https://img.shields.io/badge/OpenClaw-Compatible-FF6B35?style=for-the-badge&logoColor=white" alt="OpenClaw" />
-  <img src="https://img.shields.io/badge/version-2.4.0-blue?style=for-the-badge" alt="Version" />
+  <img src="https://img.shields.io/badge/version-3.0.0-blue?style=for-the-badge" alt="Version" />
   <img src="https://img.shields.io/badge/license-MIT-green?style=for-the-badge" alt="License" />
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/agents-45-orange?style=for-the-badge" alt="Agents" />
-  <img src="https://img.shields.io/badge/commands-27-red?style=for-the-badge" alt="Commands" />
-  <img src="https://img.shields.io/badge/hooks-11-blueviolet?style=for-the-badge" alt="Hooks" />
+  <img src="https://img.shields.io/badge/agents-56-orange?style=for-the-badge" alt="Agents" />
+  <img src="https://img.shields.io/badge/commands-33-red?style=for-the-badge" alt="Commands" />
+  <img src="https://img.shields.io/badge/hooks-24-blueviolet?style=for-the-badge" alt="Hooks" />
+  <img src="https://img.shields.io/badge/skills-3-teal?style=for-the-badge" alt="Skills" />
 </p>
 
 <h1 align="center">ForgeBee</h1>
 
 <p align="center">
   <strong>A colony of AI agents forging your product</strong><br/>
-  45 specialist agents. 27 slash commands. 11 lifecycle hooks.<br/>
-  Adversarial debate. Growth OS. Project management. Zero dependencies.<br/>
+  53 specialist agents. 32 slash commands. 24 lifecycle hooks. 3 skills.<br/>
+  Continuous learning. Adversarial debate. Growth OS. Project management.<br/>
+  Pure Node.js. Zero external dependencies.<br/>
   <em>Works with Claude Code and OpenClaw.</em>
 </p>
 
@@ -25,6 +27,7 @@
   <a href="#commands">Commands</a> &nbsp;&bull;&nbsp;
   <a href="#agents">Agents</a> &nbsp;&bull;&nbsp;
   <a href="#hooks">Hooks</a> &nbsp;&bull;&nbsp;
+  <a href="#continuous-learning">Learning</a> &nbsp;&bull;&nbsp;
   <a href="#growth-os">Growth OS</a> &nbsp;&bull;&nbsp;
   <a href="#project-management">PM System</a> &nbsp;&bull;&nbsp;
   <a href="#openclaw">OpenClaw</a>
@@ -40,9 +43,11 @@ Claude Code and OpenClaw are powerful out of the box. ForgeBee makes them **opin
 |:--|:--|
 | Agent jumps straight into coding | Agent plans, debates requirements, then codes |
 | "It should work" | Evidence-based verification with actual test output |
-| Single-agent, single-pass | 44 specialists working in parallel with blind review |
+| Single-agent, single-pass | 53 specialists working in parallel with blind review |
 | Manual project tracking | Automated state.yaml + markdown dashboards |
 | No marketing workflow | Full 9-phase Growth OS with 18 marketing agents |
+| Every session starts from scratch | Continuous learning — instincts persist across sessions |
+| Edits break silently | Auto-format, typecheck, and lint on every edit |
 
 ---
 
@@ -72,7 +77,7 @@ claude --plugin-dir ./ForgeBee/forgebee
 
 ```bash
 git clone git@github.com:forbee-dev/ForgeBee.git
-bash ForgeBee/install.sh /path/to/your/project
+node ForgeBee/install.js /path/to/your/project
 ```
 
 </details>
@@ -81,8 +86,7 @@ bash ForgeBee/install.sh /path/to/your/project
 <summary><strong>Requirements</strong></summary>
 
 - Claude Code 1.0.33+
-- Bash 4+
-- `jq` optional (settings validation)
+- Node.js 18+ (all hooks are pure Node.js — no bash, no python, no jq)
 - Agent Teams: set `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`
 
 </details>
@@ -114,6 +118,7 @@ Invoke with a slash: `/review`, `/debug`, `/workflow`, etc.
 | `/migrate` | Version/framework migration with rollback plans |
 | `/deploy` | Pre-flight checks, rollout, post-deploy verification |
 | `/browser-debug` | Console, network, rendering, Core Web Vitals |
+| `/codemaps` | Token-lean architecture docs for AI context consumption |
 
 ### Growth & Marketing
 
@@ -130,6 +135,16 @@ Invoke with a slash: `/review`, `/debug`, `/workflow`, etc.
 | `/payments` | Stripe / LemonSqueezy / Paddle integration |
 | `/analytics` | Event tracking, dashboards, metrics framework |
 
+### Learning
+
+| Command | Description |
+|:--------|:------------|
+| `/learn` | Analyze session observations and extract patterns as instincts |
+| `/evolve` | Cluster related instincts into skills, commands, or agents |
+| `/instinct-status` | Show all learned instincts (project + global) with confidence scores |
+| `/instinct-export` | Export instincts to a shareable file |
+| `/instinct-import` | Import instincts from a file |
+
 ### Meta
 
 | Command | Description |
@@ -144,7 +159,7 @@ Invoke with a slash: `/review`, `/debug`, `/workflow`, etc.
 
 ## Agents
 
-44 specialist agents for Claude Code's Agent Teams. Use them directly or let `/team` and `/workflow` orchestrate automatically.
+53 specialist agents for Claude Code's Agent Teams. Use them directly or let `/team` and `/workflow` orchestrate automatically.
 
 <details>
 <summary><strong>Development</strong> (8 agents)</summary>
@@ -239,24 +254,86 @@ Invoke with a slash: `/review`, `/debug`, `/workflow`, etc.
 
 </details>
 
+<details>
+<summary><strong>WordPress Specialists</strong> (7 agents) &mdash; NEW in v3.0</summary>
+
+| Agent | Use when... |
+|:------|:------------|
+| `wordpress-backend` | WordPress PHP backend, REST endpoints, ACF, hooks |
+| `wordpress-frontend` | WordPress theme dev, block themes, template hierarchy |
+| `wordpress-content` | WordPress Gutenberg content, block patterns, ACF content |
+| `wordpress-security` | WordPress security audit, sanitization, WPCS |
+| `wordpress-seo` | WordPress SEO, Yoast/RankMath, XML sitemaps |
+| `phpunit-engineer` | WordPress PHPUnit testing, WP_UnitTestCase |
+| `woocommerce-cro` | WooCommerce checkout/product page CRO |
+
+</details>
+
+<details>
+<summary><strong>Next.js Specialists</strong> (3 agents) &mdash; NEW in v3.0</summary>
+
+| Agent | Use when... |
+|:------|:------------|
+| `nextjs-frontend` | Next.js App Router, Server/Client Components, Supabase SSR |
+| `nextjs-content` | Next.js MDX content, Contentlayer, static generation |
+| `nextjs-seo` | Next.js Metadata API, sitemap.ts, OG image generation |
+
+</details>
+
+<details>
+<summary><strong>CRO Specialists</strong> (1 agent) &mdash; NEW in v3.0</summary>
+
+| Agent | Use when... |
+|:------|:------------|
+| `saas-cro` | SaaS landing page/pricing/signup CRO |
+
+</details>
+
 ---
 
 ## Hooks
 
-Hooks run automatically on Claude Code lifecycle events. No invocation needed.
+24 hooks run automatically on Claude Code lifecycle events across 9 event types. No invocation needed.
+
+**Session & state management:**
 
 | Hook | Event | What it does |
 |:-----|:------|:------------|
-| `permission-guard` | `PreToolUse` | 3-tier command safety: allowlist &rarr; blocklist &rarr; ask user |
-| `skill-activator` | `UserPromptSubmit` | Intent detection + skill recommendations |
 | `session-load` | `SessionStart` | Restores previous session context |
 | `session-save` | `Stop` | Persists session state to JSON snapshot |
-| `checkpoint` | Phase transitions | Saves pipeline state for crash recovery — resume from last phase |
-| `audit-trail` | All governance events | Append-only log of permissions, debates, verifications, escalations |
-| `self-improve` | `Stop` | Captures patterns into learnings |
+| `project-triage` | `SessionStart` | Auto-detects project type, stack, and conventions |
+| `load-context-rules` | `SessionStart` | Loads contexts and language-specific rules |
 | `task-sync` | `SessionStart` + `Stop` | Bidirectional sync with TASKS.md |
 | `pm-sync` | `SessionStart` + `Stop` | Loads PM state, reports blockers |
 | `context-guard` | `PreCompact` | Backs up critical context before compaction |
+
+**Quality automation:**
+
+| Hook | Event | What it does |
+|:-----|:------|:------------|
+| `post-edit-format` | `PostToolUse` (Edit) | Auto-formats JS/TS after every edit (Biome or Prettier) |
+| `post-edit-typecheck` | `PostToolUse` (Edit) | Runs `tsc --noEmit` after editing .ts/.tsx files |
+| `post-edit-console-warn` | `PostToolUse` (Edit) | Warns about `console.log` in edited files |
+| `console-log-audit` | `Stop` | Audits all modified files for console.log at session end |
+| `permission-guard` | `PreToolUse` (Bash) | 4-tier command safety: allowlist &rarr; blocklist &rarr; cache &rarr; ask |
+| `dev-server-blocker` | `PreToolUse` (Bash) | Blocks `npm run dev` outside tmux |
+| `git-push-reminder` | `PreToolUse` (Bash) | Review warning before `git push` |
+| `suggest-compact` | `PreToolUse` (Edit\|Write) | Suggests `/compact` at logical breakpoints |
+
+**Continuous learning:**
+
+| Hook | Event | What it does |
+|:-----|:------|:------------|
+| `observe` | `PreToolUse` (*) + `PostToolUse` (*) | Captures every tool call for pattern extraction |
+
+**Intelligence & governance:**
+
+| Hook | Event | What it does |
+|:-----|:------|:------------|
+| `skill-activator` | `UserPromptSubmit` | Intent detection + skill recommendations |
+| `self-improve` | `Stop` | Captures patterns into learnings |
+| `checkpoint` | Phase transitions | Saves pipeline state for crash recovery |
+| `audit-trail` | All governance events | Append-only JSONL log of permissions, debates, verifications |
 
 **Quality gate hooks** (for Agent Teams):
 
@@ -264,6 +341,35 @@ Hooks run automatically on Claude Code lifecycle events. No invocation needed.
 |:-----|:------|:------------|
 | `TaskCompleted` | Task marked done | Demands evidence-based verification before accepting |
 | `TeammateIdle` | Agent going idle | Checks for unclaimed tasks to pick up |
+
+---
+
+## Continuous Learning
+
+ForgeBee learns from your sessions automatically. Every tool call is observed, patterns are extracted as **instincts** — atomic learned behaviors with confidence scoring.
+
+```
+Session Activity (every tool call)
+      │
+      ▼
+  observations.jsonl (automatic)
+      │
+      ▼  /learn
+  instincts/personal/ (project-scoped)
+      │
+      ▼  /evolve
+  evolved/ → skills, commands, agents
+```
+
+**Key concepts:**
+
+- **Instincts** are atomic patterns: one trigger, one action, confidence-scored (0.3–0.9)
+- **Project-scoped** by default — React patterns stay in your React project, Python conventions in your Python project
+- **Global promotion** — when the same instinct appears in 2+ projects with ≥0.8 confidence, it's promoted to global
+- **Zero-config observation** — the `observe.js` hook captures every tool call silently (3s timeout, never blocks)
+- **Portable** — export/import instincts across machines and teammates
+
+Storage lives at `~/.claude/forgebee-learning/` with per-project isolation via git remote URL hashing.
 
 ---
 
@@ -305,12 +411,13 @@ Every `/workflow`, `/growth`, `/idea`, and `/plan` run reads and writes `state.y
 
 ## How It Works
 
-ForgeBee is **just markdown and shell scripts**. No runtime, no dependencies, no build step.
+ForgeBee is **markdown files and Node.js scripts**. No runtime dependencies, no build step, no bash, no python.
 
-- **Commands** are `.md` files in `.claude/commands/` — structured prompts that activate workflows
-- **Agents** are `.md` files in `.claude/agents/` — specialist definitions with trigger conditions
-- **Hooks** are `.sh` scripts wired to Claude Code lifecycle events via `hooks.json`
-- **Audit trail** is an append-only JSONL log in `.claude/audit/` — every permission, debate, and verification is recorded
+- **Commands** are `.md` files — structured prompts that activate workflows
+- **Agents** are `.md` files — specialist definitions with trigger conditions
+- **Skills** are directories with `SKILL.md` + scripts — auto-triggered capabilities
+- **Hooks** are `.js` scripts wired to Claude Code lifecycle events via `hooks.json`
+- **Audit trail** is an append-only JSONL log — every permission, debate, and verification is recorded
 
 Claude Code reads them natively. The plugin system handles distribution.
 
@@ -328,35 +435,23 @@ your-project/
 │   │   ├── decisions.md
 │   │   └── features/
 │   ├── marketing/                     # Growth OS outputs
-│   │   ├── brand/
-│   │   ├── intel/
-│   │   ├── audience/
-│   │   ├── content-architecture/
-│   │   ├── hooks/
-│   │   ├── ideas/
-│   │   ├── engagement/
-│   │   ├── growth/
-│   │   ├── analytics/
-│   │   ├── calendar/
-│   │   ├── cro/
-│   │   ├── email/
-│   │   └── debate/
 │   └── planning/                      # Planning artifacts
 │       ├── briefs/
 │       ├── requirements/
 │       └── stories/
 └── .claude/
     ├── settings.json
-    ├── hooks/
-    │   └── *.sh                       # 8 lifecycle hook scripts
-    ├── commands/
-    │   └── *.md                       # 26 slash commands
-    ├── agents/
-    │   └── *.md                       # 44 specialist agents
     ├── sessions/                      # Session snapshots
     ├── session-cache/                 # Permissions + skill manifest
     └── learnings/
         └── learnings.md              # Auto-captured patterns
+
+~/.claude/forgebee-learning/           # Continuous learning (persists globally)
+├── projects.json                      # Project registry
+├── instincts/personal/                # Global learned instincts
+└── projects/<hash>/                   # Per-project isolation
+    ├── observations.jsonl             # Tool call observations
+    └── instincts/personal/            # Project-scoped instincts
 ```
 
 </details>
@@ -367,20 +462,20 @@ your-project/
 
 The installed `CLAUDE.md` is a structured template Claude reads at the start of every session. Fill in your stack, conventions, key components, and team contacts.
 
-The `self-improve` hook appends patterns to the **Learned Patterns** section automatically over time — your agent gets smarter the more you use it.
+The `self-improve` hook appends patterns to the **Learned Patterns** section automatically. The continuous learning system goes further — observing every tool call and building project-scoped instincts with confidence scoring that persist across sessions.
 
 ---
 
 ## OpenClaw
 
-ForgeBee is fully compatible with [OpenClaw](https://github.com/openclaw/openclaw). All 44 agents and 26 commands convert to OpenClaw skills.
+ForgeBee is fully compatible with [OpenClaw](https://github.com/openclaw/openclaw). All 53 agents and 32 commands convert to OpenClaw skills.
 
 ```bash
 # Clone ForgeBee
 git clone git@github.com:forbee-dev/ForgeBee.git
 
 # Install for OpenClaw
-bash ForgeBee/openclaw/install-openclaw.sh
+node ForgeBee/openclaw/install-openclaw.js
 ```
 
 This converts every agent and command into `SKILL.md` files in `~/.openclaw/workspace/skills/forgebee-*`. Skills auto-trigger based on their descriptions — the same ones optimized from the [Superpowers trigger pattern](#why-forgebee).
@@ -400,11 +495,11 @@ This converts every agent and command into `SKILL.md` files in `~/.openclaw/work
 
 ## Contributing
 
-Contributions welcome! ForgeBee is markdown and shell scripts — easy to extend.
+Contributions welcome! ForgeBee is markdown files and Node.js scripts — easy to extend.
 
 1. Fork the repo
-2. Add your command (`.claude/commands/your-command.md`) or agent (`.claude/agents/your-agent.md`)
-3. Update counts in `install.sh` and `plugin.json`
+2. Add your command (`commands/your-command.md`) or agent (`agents/your-agent.md`)
+3. Update counts in `plugin.json`
 4. Open a PR
 
 ---

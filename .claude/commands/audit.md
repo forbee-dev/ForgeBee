@@ -14,7 +14,7 @@ Every governance decision is recorded with timestamp, session ID, and context:
 
 | Event Type | Source | What's Logged |
 |:-----------|:-------|:-------------|
-| `permission` | permission-guard.sh | Every Bash command allow/deny/ask with tier |
+| `permission` | permission-guard.js | Every Bash command allow/deny/ask with tier |
 | `debate` | judge agents | Every ruling (approve/block/flag) with severity |
 | `verification` | verification-enforcer | Every verdict with evidence summary |
 | `escalation` | judge agents | High/Critical items escalated to user |
@@ -33,13 +33,13 @@ When the user runs `/audit`, determine what they want to see:
 
 ```bash
 # Recent events (default)
-echo '{"event_type":"query","limit":"20"}' | bash "$CLAUDE_PROJECT_DIR/.claude/hooks/audit-trail.sh"
+echo '{"event_type":"query","limit":"20"}' | node "$CLAUDE_PROJECT_DIR/.claude/hooks/audit-trail.js"
 
 # Filter by type
-echo '{"event_type":"query","filter_type":"debate","limit":"50"}' | bash "$CLAUDE_PROJECT_DIR/.claude/hooks/audit-trail.sh"
+echo '{"event_type":"query","filter_type":"debate","limit":"50"}' | node "$CLAUDE_PROJECT_DIR/.claude/hooks/audit-trail.js"
 
 # Filter by feature
-echo '{"event_type":"query","filter_feature":"FEATURE_NAME","limit":"50"}' | bash "$CLAUDE_PROJECT_DIR/.claude/hooks/audit-trail.sh"
+echo '{"event_type":"query","filter_feature":"FEATURE_NAME","limit":"50"}' | node "$CLAUDE_PROJECT_DIR/.claude/hooks/audit-trail.js"
 ```
 
 ## Presentation

@@ -22,7 +22,7 @@ You are the CMO of the orchestra. You don't play any instrument.
 ## Project State Management (Automated)
 
 At the **start** of every /growth run:
-1. **Check for crash recovery**: `echo '{"action":"load","pipeline":"growth","feature":"FEATURE_NAME"}' | bash "$CLAUDE_PROJECT_DIR/.claude/hooks/checkpoint.sh"` — if a checkpoint exists with status "in-progress" or "needs-recovery", present recovery options to the user: resume from last completed phase, or restart fresh
+1. **Check for crash recovery**: `echo '{"action":"load","pipeline":"growth","feature":"FEATURE_NAME"}' | node "$CLAUDE_PROJECT_DIR/.claude/hooks/checkpoint.js"` — if a checkpoint exists with status "in-progress" or "needs-recovery", present recovery options to the user: resume from last completed phase, or restart fresh
 2. Read `docs/pm/state.yaml` — load existing project state
 3. If a feature name matches an existing feature with `origin: growth`, resume from its current phase
 4. If it's a new initiative, create a new entry with the next sequential ID from `counters.feature`
@@ -32,8 +32,8 @@ At **every phase transition**:
 1. Update the feature's `phase` in state.yaml
 2. Update the `updated` timestamp
 3. Write state.yaml to disk immediately (don't batch updates)
-4. **Save a durability checkpoint**: `echo '{"action":"save","pipeline":"growth","feature":"FEATURE_NAME","phase":"PHASE_NAME","phase_number":N,"status":"completed","artifacts":["list","of","output","files"]}' | bash "$CLAUDE_PROJECT_DIR/.claude/hooks/checkpoint.sh"`
-5. **Log to audit trail** for every agent dispatch: `echo '{"event_type":"dispatch","agent":"AGENT","task":"SUMMARY","pipeline":"growth","phase":"PHASE"}' | bash "$CLAUDE_PROJECT_DIR/.claude/hooks/audit-trail.sh"`
+4. **Save a durability checkpoint**: `echo '{"action":"save","pipeline":"growth","feature":"FEATURE_NAME","phase":"PHASE_NAME","phase_number":N,"status":"completed","artifacts":["list","of","output","files"]}' | node "$CLAUDE_PROJECT_DIR/.claude/hooks/checkpoint.js"`
+5. **Log to audit trail** for every agent dispatch: `echo '{"event_type":"dispatch","agent":"AGENT","task":"SUMMARY","pipeline":"growth","phase":"PHASE"}' | node "$CLAUDE_PROJECT_DIR/.claude/hooks/audit-trail.js"`
 
 When **decisions** are made (brand choices, positioning pivots, audience refinements):
 1. Append to the feature's `decisions` array with a new sequential ID from `counters.decision`

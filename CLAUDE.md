@@ -1,6 +1,6 @@
 # Project Memory
 
-> Auto-managed by DevKit. Edit freely — hooks will append to the bottom sections.
+> Auto-managed by ForgeBee. Edit freely — hooks will append to the bottom sections.
 
 ## Me
 <!-- Your role and team context -->
@@ -86,6 +86,7 @@ npm run deploy:production # Deploy to production
 - `/migrate` — Version/framework migrations with rollback plans
 - `/deploy` — Deployment with pre-flight checks and rollback
 - `/browser-debug` — Client-side debugging (console, network, rendering)
+- `/codemaps` — Token-lean architecture documentation for AI context consumption
 
 **Growth & Marketing:**
 - `/growth` — **Growth OS orchestrator**: Brand → Intel → Audience → Content Architecture → Hooks → Debate → Calendar → Creation → Distribution → Measure. Main agent only delegates. Includes adversarial strategy debate.
@@ -98,6 +99,13 @@ npm run deploy:production # Deploy to production
 - `/landing` — Conversion-optimized landing page builder
 - `/payments` — Stripe/LemonSqueezy/Paddle integration
 - `/analytics` — Event tracking, dashboards, marketing performance metrics
+
+**Learning:**
+- `/learn` — Analyze session observations and extract patterns as instincts
+- `/evolve` — Cluster related instincts into skills, commands, or agents
+- `/instinct-status` — Show all learned instincts (project + global) with confidence scores
+- `/instinct-export` — Export instincts to a shareable file
+- `/instinct-import` — Import instincts from a file
 
 **Meta:**
 - `/workflow` — Full pipeline orchestrator: Plan → Debate → Architect → Scrum → Execute → Debate → Deliver (with adversarial review). Auto-tracks in PM system.
@@ -115,6 +123,12 @@ npm run deploy:production # Deploy to production
 *Strategy Debate:* strategy-advocate, strategy-skeptic, strategy-judge
 
 *Growth OS:* brand-strategist, market-intel, audience-architect, content-architect, hook-engineer, idea-machine, engagement-strategist, content-creator, growth-hacker, calendar-builder, performance-analyst, conversion-optimizer, email-strategist
+
+*WordPress:* wordpress-backend, wordpress-frontend, wordpress-content, wordpress-security, wordpress-seo, phpunit-engineer, woocommerce-cro
+
+*Next.js:* nextjs-frontend, nextjs-content, nextjs-seo
+
+*CRO:* saas-cro
 
 ---
 

@@ -180,6 +180,36 @@ Prioritize segments by attractiveness:
 3. [Channel implications]
 ```
 
+## Verification
+
+Before marking work as done, you MUST:
+
+- [ ] ICP includes both firmographics AND psychographics
+- [ ] 2-3 buyer personas defined with Jobs-to-be-Done
+- [ ] Buyer journey mapped across all stages (Awareness → Retention)
+- [ ] Pain point hierarchy ranked by severity and frequency
+- [ ] Trigger events identified (what causes people to start looking)
+- [ ] All audience artifacts stored in `docs/marketing/audience/`
+
+**Evidence required:** Complete audience strategy document with all sections filled.
+
+## Failure Modes
+
+| Symptom | Likely Cause | Fix |
+|---------|-------------|-----|
+| Personas feel fictional | Not grounded in real data | Base on actual customer interviews, support tickets, or surveys |
+| ICP too broad | Trying to appeal to everyone | Narrow to one primary ICP, add secondary only if distinct |
+| Pain points are surface-level | Didn't dig deep enough | Use "5 Whys" technique, look at emotional drivers not just functional |
+| Buyer journey is linear | Ignoring real-world loops and drop-offs | Map non-linear paths, identify re-entry points |
+| Trigger events too generic | "They need a solution" isn't a trigger | Identify specific life/business events that cause action |
+
+## Escalation
+
+- If customer data is unavailable → recommend user interviews or survey, produce hypothesis-based personas labeled as such
+- If personas conflict with brand strategy → escalate to growth orchestrator for alignment
+- If audience is in a niche with no accessible data → flag to user, proceed with competitive analysis as proxy
+
+
 ## Communication
 When working on a team, report:
 - ICP definition and persona profiles created

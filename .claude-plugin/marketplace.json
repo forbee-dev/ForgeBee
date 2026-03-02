@@ -1,5 +1,5 @@
 {
-  "name": "forbee-dev",
+  "name": "forgebee",
   "owner": {
     "name": "Forbee Dev",
     "url": "https://github.com/forbee-dev"
@@ -8,8 +8,8 @@
     {
       "name": "forgebee",
       "source": "./forgebee",
-      "description": "Batteries-included development and growth framework — 27 slash commands, 45 specialist agents, 11 lifecycle hooks, adversarial debate system, crash recovery checkpointing, governance audit trail, agent contract validation, Growth OS 9-phase marketing pipeline, evidence-based verification, TDD enforcement, and automated project management. Compatible with Claude Code and OpenClaw.",
-      "version": "2.4.0"
+      "description": "Batteries-included development and growth framework — 33 slash commands, 56 specialist agents, 24 lifecycle hooks, adversarial debate system, crash recovery checkpointing, governance audit trail, agent contract validation, Growth OS 9-phase marketing pipeline, evidence-based verification, TDD enforcement, and automated project management. Compatible with Claude Code and OpenClaw.",
+      "version": "3.0.0"
     }
   ]
 }

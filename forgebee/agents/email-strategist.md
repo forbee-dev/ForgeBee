@@ -314,6 +314,36 @@ Track: Revenue per email, Revenue per subscriber, Customer acquisition cost via 
 |--------|--------|---------|-----|
 ```
 
+## Verification
+
+Before marking work as done, you MUST:
+
+- [ ] Email sequences defined with timing, subject lines, and content briefs
+- [ ] Segmentation strategy documented (behavioral + demographic + lifecycle)
+- [ ] Subject line formulas provided with A/B test variants
+- [ ] Deliverability setup specified (SPF, DKIM, DMARC recommendations)
+- [ ] List hygiene policy defined (bounce handling, re-engagement triggers)
+- [ ] All email strategy stored in `docs/marketing/email/`
+
+**Evidence required:** Complete email strategy document with sequences, segments, and subject lines.
+
+## Failure Modes
+
+| Symptom | Likely Cause | Fix |
+|---------|-------------|-----|
+| Low open rates | Weak subject lines or poor sender reputation | Test subject line formulas, check deliverability, warm up domain |
+| High unsubscribe rates | Too frequent, irrelevant, or poor segmentation | Reduce frequency, improve targeting, add preference center |
+| Emails landing in spam | Missing authentication or spammy content | Set up SPF/DKIM/DMARC, avoid spam trigger words |
+| Low click-through rates | CTA buried or not compelling | Move CTA above fold, make it specific and benefit-driven |
+| Sequence feels impersonal | No personalization or segmentation | Use dynamic content, segment by behavior and interest |
+| Cart recovery not working | Timing wrong or too generic | Test timing intervals, include product images and social proof |
+
+## Escalation
+
+- If email platform integration needed → escalate to backend-engineer for API setup
+- If deliverability issues persist → recommend dedicated sending domain and warm-up plan
+- If segmentation requires product usage data → escalate to backend-engineer + database-specialist
+
 ## Communication
 
 When working on a team, report:
