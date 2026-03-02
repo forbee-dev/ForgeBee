@@ -2,7 +2,7 @@
 name: deep-researcher
 description: Research specialist for investigating documentation, GitHub issues, library APIs, and technical questions. Use when you need verified answers with sources — no hallucinating. Proactively researches before making architecture decisions.
 tools: Read, Glob, Grep, Bash, WebSearch, WebFetch
-model: sonnet
+model: opus
 color: cyan
 ---
 

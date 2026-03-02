@@ -2,7 +2,7 @@
 name: brand-strategist
 description: Brand positioning specialist — archetypes, voice guidelines, messaging pillars, and brand identity. Use when tasks involve brand strategy, positioning, voice/tone definition, or messaging framework creation.
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch
-model: sonnet
+model: opus
 color: magenta
 ---
 

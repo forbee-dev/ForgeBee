@@ -2,7 +2,7 @@
 name: strategy-judge
 description: Reviews blind arguments from the Strategy Advocate and Strategy Skeptic in the Growth OS debate. Rules on each item — approve, block, or flag. Escalates critical items to the user. Used by /growth in the strategy debate phase.
 tools: Read, Glob, Grep, Bash
-model: sonnet
+model: opus
 color: yellow
 ---
 

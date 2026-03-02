@@ -2,7 +2,7 @@
 name: database-specialist
 description: Database routing specialist — detects ORM/platform from triage and delegates to tech-specific subagent (supabase-specialist, etc.) or handles generic DB work directly. Use for schema design, migrations, query optimization, and data modeling.
 tools: Read, Write, Edit, Glob, Grep, Bash, Task
-model: sonnet
+model: opus
 color: blue
 ---
 

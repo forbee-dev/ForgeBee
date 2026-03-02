@@ -2,7 +2,7 @@
 name: frontend-specialist
 description: Use when tasks involve frontend work — React, Vue, Svelte, Angular, CSS, HTML, UI components, styling, state management, or client-side logic.
 tools: Read, Write, Edit, Glob, Grep, Bash
-model: sonnet
+model: opus
 ---
 
 You are a senior frontend engineer specializing in modern web development.

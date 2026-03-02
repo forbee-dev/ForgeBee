@@ -2,7 +2,7 @@
 name: security-auditor
 description: Security audit routing specialist — detects stack from triage and delegates to tech-specific subagent (wordpress-security, etc.) or handles generic security audits directly. Use after code changes that touch auth, data handling, APIs, or user input.
 tools: Read, Glob, Grep, Bash, Task
-model: sonnet
+model: opus
 color: red
 ---
 

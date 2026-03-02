@@ -2,7 +2,7 @@
 name: n8n-builder
 description: n8n workflow automation specialist for building integrations, automations, and data pipelines. Use when tasks involve n8n workflows, API integrations, webhook handling, or no-code/low-code automation.
 tools: Read, Write, Edit, Glob, Grep, Bash
-model: sonnet
+model: opus
 color: blue
 ---
 

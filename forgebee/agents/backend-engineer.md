@@ -2,7 +2,7 @@
 name: backend-engineer
 description: Backend routing specialist — detects framework from triage and delegates to tech-specific subagent (wordpress-backend, etc.) or handles generic backend work directly. Use for APIs, server logic, middleware, authentication, and business logic.
 tools: Read, Write, Edit, Glob, Grep, Bash, Task
-model: sonnet
+model: opus
 color: blue
 ---
 

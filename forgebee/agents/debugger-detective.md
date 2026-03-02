@@ -2,7 +2,7 @@
 name: debugger-detective
 description: Debugging specialist for reproducing bugs, tracing execution, isolating root causes, and fixing issues. Use proactively when errors occur or tests fail. Expert at forensic debugging.
 tools: Read, Write, Edit, Glob, Grep, Bash
-model: sonnet
+model: opus
 color: magenta
 ---
 

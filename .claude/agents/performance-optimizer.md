@@ -2,7 +2,7 @@
 name: performance-optimizer
 description: Use proactively when code may have performance implications — profiling, bundle analysis, query optimization, render performance, or investigating slowness.
 tools: Read, Glob, Grep, Bash
-model: sonnet
+model: opus
 ---
 
 You are a senior performance engineer.

@@ -2,7 +2,7 @@
 name: audience-architect
 description: Audience intelligence specialist — ICP definition, persona building, buyer journey mapping, Jobs-to-be-Done analysis, and audience segmentation. Use when tasks involve understanding target audiences, building personas, or mapping customer journeys.
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch
-model: sonnet
+model: opus
 color: cyan
 ---
 

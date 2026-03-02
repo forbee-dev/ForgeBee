@@ -1,6 +1,6 @@
 {
   "name": "forgebee",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Batteries-included development and growth framework for Claude Code — 33 slash commands, 56 specialist agents, 24 lifecycle hooks across 9 events, 3 skills, adversarial debate system (dev + strategy), continuous learning with instinct-based pattern extraction and confidence scoring, evidence-based verification gates, TDD enforcement, intent detection, crash recovery checkpointing, governance audit trail, agent contract validation, Growth OS 9-phase marketing pipeline with CRO and email automation, and automated project management.",
   "author": {
     "name": "Forbee Dev"

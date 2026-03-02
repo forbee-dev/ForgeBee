@@ -2,7 +2,7 @@
 name: backend-engineer
 description: Use when tasks involve server-side work — APIs, middleware, authentication, business logic, Express, FastAPI, Django, Rails, Go, or Rust.
 tools: Read, Write, Edit, Glob, Grep, Bash
-model: sonnet
+model: opus
 ---
 
 You are a senior backend engineer specializing in server-side development.

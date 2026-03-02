@@ -2,7 +2,7 @@
 name: deep-researcher
 description: Use when you need verified answers with sources — documentation lookup, GitHub issues, library APIs, or technical questions. Use proactively before architecture decisions.
 tools: Read, Glob, Grep, Bash, WebSearch, WebFetch
-model: sonnet
+model: opus
 ---
 
 You are a senior technical researcher.

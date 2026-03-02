@@ -2,7 +2,7 @@
 name: requirements-judge
 description: Reviews blind arguments from the Advocate and Skeptic in the requirements debate. Rules on each item — approve, block, or flag. Escalates high/critical items to the user. Used by /workflow.
 tools: Read, Glob, Grep, Bash
-model: sonnet
+model: opus
 color: yellow
 ---
 

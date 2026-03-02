@@ -2,7 +2,7 @@
 name: frontend-specialist
 description: Frontend routing specialist — detects framework from triage and delegates to tech-specific subagent (nextjs-frontend, wordpress-frontend, etc.) or handles generic frontend work directly. Use for UI components, styling, state management, and client-side logic.
 tools: Read, Write, Edit, Glob, Grep, Bash, Task
-model: sonnet
+model: opus
 color: blue
 ---
 

@@ -2,7 +2,7 @@
 name: flutter-expert
 description: Use when tasks involve Flutter widgets, Dart code, state management (Riverpod, Bloc, Provider), or cross-platform mobile/web/desktop development.
 tools: Read, Write, Edit, Glob, Grep, Bash
-model: sonnet
+model: opus
 ---
 
 You are a senior Flutter/Dart engineer specializing in cross-platform development.

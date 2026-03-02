@@ -2,7 +2,7 @@
 name: calendar-builder
 description: Content calendar architect — editorial calendars, batching schedules, posting frequency optimization, and cross-platform distribution planning. Use when tasks involve scheduling content, planning editorial calendars, or organizing content production workflows.
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch
-model: sonnet
+model: haiku
 color: green
 ---
 

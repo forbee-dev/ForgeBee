@@ -2,7 +2,7 @@
 name: test-engineer
 description: Test engineering routing specialist — detects test framework from triage and delegates to tech-specific subagent (phpunit-engineer, etc.) or handles generic test work directly. Use for test generation, test fixing, or coverage improvement.
 tools: Read, Write, Edit, Glob, Grep, Bash, Task
-model: sonnet
+model: opus
 color: green
 ---
 

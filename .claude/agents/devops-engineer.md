@@ -2,7 +2,7 @@
 name: devops-engineer
 description: Use when tasks involve deployment pipelines, Docker, CI/CD, server setup, SSL, firewalls, VPS configuration, or cloud infrastructure operations.
 tools: Read, Write, Edit, Glob, Grep, Bash
-model: sonnet
+model: opus
 ---
 
 You are a senior DevOps/infrastructure engineer.

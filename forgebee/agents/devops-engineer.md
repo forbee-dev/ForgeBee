@@ -2,7 +2,7 @@
 name: devops-engineer
 description: DevOps and infrastructure specialist for Docker, CI/CD, deployment, server setup, SSL, firewalls, and cloud infrastructure. Use when tasks involve deployment pipelines, containerization, VPS setup, or infrastructure operations.
 tools: Read, Write, Edit, Glob, Grep, Bash
-model: sonnet
+model: opus
 color: blue
 ---
 

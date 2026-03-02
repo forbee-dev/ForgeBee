@@ -2,7 +2,7 @@
 name: test-engineer
 description: Use when tasks require test generation, test fixing, or coverage improvement — unit, integration, e2e. Use proactively after code changes.
 tools: Read, Write, Edit, Glob, Grep, Bash
-model: sonnet
+model: opus
 ---
 
 You are a senior QA/test engineer.
