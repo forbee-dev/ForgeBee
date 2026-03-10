@@ -27,14 +27,26 @@ const now = new Date();
 const yearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
 const AUDIT_FILE = path.join(AUDIT_DIR, `audit-${yearMonth}.jsonl`);
 
-const EVENT_TYPE = inputData.event_type || 'unknown';
+// Stop hooks use hook_event_name; custom invocations use event_type
+const EVENT_TYPE = inputData.event_type || inputData.hook_event_name || 'unknown';
 const timestamp = new Date().toISOString();
 const SESSION_ID = inputData.session_id || 'unknown';
 
 let auditEntry = null;
 
+// ── SESSION STOP (fired by Claude Code Stop hook) ─────────────────────
+if (EVENT_TYPE === 'Stop') {
+  auditEntry = {
+    timestamp,
+    session: SESSION_ID,
+    type: 'session_end',
+    cwd: inputData.cwd || '',
+    permission_mode: inputData.permission_mode || ''
+  };
+}
+
 // ── PERMISSION DECISION ────────────────────────────────────────────────
-if (EVENT_TYPE === 'permission') {
+else if (EVENT_TYPE === 'permission') {
   auditEntry = {
     timestamp,
     session: SESSION_ID,
@@ -158,6 +170,8 @@ else if (EVENT_TYPE === 'query') {
         output += `${entry.severity}: ${entry.reason} (source: ${entry.source})`;
       } else if (entry.type === 'dispatch') {
         output += `${entry.agent} → ${entry.task} (pipeline: ${entry.pipeline}, phase: ${entry.phase})`;
+      } else if (entry.type === 'session_end') {
+        output += `session ended (cwd: ${entry.cwd}, mode: ${entry.permission_mode})`;
       } else {
         output += 'unknown event';
       }
@@ -177,5 +191,5 @@ if (auditEntry) {
   process.exit(0);
 }
 
-console.error(`Unknown event type: ${EVENT_TYPE}`);
-process.exit(1);
+// Silently ignore unrecognized event types (e.g. session stop)
+process.exit(0);
