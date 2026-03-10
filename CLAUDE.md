@@ -130,6 +130,8 @@ npm run deploy:production # Deploy to production
 
 *CRO:* saas-cro
 
+*Review:* review-all, review-code, review-code-style, review-security, review-performance, review-accessibility, review-api, review-database, review-tests, review-docs, review-best-practices, review-wordpress
+
 ---
 
 ## Learned Patterns

@@ -17,6 +17,14 @@ const PROJECT_DIR = process.env.CLAUDE_PROJECT_DIR || '.';
 const PLUGIN_ROOT = process.env.CLAUDE_PLUGIN_ROOT || '';
 
 /**
+ * Resolves PROJECT_DIR as an absolute path (function form for consistency with forgebee _common.js)
+ * @returns {string} Absolute path to project directory
+ */
+function getProjectDir() {
+  return path.resolve(PROJECT_DIR);
+}
+
+/**
  * Ensure project-level directories exist
  * When installed as a plugin, these won't exist until first run
  */
@@ -107,7 +115,7 @@ function findSkillsDirs() {
 }
 
 /**
- * Read stdin synchronously
+ * Read stdin synchronously (returns raw string)
  */
 function readStdinSync() {
   try {
@@ -116,6 +124,24 @@ function readStdinSync() {
     return '';
   }
 }
+
+/**
+ * Synchronous version that reads and parses JSON from stdin
+ * @returns {object|null} Parsed JSON object or null on error
+ */
+function readStdinJsonSync() {
+  try {
+    const data = fs.readFileSync(0, 'utf8');
+    return data ? JSON.parse(data) : null;
+  } catch (e) {
+    return null;
+  }
+}
+
+/**
+ * Alias for initDirs (matches forgebee _common.js naming)
+ */
+const initializeProjectDirs = initDirs;
 
 /**
  * Read stdin asynchronously (for node-style async)
@@ -162,11 +188,14 @@ function runGit(args) {
 module.exports = {
   PROJECT_DIR,
   PLUGIN_ROOT,
+  getProjectDir,
   initDirs,
+  initializeProjectDirs,
   findForgebeeRoot,
   findCommandsDir,
   findSkillsDirs,
   readStdinSync,
+  readStdinJsonSync,
   readStdin,
   readJsonFile,
   runGit

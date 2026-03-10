@@ -223,6 +223,19 @@ async function readStdinJson(timeoutMs = 5000, maxSizeBytes = 1024 * 1024) {
 }
 
 /**
+ * Synchronous version of readStdinJson for hooks that don't need async
+ * @returns {object|null} Parsed JSON object or null on error
+ */
+function readStdinJsonSync() {
+  try {
+    const data = fs.readFileSync(0, 'utf8');
+    return data ? JSON.parse(data) : null;
+  } catch (e) {
+    return null;
+  }
+}
+
+/**
  * Logs message to stderr (visible to user)
  * @param {string} message - Message to log
  */
@@ -355,6 +368,16 @@ function isGitRepo() {
 }
 
 /**
+ * Runs a git subcommand (without the 'git' prefix)
+ * @param {string} subcommand - Git subcommand (e.g., 'diff --stat HEAD~1')
+ * @returns {string} Command output or empty string on error
+ */
+function runGit(subcommand) {
+  const result = runCommand(`git ${subcommand}`);
+  return result.success ? result.output : '';
+}
+
+/**
  * Gets modified files in git repository
  * @param {string|null} pattern - Optional regex pattern to filter files
  * @returns {string[]} Array of modified file paths
@@ -475,6 +498,7 @@ module.exports = {
 
   // STDIO utilities
   readStdinJson,
+  readStdinJsonSync,
   log,
   output,
 
@@ -486,6 +510,7 @@ module.exports = {
 
   // Command execution
   runCommand,
+  runGit,
   isGitRepo,
   getGitModifiedFiles,
 

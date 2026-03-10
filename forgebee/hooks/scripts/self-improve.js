@@ -1,135 +1,171 @@
 #!/usr/bin/env node
 /**
- * self-improve.js
- * Capture learnings and patterns on session Stop
- * Appends insights to learnings.md for future reference
+ * self-improve.js — Capture learnings and patterns on session Stop
+ * Appends insights to learnings.md + structured index.jsonl for querying
  */
 
-const path = require('path');
 const fs = require('fs');
-const {
-  getProjectDir,
-  readStdinJson,
-  readFile,
-  writeFile,
-  appendFile,
-  runCommand,
-  getDateString,
-  log,
-} = require('./_common.js');
+const path = require('path');
+const { getProjectDir, initializeProjectDirs, readStdinJsonSync, runGit } = require('./_common.js');
 
-async function main() {
+const PROJECT_DIR = getProjectDir();
+initializeProjectDirs();
+
+const input = readStdinJsonSync();
+const inputData = input || {};
+
+// Prevent infinite loop
+if (inputData.stop_hook_active === true) {
+  process.exit(0);
+}
+
+const LEARNINGS_DIR = path.join(PROJECT_DIR, '.claude/learnings');
+const LEARNINGS_FILE = path.join(LEARNINGS_DIR, 'learnings.md');
+const INDEX_FILE = path.join(LEARNINGS_DIR, 'index.jsonl');
+
+fs.mkdirSync(LEARNINGS_DIR, { recursive: true });
+
+const timestamp = new Date().toLocaleString('en-US', {
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+  hour: '2-digit',
+  minute: '2-digit'
+}) + ' UTC';
+
+const sessionId = inputData.session_id || 'unknown';
+
+// Gather what happened this session
+let gitDiffStat = '';
+let filesChanged = '';
+const topics = [];
+
+try {
+  if (runGit('rev-parse --is-inside-work-tree')) {
+    const diffStat = runGit('diff --stat HEAD~1');
+    if (diffStat) {
+      gitDiffStat = diffStat.split('\n').pop() || '';
+    }
+
+    const diffs = runGit('diff --name-only HEAD~1');
+    filesChanged = diffs.split('\n').slice(0, 20).filter(f => f.length > 0).join(',');
+
+    // Auto-detect topics from changed files
+    if (/test|spec|__test/i.test(filesChanged)) topics.push('testing');
+    if (/auth|login|session|token/i.test(filesChanged)) topics.push('auth');
+    if (/api|route|endpoint|controller/i.test(filesChanged)) topics.push('api');
+    if (/migration|schema|model|database/i.test(filesChanged)) topics.push('database');
+    if (/component|page|layout|style|css/i.test(filesChanged)) topics.push('frontend');
+    if (/deploy|docker|ci|cd|pipeline/i.test(filesChanged)) topics.push('devops');
+    if (/security|audit|permission|rbac/i.test(filesChanged)) topics.push('security');
+    if (/marketing|brand|content|seo/i.test(filesChanged)) topics.push('marketing');
+    if (/hook|agent|command|workflow/i.test(filesChanged)) topics.push('forgebee');
+  }
+} catch {
+  // not a git repo
+}
+
+// Check permission cache for new entries
+const CACHE_FILE = path.join(PROJECT_DIR, '.claude/session-cache/permissions.json');
+let newPermissions = '';
+if (fs.existsSync(CACHE_FILE)) {
   try {
-    const input = await readStdinJson();
-
-    // Prevent infinite loop
-    if (input && input.stop_hook_active === true) {
-      process.exit(0);
-    }
-
-    const projectDir = getProjectDir();
-    const learningsDir = path.join(projectDir, '.claude', 'learnings');
-    const learningsFile = path.join(learningsDir, 'learnings.md');
-
-    // Ensure learnings directory exists
-    if (!fs.existsSync(learningsDir)) {
-      fs.mkdirSync(learningsDir, { recursive: true });
-    }
-
-    // Ensure learnings file exists
-    if (!fs.existsSync(learningsFile)) {
-      const template = `# Learnings
-
-> Auto-managed by ForgeBee. Edit freely.
-
-## Key Insights
-<!-- Add key learnings here -->
-
-## Patterns Discovered
-<!-- Document patterns found during development -->
-
-## Blockers & Solutions
-<!-- Document issues and their resolutions -->
-`;
-      writeFile(learningsFile, template);
-    }
-
-    const now = new Date();
-    const timestamp = now.getFullYear() + '-'
-      + String(now.getMonth() + 1).padStart(2, '0') + '-'
-      + String(now.getDate()).padStart(2, '0') + ' '
-      + String(now.getHours()).padStart(2, '0') + ':'
-      + String(now.getMinutes()).padStart(2, '0') + ' UTC';
-
-    const sessionId = (input && input.session_id) || 'unknown';
-
-    // Gather what happened this session
-    let gitDiffStat = '';
-    const gitResult = runCommand('git rev-parse --is-inside-work-tree', {
-      stdio: ['pipe', 'pipe', 'ignore'],
-    });
-
-    if (gitResult.success && gitResult.output === 'true') {
-      const diffResult = runCommand('git diff --stat HEAD~1', {
-        stdio: ['pipe', 'pipe', 'ignore'],
-      });
-      if (diffResult.success) {
-        const lines = diffResult.output.split('\n').filter(line => line.trim());
-        gitDiffStat = lines.length > 0 ? lines[lines.length - 1] : '';
-      }
-    }
-
-    // Check permission cache for new entries
-    const cacheFile = path.join(projectDir, '.claude', 'session-cache', 'permissions.json');
-    let newPermissions = '';
-    if (fs.existsSync(cacheFile)) {
-      try {
-        const cacheContent = readFile(cacheFile);
-        if (cacheContent && cacheContent.length > 3) {
-          const cache = JSON.parse(cacheContent);
-          const keys = Object.keys(cache);
-          newPermissions = keys.slice(0, 5).join(', ');
-        }
-      } catch (e) {
-        // Ignore parse errors
-      }
-    }
-
-    // Append session entry
-    let sessionEntry = `### Session: ${timestamp}\n`;
-    sessionEntry += `- Session ID: \`${sessionId}\`\n`;
-    if (gitDiffStat) {
-      sessionEntry += `- Changes: ${gitDiffStat}\n`;
-    }
-    if (newPermissions) {
-      sessionEntry += `- Permission patterns learned: ${newPermissions}\n`;
-    }
-    sessionEntry += '\n';
-
-    appendFile(learningsFile, sessionEntry);
-
-    // Trim learnings file if it gets too long (keep last 200 lines + header)
-    const learningsContent = readFile(learningsFile);
-    if (learningsContent) {
-      const lines = learningsContent.split('\n');
-      if (lines.length > 250) {
-        // Keep the header (first 6 lines) and last 200 lines
-        const headerLines = lines.slice(0, 6);
-        const recentLines = lines.slice(Math.max(6, lines.length - 200));
-
-        let trimmedContent = headerLines.join('\n') + '\n\n';
-        trimmedContent += '*[Older entries archived]*\n\n';
-        trimmedContent += recentLines.join('\n');
-
-        writeFile(learningsFile, trimmedContent);
-      }
-    }
-
-    process.exit(0);
-  } catch (error) {
-    log(`Unexpected error: ${error.message}`);
-    process.exit(1);
+    const cacheData = JSON.parse(fs.readFileSync(CACHE_FILE, 'utf8'));
+    const keys = Object.keys(cacheData).slice(0, 5);
+    newPermissions = keys.join(', ');
+  } catch {
+    // ignore
   }
 }
 
-main();
+// Check for active pipeline context
+let pipelineContext = '';
+const checkpointDir = path.join(PROJECT_DIR, '.claude/checkpoints');
+if (fs.existsSync(checkpointDir)) {
+  const files = fs.readdirSync(checkpointDir).filter(f => f.endsWith('.json'));
+  for (const f of files) {
+    try {
+      const checkpoint = JSON.parse(fs.readFileSync(path.join(checkpointDir, f), 'utf8'));
+      if (checkpoint.status === 'in-progress') {
+        const pipeline = checkpoint.pipeline || 'unknown';
+        const feature = checkpoint.feature || 'unknown';
+        const phase = checkpoint.current_phase || '?';
+        pipelineContext = `${pipeline}/${feature} (phase ${phase})`;
+        break;
+      }
+    } catch {
+      // ignore
+    }
+  }
+}
+
+const topicsStr = topics.join(',');
+
+// ── Append to human-readable learnings.md ──────────────────────────────
+let learningsEntry = `### Session: ${timestamp}\n`;
+learningsEntry += `- Session ID: \`${sessionId}\`\n`;
+if (gitDiffStat) {
+  learningsEntry += `- Changes: ${gitDiffStat}\n`;
+}
+if (filesChanged) {
+  learningsEntry += `- Files: ${filesChanged}\n`;
+}
+if (topicsStr) {
+  learningsEntry += `- Topics: ${topicsStr}\n`;
+}
+if (newPermissions) {
+  learningsEntry += `- Permission patterns learned: ${newPermissions}\n`;
+}
+if (pipelineContext) {
+  learningsEntry += `- Pipeline: ${pipelineContext}\n`;
+}
+learningsEntry += '\n';
+
+if (fs.existsSync(LEARNINGS_FILE)) {
+  fs.appendFileSync(LEARNINGS_FILE, learningsEntry);
+} else {
+  fs.writeFileSync(LEARNINGS_FILE, learningsEntry);
+}
+
+// ── Append to structured index (JSONL for fast querying) ───────────────
+const indexEntry = {
+  timestamp,
+  session: sessionId,
+  changes: gitDiffStat,
+  files: filesChanged.split(',').filter(f => f.length > 0),
+  topics: topicsStr.split(',').filter(t => t.length > 0),
+  permissions: newPermissions,
+  pipeline: pipelineContext
+};
+
+fs.appendFileSync(INDEX_FILE, JSON.stringify(indexEntry) + '\n');
+
+// Trim learnings file if it gets too long (keep last 200 lines + header)
+if (fs.existsSync(LEARNINGS_FILE)) {
+  const content = fs.readFileSync(LEARNINGS_FILE, 'utf8');
+  const lines = content.split('\n');
+
+  if (lines.length > 250) {
+    const header = lines.slice(0, 6).join('\n');
+    const recent = lines.slice(-200).join('\n');
+
+    let trimmedContent = header + '\n\n';
+    trimmedContent += '*[Older entries archived — see index.jsonl for full history]*\n\n';
+    trimmedContent += recent;
+
+    fs.writeFileSync(LEARNINGS_FILE, trimmedContent);
+  }
+}
+
+// Trim index if over 500 entries (keep most recent)
+if (fs.existsSync(INDEX_FILE)) {
+  const content = fs.readFileSync(INDEX_FILE, 'utf8');
+  const lines = content.split('\n').filter(l => l.length > 0);
+
+  if (lines.length > 500) {
+    const recentLines = lines.slice(-400);
+    fs.writeFileSync(INDEX_FILE, recentLines.join('\n') + '\n');
+  }
+}
+
+process.exit(0);

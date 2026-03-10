@@ -2,7 +2,7 @@
 name: performance-analyst
 description: Marketing performance analyst — KPI dashboards, campaign analysis, attribution modeling, A/B test design, and optimization recommendations. Use when tasks involve measuring marketing performance, designing dashboards, or analyzing campaign results.
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch
-model: haiku
+model: sonnet
 color: cyan
 ---
 

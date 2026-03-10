@@ -63,8 +63,8 @@ Phase 3: Content Architecture   → content-architect
 Phase 4: Hook & Idea Engine     → hook-engineer + idea-machine (parallel)
 Phase 5: Strategy Debate        → strategy-advocate + strategy-skeptic → strategy-judge (adversarial review)
 Phase 6: Execution Plan         → calendar-builder (present to user for approval)
-Phase 7: Content Production     → content-creator + content-writer + seo-specialist (parallel)
-Phase 8: Distribution & Growth  → engagement-strategist + growth-hacker (parallel)
+Phase 7: Content Production     → content-creator + content-writer + seo-specialist + email-strategist (parallel)
+Phase 8: Distribution & Growth  → engagement-strategist + growth-hacker + conversion-optimizer (parallel)
 Phase 9: Measure & Optimize     → performance-analyst
 ```
 

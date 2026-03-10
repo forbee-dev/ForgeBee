@@ -3,8 +3,8 @@
 # Manual edits are allowed but may be overwritten by automated updates
 
 project:
-  name: ""
-  updated: ""
+  name: "ForgeBee"
+  updated: "2026-03-10T12:00:00Z"
 
 # Feature lifecycle phases (in order):
 # idea → idea-debate → mvp-definition → mvp-debate → planning → requirements-debate →
@@ -15,7 +15,64 @@ project:
 #   /plan    → starts at "planning"
 #   /workflow → starts at "planning" (or loads existing feature)
 
-features: []
+features:
+  - id: feat-001
+    name: "ForgeBee Framework Review"
+    phase: execution
+    created: "2026-03-10"
+    updated: "2026-03-10T12:00:00Z"
+    origin: workflow
+    phase: code-debate
+    stories:
+      - id: story-001
+        title: "Agent Consistency Review"
+        status: done
+        agent: "code-skeptic"
+      - id: story-002
+        title: "Command Quality Review"
+        status: done
+        agent: "review-code"
+      - id: story-003
+        title: "Hook Security Review"
+        status: done
+        agent: "security-auditor"
+      - id: story-004
+        title: "Architecture Review"
+        status: done
+        agent: "architect"
+      - id: story-005
+        title: "Documentation Review"
+        status: done
+        agent: "review-docs"
+    decisions:
+      - id: dec-001
+        type: code-debate
+        ruling: blocked
+        summary: "Judge ruled BLOCK — 7 blocked items, 7 flagged, 0 approved. Critical: permission guard exploitable. High: audit trail non-functional, 56 agents diverged, zero hook tests, triage filename mismatch."
+        date: "2026-03-10"
+        details: "Full debate transcript in session"
+    risks:
+      - description: "Permission guard allowlist unconditionally approves node -e, cp, mv, xargs — allows arbitrary code execution bypassing all security tiers"
+        severity: critical
+        source: code-debate
+        status: open
+      - description: "audit-trail.js missing from plugin path — governance audit trail is non-functional for plugin installs"
+        severity: high
+        source: code-debate
+        status: open
+      - description: "56 of 69 agents diverged between .claude/agents/ and forgebee/agents/ — no sync mechanism"
+        severity: high
+        source: code-debate
+        status: open
+      - description: "Zero tests for any hook script — security-critical permission guard is untested"
+        severity: high
+        source: code-debate
+        status: open
+      - description: "load-context-rules.js reads triage.json but triage writes project-triage.json — context rules always use fallback"
+        severity: medium
+        source: code-debate
+        status: open
+    blocked: []
 # Each feature follows this schema:
 # - id: feat-001                        # Auto-generated sequential ID
 #   name: "Feature Name"                # Human-readable name
@@ -48,6 +105,6 @@ features: []
 
 # Counters for auto-generating IDs
 counters:
-  feature: 0
-  story: 0
-  decision: 0
+  feature: 1
+  story: 5
+  decision: 1

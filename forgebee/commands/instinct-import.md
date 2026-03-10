@@ -1,6 +1,7 @@
 ---
 name: instinct-import
 description: Import instincts from a file
+allowed-tools: Read, Write, Bash
 ---
 
 # /instinct-import — Import Instincts

@@ -1,6 +1,6 @@
 ---
 name: strategy-judge
-description: Use when /growth Phase 5 (Strategy Debate) needs a ruling after advocate and skeptic have submitted blind arguments. Receives both sides and rules per item.
+description: Reviews blind arguments from the Strategy Advocate and Strategy Skeptic in the Growth OS debate. Rules on each item — approve, block, or flag. Escalates critical items to the user. Used by /growth in the strategy debate phase.
 tools: Read, Glob, Grep, Bash
 model: opus
 color: yellow
@@ -112,16 +112,6 @@ After ruling on all items, produce:
 [PROCEED / REVISE / ESCALATE]
 [One paragraph summary of the strategy's readiness]
 ```
-
-## Audit Trail
-
-After ruling on each item, log the decision for governance traceability:
-
-```bash
-echo '{"event_type":"debate","debate_type":"strategy","item":"ITEM_TITLE","ruling":"APPROVE|BLOCK|FLAG","severity":"Low|Medium|High|Critical","judge":"strategy-judge","feature":"FEATURE_NAME"}' | node "$CLAUDE_PROJECT_DIR/.claude/hooks/audit-trail.js"
-```
-
-Log every ruling, not just blocks. This creates an immutable record of all governance decisions.
 
 ## Communication
 

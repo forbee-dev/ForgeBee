@@ -1,12 +1,12 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Claude_Code-Plugin-7C3AED?style=for-the-badge&logoColor=white" alt="Claude Code" />
   <img src="https://img.shields.io/badge/OpenClaw-Compatible-FF6B35?style=for-the-badge&logoColor=white" alt="OpenClaw" />
-  <img src="https://img.shields.io/badge/version-3.0.0-blue?style=for-the-badge" alt="Version" />
+  <img src="https://img.shields.io/badge/version-3.1.1-blue?style=for-the-badge" alt="Version" />
   <img src="https://img.shields.io/badge/license-MIT-green?style=for-the-badge" alt="License" />
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/agents-56-orange?style=for-the-badge" alt="Agents" />
+  <img src="https://img.shields.io/badge/agents-69-orange?style=for-the-badge" alt="Agents" />
   <img src="https://img.shields.io/badge/commands-33-red?style=for-the-badge" alt="Commands" />
   <img src="https://img.shields.io/badge/hooks-24-blueviolet?style=for-the-badge" alt="Hooks" />
   <img src="https://img.shields.io/badge/skills-3-teal?style=for-the-badge" alt="Skills" />
@@ -16,7 +16,7 @@
 
 <p align="center">
   <strong>A colony of AI agents forging your product</strong><br/>
-  53 specialist agents. 32 slash commands. 24 lifecycle hooks. 3 skills.<br/>
+  69 specialist agents. 33 slash commands. 19 lifecycle hooks. 3 skills.<br/>
   Continuous learning. Adversarial debate. Growth OS. Project management.<br/>
   Pure Node.js. Zero external dependencies.<br/>
   <em>Works with Claude Code and OpenClaw.</em>
@@ -43,9 +43,9 @@ Claude Code and OpenClaw are powerful out of the box. ForgeBee makes them **opin
 |:--|:--|
 | Agent jumps straight into coding | Agent plans, debates requirements, then codes |
 | "It should work" | Evidence-based verification with actual test output |
-| Single-agent, single-pass | 53 specialists working in parallel with blind review |
+| Single-agent, single-pass | 69 specialists working in parallel with blind review |
 | Manual project tracking | Automated state.yaml + markdown dashboards |
-| No marketing workflow | Full 9-phase Growth OS with 18 marketing agents |
+| No marketing workflow | Full 9-phase Growth OS with 13 marketing agents + 3 strategy debate agents |
 | Every session starts from scratch | Continuous learning — instincts persist across sessions |
 | Edits break silently | Auto-format, typecheck, and lint on every edit |
 
@@ -159,7 +159,7 @@ Invoke with a slash: `/review`, `/debug`, `/workflow`, etc.
 
 ## Agents
 
-53 specialist agents for Claude Code's Agent Teams. Use them directly or let `/team` and `/workflow` orchestrate automatically.
+69 specialist agents for Claude Code's Agent Teams. Use them directly or let `/team` and `/workflow` orchestrate automatically.
 
 <details>
 <summary><strong>Development</strong> (8 agents)</summary>
@@ -289,11 +289,31 @@ Invoke with a slash: `/review`, `/debug`, `/workflow`, etc.
 
 </details>
 
+<details>
+<summary><strong>Review Sub-Agents</strong> (12 agents) &mdash; NEW in v3.1</summary>
+
+| Agent | Focus |
+|:------|:------|
+| `review-all` | Full pre-push quality gate (all checks) |
+| `review-code` | Logic errors, DRY, error handling, dead code |
+| `review-code-style` | Convention adherence, imports, naming, file org |
+| `review-security` | OWASP Top 10, injection, auth, secrets |
+| `review-performance` | N+1 queries, memory leaks, missing caching |
+| `review-accessibility` | WCAG 2.1 AA compliance |
+| `review-api` | API design, validation, rate limiting, REST consistency |
+| `review-database` | Migrations, RLS, schema, query patterns |
+| `review-tests` | Coverage, test quality, mocking, structure |
+| `review-docs` | Docblocks, comments, parameter docs |
+| `review-best-practices` | SOLID, design patterns, architecture health |
+| `review-wordpress` | WP coding standards, security, plugin architecture |
+
+</details>
+
 ---
 
 ## Hooks
 
-24 hooks run automatically on Claude Code lifecycle events across 9 event types. No invocation needed.
+19 hook scripts run automatically on Claude Code lifecycle events across 9 event types. No invocation needed.
 
 **Session & state management:**
 
@@ -315,16 +335,16 @@ Invoke with a slash: `/review`, `/debug`, `/workflow`, etc.
 | `post-edit-typecheck` | `PostToolUse` (Edit) | Runs `tsc --noEmit` after editing .ts/.tsx files |
 | `post-edit-console-warn` | `PostToolUse` (Edit) | Warns about `console.log` in edited files |
 | `console-log-audit` | `Stop` | Audits all modified files for console.log at session end |
-| `permission-guard` | `PreToolUse` (Bash) | 4-tier command safety: allowlist &rarr; blocklist &rarr; cache &rarr; ask |
+| `permission-guard` | `PreToolUse` (Bash) | 4-tier command safety: blocklist &rarr; allowlist &rarr; cache &rarr; ask |
 | `dev-server-blocker` | `PreToolUse` (Bash) | Blocks `npm run dev` outside tmux |
-| `git-push-reminder` | `PreToolUse` (Bash) | Review warning before `git push` |
+| `git-push-reminder` | `PreToolUse` (Bash) | Warns before pushing to main/master |
 | `suggest-compact` | `PreToolUse` (Edit\|Write) | Suggests `/compact` at logical breakpoints |
 
 **Continuous learning:**
 
 | Hook | Event | What it does |
 |:-----|:------|:------------|
-| `observe` | `PreToolUse` (*) + `PostToolUse` (*) | Captures every tool call for pattern extraction |
+| `observe` | `PostToolUse` (*) | Captures every tool call for pattern extraction |
 
 **Intelligence & governance:**
 
@@ -468,7 +488,7 @@ The `self-improve` hook appends patterns to the **Learned Patterns** section aut
 
 ## OpenClaw
 
-ForgeBee is fully compatible with [OpenClaw](https://github.com/openclaw/openclaw). All 53 agents and 32 commands convert to OpenClaw skills.
+ForgeBee is fully compatible with [OpenClaw](https://github.com/openclaw/openclaw). All 69 agents and 33 commands convert to OpenClaw skills.
 
 ```bash
 # Clone ForgeBee

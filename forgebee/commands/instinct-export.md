@@ -1,6 +1,7 @@
 ---
 name: instinct-export
 description: Export instincts to a shareable file
+allowed-tools: Read, Bash
 ---
 
 # /instinct-export — Export Instincts

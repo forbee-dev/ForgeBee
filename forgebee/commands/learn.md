@@ -1,6 +1,7 @@
 ---
 name: learn
 description: Analyze session observations and extract patterns as instincts
+allowed-tools: Read, Write, Bash
 ---
 
 # /learn — Extract Patterns as Instincts

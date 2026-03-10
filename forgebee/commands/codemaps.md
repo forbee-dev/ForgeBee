@@ -1,3 +1,9 @@
+---
+name: codemaps
+description: Generate or refresh token-lean architecture documentation optimized for AI context consumption
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash
+---
+
 # Codemaps — Token-Lean Architecture Documentation
 
 Generate or refresh architecture documentation optimized for AI context consumption. Each codemap stays under ~1000 tokens and captures structure, not implementation.

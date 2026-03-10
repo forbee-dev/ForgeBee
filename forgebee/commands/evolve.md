@@ -1,6 +1,7 @@
 ---
 name: evolve
 description: Analyze instincts and cluster them into skills, commands, or agents
+allowed-tools: Read, Write, Bash
 ---
 
 # /evolve — Evolve Instincts into Higher-Level Structures

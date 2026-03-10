@@ -1,6 +1,7 @@
 ---
 name: instinct-status
 description: Show learned instincts with confidence scores
+allowed-tools: Read, Bash
 ---
 
 # /instinct-status — Show Instinct Status

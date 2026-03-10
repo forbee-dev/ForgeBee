@@ -6,18 +6,13 @@
 
 const fs = require('fs');
 const path = require('path');
-const { PROJECT_DIR, initDirs, readStdinSync, runGit } = require('./_common.js');
+const { getProjectDir, initializeProjectDirs, readStdinJsonSync, runGit } = require('./_common.js');
 
-initDirs();
+const PROJECT_DIR = getProjectDir();
+initializeProjectDirs();
 
-const input = readStdinSync();
-
-let inputData = {};
-try {
-  inputData = JSON.parse(input);
-} catch {
-  // empty
-}
+const input = readStdinJsonSync();
+const inputData = input || {};
 
 // Prevent infinite loop
 if (inputData.stop_hook_active === true) {
@@ -47,12 +42,12 @@ const topics = [];
 
 try {
   if (runGit('rev-parse --is-inside-work-tree')) {
-    const diffStat = runGit('git diff --stat HEAD~1');
+    const diffStat = runGit('diff --stat HEAD~1');
     if (diffStat) {
       gitDiffStat = diffStat.split('\n').pop() || '';
     }
 
-    const diffs = runGit('git diff --name-only HEAD~1');
+    const diffs = runGit('diff --name-only HEAD~1');
     filesChanged = diffs.split('\n').slice(0, 20).filter(f => f.length > 0).join(',');
 
     // Auto-detect topics from changed files

@@ -86,16 +86,19 @@ npm run deploy:production # Deploy to production
 - `/migrate` — Version/framework migrations with rollback plans
 - `/deploy` — Deployment with pre-flight checks and rollback
 - `/browser-debug` — Client-side debugging (console, network, rendering)
+- `/codemaps` — Token-lean architecture documentation for AI context consumption
 
 **Growth & Marketing:**
+- `/growth` — **Growth OS orchestrator**: Brand → Intel → Audience → Content Architecture → Hooks → Debate → Calendar → Creation → Distribution → Measure. Main agent only delegates. Includes adversarial strategy debate.
+- `/content` — Quick content production (single piece or small batch without full pipeline)
 - `/gtm` — Go-to-market planning with launch checklists
 - `/seo` — SEO audit, keyword research, and optimization
-- `/social` — Social media strategy and content calendars
+- `/social` — Social media strategy, content calendars, hook formulas, engagement psychology
 - `/launch` — Product launch (Product Hunt, HN, press)
-- `/competitive` — Competitive intelligence and battlecards
+- `/competitive` — Competitive intelligence, FIA battlecards, niche intelligence
 - `/landing` — Conversion-optimized landing page builder
 - `/payments` — Stripe/LemonSqueezy/Paddle integration
-- `/analytics` — Event tracking, dashboards, and metrics
+- `/analytics` — Event tracking, dashboards, marketing performance metrics
 
 **Learning:**
 - `/learn` — Analyze session observations and extract patterns as instincts
@@ -109,9 +112,25 @@ npm run deploy:production # Deploy to production
 - `/team` — Lightweight multi-agent orchestration (ad-hoc delegation without debate ceremony)
 - `/idea` — Idea-to-product validation and MVP planning (with debate). Auto-tracks in PM system.
 - `/pm` — Automated project management: reads state.yaml, syncs TASKS.md, regenerates dashboards, surfaces blockers
+- `/audit` — Governance audit trail: query permission decisions, debate rulings, verification results, escalations
 
 **Specialist Agents** (for Agent Teams):
-frontend, backend, database, security, testing, devops, perf, debug, research, content, seo, supabase, ios, flutter, n8n, session-librarian, ux-designer, scrum-master, requirements-advocate, requirements-skeptic, requirements-judge, code-advocate, code-skeptic, code-judge, delivery-agent, dashboard-generator
+
+*Development:* frontend, backend, database, security, testing, devops, perf, debug, research, content, seo, supabase, ios, flutter, n8n, session-librarian, ux-designer, scrum-master, delivery-agent, dashboard-generator, verification-enforcer, tdd-enforcer, contract-validator
+
+*Dev Debate:* requirements-advocate, requirements-skeptic, requirements-judge, code-advocate, code-skeptic, code-judge
+
+*Strategy Debate:* strategy-advocate, strategy-skeptic, strategy-judge
+
+*Growth OS:* brand-strategist, market-intel, audience-architect, content-architect, hook-engineer, idea-machine, engagement-strategist, content-creator, growth-hacker, calendar-builder, performance-analyst, conversion-optimizer, email-strategist
+
+*WordPress:* wordpress-backend, wordpress-frontend, wordpress-content, wordpress-security, wordpress-seo, phpunit-engineer, woocommerce-cro
+
+*Next.js:* nextjs-frontend, nextjs-content, nextjs-seo
+
+*CRO:* saas-cro
+
+*Review:* review-all, review-code, review-code-style, review-security, review-performance, review-accessibility, review-api, review-database, review-tests, review-docs, review-best-practices, review-wordpress
 
 ---
 

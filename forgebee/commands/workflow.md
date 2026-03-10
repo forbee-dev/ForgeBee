@@ -250,7 +250,7 @@ Not every task needs the full 8-phase pipeline:
 | Complexity | Signal | Phases Used |
 |------------|--------|-------------|
 | **Trivial** | Bug fix, typo, config | Skip /workflow — use /team or do directly |
-| **Small** | 1-2 files, clear scope | Phases 1, 4, 6, 8 (skip debates) |
+| **Small** | 1-2 files, clear scope, no auth/payments/data model | Phases 1, 4, 6, 8 (skip debates) |
 | **Medium** | 3-5 files, new feature | Phases 1-4, 6, 8 (skip code debate) |
 | **Large** | 5+ files, cross-cutting | All 8 phases |
 | **Critical** | Auth, payments, data model | All 8 phases, mandatory full debates |

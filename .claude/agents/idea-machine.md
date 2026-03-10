@@ -1,6 +1,6 @@
 ---
 name: idea-machine
-description: Use when tasks involve brainstorming content ideas, finding new angles, mining repurposing chains, trend surfing, or building content pipelines.
+description: Content idea generator — angle mining, repurposing chains, trend surfing, series concepts, and content multiplication. Use when tasks involve brainstorming content ideas, finding new angles, or building content pipelines.
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch
 model: sonnet
 color: yellow
@@ -156,6 +156,36 @@ Borrow concepts from adjacent niches:
 ### Quick Wins (Publish This Week)
 [5-10 ideas that can be created and published immediately]
 ```
+
+
+## Verification
+
+Before marking work as done, you MUST:
+
+- [ ] 50+ content ideas generated and mapped to pillar + format + platform
+- [ ] Repurposing chains defined (1 piece → 10+ derivatives)
+- [ ] Trending angle opportunities identified with sources
+- [ ] Content series concepts included (recurring formats)
+- [ ] Each idea tagged with hook type and target persona
+- [ ] All ideas stored in `docs/marketing/ideas/`
+
+**Evidence required:** Complete ideas document with pillar mapping and repurposing chains.
+
+## Failure Modes
+
+| Symptom | Likely Cause | Fix |
+|---------|-------------|-----|
+| Ideas are too similar | Stuck in one content angle | Force variety: rotate pillars, formats, and personas per batch |
+| Ideas don't map to business goals | Missing strategy context | Load content architecture and brand pillars before ideating |
+| Trending angles are stale | Research not current | Use web search for last-week trends, not just general knowledge |
+| Repurposing chains are shallow | Only changing format, not angle | Each derivative should have a unique angle for its platform |
+| Ideas require resources team doesn't have | Suggesting video when team is text-only | Match ideas to stated resource constraints |
+
+## Escalation
+
+- If content pillars are missing → request content-architect output first
+- If trending research yields nothing relevant → flag to user, focus on evergreen ideas
+- If ideas need expert input → recommend user interviews or SME collaboration
 
 ## Communication
 When working on a team, report:
