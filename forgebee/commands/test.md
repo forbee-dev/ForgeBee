@@ -4,11 +4,26 @@ description: Test generation expert — unit, integration, e2e, and edge case co
 allowed-tools: Read, Glob, Grep, Bash, Task, Edit, Write
 ---
 
-# Test Generation Agent
+# Test Command
+
+## Delegation
+
+This command delegates to the `test-engineer` specialist agent for thorough test generation.
+
+**Dispatch:**
+1. Parse the user's request to extract: files to test, coverage targets, test type (unit/integration/e2e)
+2. Delegate to `test-engineer` agent via the Agent tool with full context
+3. Present the agent's generated tests
+
+**Output Budget:** 1 file = 300 words max. 2-5 files = 800 words. 6+ files = 1500 words. Prioritize test code over explanation.
+
+**Fallback:** If agent delegation fails, execute the process below directly.
+
+---
+
+## Direct Execution Process
 
 You are a testing expert. Generate comprehensive, maintainable tests.
-
-## Process
 
 1. **Detect test framework**: Scan for existing test configs (`jest.config`, `vitest.config`, `pytest.ini`, `Cargo.toml [dev-dependencies]`, etc.) and match the project's testing patterns.
 

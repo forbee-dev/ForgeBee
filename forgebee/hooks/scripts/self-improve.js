@@ -25,13 +25,7 @@ const INDEX_FILE = path.join(LEARNINGS_DIR, 'index.jsonl');
 
 fs.mkdirSync(LEARNINGS_DIR, { recursive: true });
 
-const timestamp = new Date().toLocaleString('en-US', {
-  year: 'numeric',
-  month: '2-digit',
-  day: '2-digit',
-  hour: '2-digit',
-  minute: '2-digit'
-}) + ' UTC';
+const timestamp = new Date().toISOString();
 
 const sessionId = inputData.session_id || 'unknown';
 
@@ -166,6 +160,121 @@ if (fs.existsSync(INDEX_FILE)) {
     const recentLines = lines.slice(-400);
     fs.writeFileSync(INDEX_FILE, recentLines.join('\n') + '\n');
   }
+}
+
+// ── S-008: Lightweight pattern heuristics (no API calls) ──────────────
+// Analyze session observations and flag candidate patterns
+try {
+  const observationsDir = path.join(require('os').homedir(), '.claude/forgebee-learning/projects');
+  if (fs.existsSync(observationsDir)) {
+    const PENDING_FILE = path.join(PROJECT_DIR, '.claude/learnings/pending-instincts.jsonl');
+    const projects = fs.readdirSync(observationsDir).filter(d =>
+      fs.existsSync(path.join(observationsDir, d, 'observations.jsonl'))
+    );
+
+    for (const proj of projects) {
+      const obsFile = path.join(observationsDir, proj, 'observations.jsonl');
+      const content = fs.readFileSync(obsFile, 'utf8');
+      const lines = content.split('\n').filter(l => l.trim().length > 0);
+
+      // Only analyze last 1000 lines for performance
+      const recentLines = lines.slice(-1000);
+      const observations = [];
+      for (const line of recentLines) {
+        try { observations.push(JSON.parse(line)); } catch { /* skip */ }
+      }
+
+      if (observations.length < 5) continue;
+
+      // Heuristic 1: Bash commands repeated 3+ times
+      const bashCmds = {};
+      for (const obs of observations) {
+        if (obs.tool === 'Bash' && obs.event === 'tool_complete' && obs.input) {
+          const cmd = (obs.input.command || '').split(/\s+/).slice(0, 3).join(' ');
+          if (cmd.length > 2) bashCmds[cmd] = (bashCmds[cmd] || 0) + 1;
+        }
+      }
+
+      // Heuristic 2: Same file edited 3+ times
+      const fileEdits = {};
+      for (const obs of observations) {
+        if (obs.tool === 'Edit' && obs.event === 'tool_complete' && obs.input?.file_path) {
+          const fp = obs.input.file_path;
+          fileEdits[fp] = (fileEdits[fp] || 0) + 1;
+        }
+      }
+
+      // Load existing pending instincts for dedup
+      let pending = {};
+      if (fs.existsSync(PENDING_FILE)) {
+        const pLines = fs.readFileSync(PENDING_FILE, 'utf8').split('\n').filter(l => l.trim());
+        for (const l of pLines) {
+          try {
+            const entry = JSON.parse(l);
+            pending[entry.signal] = entry;
+          } catch { /* skip */ }
+        }
+      }
+
+      let changed = false;
+
+      // Write candidates for repeated bash commands
+      for (const [cmd, count] of Object.entries(bashCmds)) {
+        if (count >= 3) {
+          const signal = `bash-repeat:${cmd}`;
+          if (pending[signal]) {
+            pending[signal].sessions_seen = (pending[signal].sessions_seen || 1) + 1;
+            pending[signal].confidence = Math.min(0.9, 0.3 + pending[signal].sessions_seen * 0.1);
+          } else {
+            pending[signal] = {
+              id: `cmd-${cmd.replace(/[^a-z0-9]/gi, '-').toLowerCase()}`,
+              type: 'command-repeat',
+              signal,
+              confidence: 0.3,
+              sessions_seen: 1,
+              status: 'pending',
+              created_at: new Date().toISOString()
+            };
+          }
+          changed = true;
+        }
+      }
+
+      // Write candidates for repeatedly edited files
+      for (const [fp, count] of Object.entries(fileEdits)) {
+        if (count >= 3) {
+          const relPath = fp.startsWith('/') ? path.relative(PROJECT_DIR, fp) : fp;
+          const signal = `file-repeat:${relPath}`;
+          if (pending[signal]) {
+            pending[signal].sessions_seen = (pending[signal].sessions_seen || 1) + 1;
+            pending[signal].confidence = Math.min(0.9, 0.3 + pending[signal].sessions_seen * 0.1);
+          } else {
+            pending[signal] = {
+              id: `file-${path.basename(fp).replace(/[^a-z0-9]/gi, '-').toLowerCase()}`,
+              type: 'file-repeat',
+              signal,
+              confidence: 0.3,
+              sessions_seen: 1,
+              status: 'pending',
+              created_at: new Date().toISOString()
+            };
+          }
+          changed = true;
+        }
+      }
+
+      // Write back pending instincts
+      if (changed) {
+        const entries = Object.values(pending)
+          .filter(e => e.status !== 'rejected')
+          .map(e => JSON.stringify(e))
+          .join('\n');
+        fs.writeFileSync(PENDING_FILE, entries + '\n');
+      }
+    }
+  }
+} catch (e) {
+  // Heuristics are best-effort — never block session end
 }
 
 process.exit(0);

@@ -1,9 +1,11 @@
 #!/usr/bin/env node
 /**
- * audit-trail.js — Append-only governance audit log
- * Records every permission decision, debate ruling, verification result,
- * and escalation with timestamp, actor, and context
+ * audit-trail.js — Dual-mode governance logger:
+ *   1. Stop hook (auto-fires on session end → logs session_end)
+ *   2. CLI invocation (piped JSON from commands → logs permission/debate/verification/escalation/dispatch)
+ *   3. Query mode (event_type=query → reads and filters the log)
  *
+ * Append-only JSONL format in .claude/audit/audit-YYYY-MM.jsonl
  * Provides accountability and traceability for all agent actions
  */
 

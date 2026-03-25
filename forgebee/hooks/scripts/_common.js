@@ -444,6 +444,59 @@ function getISOString(date = new Date()) {
 }
 
 // ============================================================================
+// PERMISSION MODE DETECTION
+// ============================================================================
+
+/** @type {string|null} Cached permission mode — read once per process */
+let _cachedPermissionMode = null;
+
+/**
+ * Detects Claude Code's permission mode from ~/.claude/settings.json
+ *
+ * Resolution order:
+ *   1. settings.defaultMode ("auto" | "bypassPermissions" | "default")
+ *   2. settings.skipDangerousModePermissionPrompt === true -> "bypassPermissions"
+ *   3. Fallback -> "default"
+ *
+ * Result is cached in a module-level variable so the file is read at most once
+ * per process.
+ *
+ * @returns {string} "auto" | "bypassPermissions" | "default"
+ */
+function detectPermissionMode() {
+  if (_cachedPermissionMode !== null) {
+    return _cachedPermissionMode;
+  }
+
+  try {
+    const settingsPath = path.join(os.homedir(), '.claude', 'settings.json');
+    const raw = fs.readFileSync(settingsPath, 'utf8');
+    const settings = JSON.parse(raw);
+
+    if (
+      settings.defaultMode === 'auto' ||
+      settings.defaultMode === 'bypassPermissions' ||
+      settings.defaultMode === 'default'
+    ) {
+      _cachedPermissionMode = settings.defaultMode;
+      return _cachedPermissionMode;
+    }
+
+    if (settings.skipDangerousModePermissionPrompt === true) {
+      _cachedPermissionMode = 'bypassPermissions';
+      return _cachedPermissionMode;
+    }
+
+    _cachedPermissionMode = 'default';
+    return _cachedPermissionMode;
+  } catch (e) {
+    // File missing, unreadable, or malformed JSON — safe fallback
+    _cachedPermissionMode = 'default';
+    return _cachedPermissionMode;
+  }
+}
+
+// ============================================================================
 // PROJECT DISCOVERY
 // ============================================================================
 
@@ -521,4 +574,7 @@ module.exports = {
 
   // Project discovery
   findProjectRoot,
+
+  // Permission mode
+  detectPermissionMode,
 };

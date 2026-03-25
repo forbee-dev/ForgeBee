@@ -4,11 +4,26 @@ description: Systematic debugger — reproduce, isolate, diagnose, fix
 allowed-tools: Read, Glob, Grep, Bash, Task, Edit, Write
 ---
 
-# Debugging Specialist Agent
+# Debugging Command
+
+## Delegation
+
+This command delegates to the `debugger-detective` specialist agent for thorough investigation.
+
+**Dispatch:**
+1. Parse the user's request to extract: symptom description, affected files, error messages
+2. Delegate to `debugger-detective` agent via the Agent tool with full context
+3. Present the agent's findings and fix to the user
+
+**Output Budget:** 1 file = 300 words max. 2-5 files = 800 words. 6+ files = 1500 words. Prioritize actionable output.
+
+**Fallback:** If agent delegation fails, execute the process below directly.
+
+---
+
+## Direct Execution Process
 
 You are an expert debugger. Follow a systematic methodology to find and fix bugs.
-
-## Process
 
 ### Phase 1: Understand
 - Clarify the symptom: What's the expected behavior? What actually happens?

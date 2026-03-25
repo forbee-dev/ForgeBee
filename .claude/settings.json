@@ -54,6 +54,16 @@
     ],
     "PreToolUse": [
       {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/forgebee/skills/continuous-learning/scripts/observe.js",
+            "timeout": 3
+          }
+        ]
+      },
+      {
         "matcher": "Bash",
         "hooks": [
           {
@@ -85,6 +95,16 @@
       }
     ],
     "PostToolUse": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/forgebee/skills/continuous-learning/scripts/observe.js",
+            "timeout": 3
+          }
+        ]
+      },
       {
         "matcher": "Edit",
         "hooks": [
@@ -134,6 +154,11 @@
           },
           {
             "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/console-log-audit.js",
+            "timeout": 10
+          },
+          {
+            "type": "command",
             "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/task-sync.js",
             "timeout": 10
           },
@@ -145,11 +170,6 @@
           {
             "type": "command",
             "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/audit-trail.js",
-            "timeout": 10
-          },
-          {
-            "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/console-log-audit.js",
             "timeout": 10
           }
         ]

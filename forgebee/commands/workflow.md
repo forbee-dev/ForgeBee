@@ -92,11 +92,12 @@ Phase 8: Delivery
 
 **Process:**
 1. Extract action items from the planning artifacts (each user story, requirement, or decision point becomes a debate item)
-2. Spawn three agents **in parallel** (blind — they don't see each other's arguments):
-   - `requirements-advocate` — argues FOR each item (why it's sound, well-scoped, feasible)
-   - `requirements-skeptic` — argues AGAINST each item (gaps, risks, missing edge cases, assumptions)
-   - `requirements-judge` — (runs after both complete) receives both cases, rules per item
-3. Collect the Judge's rulings
+2. **Batch items** for efficient debate: group related items into batches of max 10 (semantically related items together, not arbitrary splits). For small features (≤10 items), use a single batch.
+3. For each batch, spawn three agents **in parallel** (blind — they don't see each other's arguments):
+   - `requirements-advocate` — argues FOR all items in the batch (one argument block per item)
+   - `requirements-skeptic` — argues AGAINST all items in the batch (one argument block per item)
+   - `requirements-judge` — (runs after both complete) receives both cases, rules per item in the batch
+4. Collect the Judge's rulings across all batches
 
 **Handling rulings:**
 - **Approved items** → move forward to Phase 3
@@ -187,12 +188,23 @@ Phase 8: Delivery
 ### Phase 6: Delegation
 
 **For each story/task:**
-1. Prepare a context package for the assigned agent:
-   - The story file content
-   - Relevant architecture decisions
-   - Files to modify (from scrum-master's implementation guidance)
-   - Patterns to follow (from existing codebase)
-   - Acceptance criteria to meet
+1. Prepare a structured context package (handoff contract) with these required fields:
+   ```json
+   {
+     "story": { "id": "S-001", "title": "...", "description": "..." },
+     "context": {
+       "project_stack": "from CLAUDE.md",
+       "files_to_modify": ["path/to/file.js"],
+       "architecture_decisions": ["relevant ADR notes"],
+       "patterns_to_follow": ["existing code patterns"],
+       "constraints": ["any limitations"]
+     },
+     "acceptance_criteria": [
+       { "criterion": "Given X, when Y, then Z", "verification": "how to test" }
+     ]
+   }
+   ```
+   All three top-level keys (`story`, `context`, `acceptance_criteria`) are required. Do NOT dispatch without them.
 2. Dispatch agents according to the approved execution plan
 3. Monitor completion — use TaskCompleted and TeammateIdle quality gates
 4. Collect all outputs
@@ -208,13 +220,14 @@ Phase 8: Delivery
 
 **Purpose:** Stress-test the implementation before delivery.
 
-**Process:** Same as Phase 2, but with code-focused agents:
+**Process:** Same batching approach as Phase 2, with code-focused agents:
 1. Compile all code changes, test results, and implementation decisions
-2. Spawn three agents **in parallel** (blind):
-   - `code-advocate` — argues FOR the implementation quality
-   - `code-skeptic` — argues AGAINST (bugs, missed requirements, security holes, tech debt)
-   - `code-judge` — receives both cases, rules per item
-3. Collect Judge's rulings
+2. **Batch items** (max 10 per batch, group by component/story)
+3. For each batch, spawn three agents **in parallel** (blind):
+   - `code-advocate` — argues FOR the implementation quality (one argument per item)
+   - `code-skeptic` — argues AGAINST (bugs, missed requirements, security holes, tech debt — one argument per item)
+   - `code-judge` — receives both cases, rules per item in the batch
+4. Collect Judge's rulings across all batches
 
 **Handling rulings:** Same escalation pattern as Phase 2:
 - Approved → move to Phase 8

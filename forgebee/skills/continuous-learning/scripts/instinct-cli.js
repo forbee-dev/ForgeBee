@@ -913,12 +913,204 @@ function parseArgs() {
       options.minConfidence = parseFloat(args[++i]);
     } else if ((arg === '--output' || arg === '-o') && args[i + 1]) {
       options.output = args[++i];
+    } else if (arg === '--activate' && args[i + 1]) {
+      options.activate = args[++i];
+    } else if (arg === '--reject' && args[i + 1]) {
+      options.reject = args[++i];
+    } else if (arg === '--include-pending') {
+      options.includePending = true;
     } else if (!arg.startsWith('-')) {
       positional.push(arg);
     }
   }
 
   return { command, options, positional };
+}
+
+// ─────────────────────────────────────────────
+// S-009: Promote Pending Candidates to Instincts
+// ─────────────────────────────────────────────
+
+function cmdPromotePending(options) {
+  const projectDir = process.env.CLAUDE_PROJECT_DIR || process.cwd();
+  const pendingFile = path.join(projectDir, '.claude/learnings/pending-instincts.jsonl');
+
+  if (!fs.existsSync(pendingFile)) {
+    console.log('No pending candidates found.');
+    return 0;
+  }
+
+  const lines = fs.readFileSync(pendingFile, 'utf8').split('\n').filter(l => l.trim());
+  const candidates = [];
+  for (const l of lines) {
+    try { candidates.push(JSON.parse(l)); } catch { /* skip */ }
+  }
+
+  const THRESHOLD_CONFIDENCE = 0.6;
+  const THRESHOLD_SESSIONS = 2;
+
+  const ready = candidates.filter(c =>
+    c.status === 'pending' &&
+    c.confidence >= THRESHOLD_CONFIDENCE &&
+    (c.sessions_seen || 1) >= THRESHOLD_SESSIONS
+  );
+
+  if (ready.length === 0) {
+    console.log(`No candidates meet promotion threshold (confidence >= ${THRESHOLD_CONFIDENCE}, sessions >= ${THRESHOLD_SESSIONS}).`);
+    return 0;
+  }
+
+  // Detect project for instinct storage
+  const project = detectProject();
+  const instinctDir = path.join(PROJECTS_DIR, project.id, 'instincts', 'personal');
+  ensureDir(instinctDir);
+
+  let promoted = 0;
+  for (const candidate of ready) {
+    const instinctId = candidate.id || `auto-${Date.now()}`;
+    if (!validateInstinctId(instinctId)) continue;
+
+    const instinctPath = path.join(instinctDir, `${instinctId}.yaml`);
+
+    // Don't overwrite active instincts
+    if (fs.existsSync(instinctPath)) {
+      const existing = fs.readFileSync(instinctPath, 'utf8');
+      if (existing.includes('status: active')) continue;
+    }
+
+    const content = `---
+id: ${instinctId}
+trigger: "${candidate.signal}"
+confidence: ${candidate.confidence}
+domain: workflow
+source: auto-heuristic
+scope: project
+status: pending
+created_at: ${candidate.created_at || new Date().toISOString()}
+sessions_seen: ${candidate.sessions_seen || 1}
+---
+
+# ${instinctId}
+
+## Signal
+${candidate.signal}
+
+## Type
+${candidate.type}
+
+## Evidence
+- Auto-detected from ${candidate.sessions_seen || 1} session(s)
+- Confidence: ${candidate.confidence}
+`;
+
+    fs.writeFileSync(instinctPath, content);
+    promoted++;
+    console.log(`  Promoted: ${instinctId} (confidence: ${candidate.confidence})`);
+  }
+
+  // Mark promoted candidates in pending-instincts.jsonl so they don't re-promote
+  if (promoted > 0) {
+    const promotedIds = new Set(ready.filter((_, i) => i < promoted).map(c => c.id));
+    const updatedLines = candidates.map(c => {
+      if (promotedIds.has(c.id)) c.status = 'promoted';
+      return JSON.stringify(c);
+    });
+    fs.writeFileSync(pendingFile, updatedLines.join('\n') + '\n');
+  }
+
+  console.log(`\n${promoted} instinct(s) promoted to pending state.`);
+  console.log('Run `/learn` to review and activate them.');
+  return 0;
+}
+
+// ─────────────────────────────────────────────
+// S-010: Review Pending Instincts
+// ─────────────────────────────────────────────
+
+function cmdReview(action, options) {
+  const project = detectProject();
+  const instinctDir = path.join(PROJECTS_DIR, project.id, 'instincts', 'personal');
+
+  if (!fs.existsSync(instinctDir)) {
+    console.log('No instincts directory found.');
+    return 0;
+  }
+
+  const files = fs.readdirSync(instinctDir).filter(f => ALLOWED_EXTENSIONS.some(e => f.endsWith(e)));
+  const pendingInstincts = [];
+
+  for (const f of files) {
+    const content = fs.readFileSync(path.join(instinctDir, f), 'utf8');
+    if (content.includes('status: pending')) {
+      const parsed = parseInstinctFile(content);
+      pendingInstincts.push({ file: f, content, parsed });
+    }
+  }
+
+  if (options.activate) {
+    const id = options.activate;
+    const match = pendingInstincts.find(p => p.file.replace(/\.(yaml|yml|md)$/, '') === id);
+    if (!match) {
+      console.error(`Pending instinct "${id}" not found.`);
+      return 1;
+    }
+    // Scope replace to frontmatter only (between first pair of ---)
+    const fmEnd = match.content.indexOf('---', match.content.indexOf('---') + 3);
+    const frontmatter = match.content.substring(0, fmEnd).replace('status: pending', 'status: active');
+    const updated = frontmatter + match.content.substring(fmEnd);
+    fs.writeFileSync(path.join(instinctDir, match.file), updated);
+    console.log(`Activated: ${id}`);
+    return 0;
+  }
+
+  if (options.reject) {
+    const id = options.reject;
+    const match = pendingInstincts.find(p => p.file.replace(/\.(yaml|yml|md)$/, '') === id);
+    if (!match) {
+      console.error(`Pending instinct "${id}" not found.`);
+      return 1;
+    }
+    fs.unlinkSync(path.join(instinctDir, match.file));
+    console.log(`Rejected and removed: ${id}`);
+
+    // Mark as rejected in pending-instincts.jsonl
+    const projectDir = process.env.CLAUDE_PROJECT_DIR || process.cwd();
+    const pendingFile = path.join(projectDir, '.claude/learnings/pending-instincts.jsonl');
+    if (fs.existsSync(pendingFile)) {
+      const lines = fs.readFileSync(pendingFile, 'utf8').split('\n').filter(l => l.trim());
+      const updated = lines.map(l => {
+        try {
+          const entry = JSON.parse(l);
+          if (entry.id === id) entry.status = 'rejected';
+          return JSON.stringify(entry);
+        } catch { return l; }
+      });
+      fs.writeFileSync(pendingFile, updated.join('\n') + '\n');
+    }
+    return 0;
+  }
+
+  // Default: list pending instincts
+  if (pendingInstincts.length === 0) {
+    console.log('No pending instincts awaiting review.');
+    return 0;
+  }
+
+  console.log(`\n  ${pendingInstincts.length} pending instinct(s) awaiting review:\n`);
+  for (const p of pendingInstincts) {
+    const id = p.file.replace(/\.(yaml|yml|md)$/, '');
+    const triggerMatch = p.content.match(/trigger:\s*"?(.+?)"?\s*$/m);
+    const confMatch = p.content.match(/confidence:\s*(\S+)/);
+    const sessionsMatch = p.content.match(/sessions_seen:\s*(\d+)/);
+    console.log(`  [PENDING] ${id}`);
+    if (triggerMatch) console.log(`    Signal: ${triggerMatch[1]}`);
+    if (confMatch) console.log(`    Confidence: ${confMatch[1]}`);
+    if (sessionsMatch) console.log(`    Sessions: ${sessionsMatch[1]}`);
+    console.log('');
+  }
+  console.log('  Use: instinct-cli.js review --activate <id>');
+  console.log('  Use: instinct-cli.js review --reject <id>');
+  return 0;
 }
 
 // ─────────────────────────────────────────────
@@ -955,6 +1147,12 @@ function main() {
     case 'projects':
       exitCode = cmdProjects();
       break;
+    case 'promote-pending':
+      exitCode = cmdPromotePending(options);
+      break;
+    case 'review':
+      exitCode = cmdReview(positional[0], options);
+      break;
     default:
       console.log('ForgeBee Instinct CLI');
       console.log('\nCommands:');
@@ -963,6 +1161,8 @@ function main() {
       console.log('  export            Export instincts to file');
       console.log('  evolve            Cluster instincts into skills/commands/agents');
       console.log('  promote [id]      Promote project instincts to global scope');
+      console.log('  promote-pending   Promote high-confidence candidates to pending instincts');
+      console.log('  review <action>   Review pending instincts (--activate <id> | --reject <id> | --list)');
       console.log('  projects          List known projects and instinct counts');
       exitCode = command === 'help' ? 0 : 1;
   }

@@ -17,8 +17,43 @@ const common = require('./_common.js');
 const PROJECT_DIR = common.getProjectDir();
 const CACHE_FILE = path.join(PROJECT_DIR, '.claude/session-cache/permissions.json');
 
+// ── S-006: Load user-configurable glob allowlist from settings ──────
+function loadCustomAllowlist() {
+  try {
+    const settingsPath = path.join(PROJECT_DIR, '.claude/settings.json');
+    if (!fs.existsSync(settingsPath)) return [];
+    const settings = JSON.parse(fs.readFileSync(settingsPath, 'utf8'));
+    const patterns = settings?.forgebee?.permissionAllowlist;
+    if (!Array.isArray(patterns)) return [];
+    return patterns.filter(p => typeof p === 'string' && p.length > 0);
+  } catch (e) {
+    return [];
+  }
+}
+
+/**
+ * Simple glob matcher — supports * (any chars) and ? (single char)
+ * No dependencies required.
+ */
+function globMatch(pattern, str) {
+  const regex = pattern
+    .replace(/[.+^${}()|[\]\\]/g, '\\$&')
+    .replace(/\*/g, '.*')
+    .replace(/\?/g, '.');
+  return new RegExp(`^${regex}$`, 'i').test(str);
+}
+
+const CUSTOM_ALLOWLIST = loadCustomAllowlist();
+
 // ── Read stdin JSON ───────────────────────────────────────────────────
 async function main() {
+  // S-007: Cache flush (must be inside main, not at module load time)
+  if (process.env.FORGEBEE_FLUSH_CACHE === '1') {
+    try { fs.unlinkSync(CACHE_FILE); } catch (e) { /* already gone */ }
+    console.error('[permission-guard] cache flushed');
+  }
+
+  const PERMISSION_MODE = common.detectPermissionMode();
   const input = await common.readStdinJson();
 
   if (!input) {
@@ -127,6 +162,14 @@ async function main() {
     /curl.*\| *(bash|sh|zsh)/i,
     /wget.*\| *(bash|sh|zsh)/i,
     /eval.*\$\(/i,
+    // Command substitution (arbitrary execution inside $(...) or backticks)
+    /\$\([^)]*rm\s/i,
+    /\$\([^)]*curl\s/i,
+    /\$\([^)]*wget\s/i,
+    /\$\([^)]*dd\s/i,
+    /\$\([^)]*chmod\s/i,
+    /`[^`]*rm\s/i,
+    /`[^`]*curl\s/i,
     // Sudo escalation
     /sudo rm/i,
     /sudo chmod/i,
@@ -169,6 +212,29 @@ async function main() {
     return BLOCKLIST_PATTERNS.some(pattern => pattern.test(cmd));
   }
 
+  /**
+   * Normalizes a command for cache key matching.
+   * Preserves command verb and flags, normalizes paths and standalone numbers.
+   */
+  function normalizeCacheKey(cmd) {
+    const parts = cmd.split(/\s+/);
+    const normalized = parts.map((p) => {
+      // Preserve flags
+      if (p.startsWith('-')) return p;
+      // Normalize absolute paths
+      if (p.startsWith('/')) return '<path>';
+      // Normalize relative paths (./... and ../...)
+      if (p.startsWith('./') || p.startsWith('../')) return '<path>';
+      // Normalize home-relative paths
+      if (p.startsWith('~/')) return '<path>';
+      // Normalize standalone numbers (not embedded in words)
+      if (/^\d+$/.test(p)) return '<n>';
+      // Normalize numbers prefixed with # (issue references)
+      return p.replace(/#\d+/g, '#<n>');
+    });
+    return normalized.join(' ');
+  }
+
   function allow(reason) {
     console.log(JSON.stringify({
       hookSpecificOutput: {
@@ -180,8 +246,7 @@ async function main() {
     process.exit(0);
   }
 
-  // ── TIER 0: BLOCKLIST (always check first) ──────────────────────────
-  // Dangerous patterns block regardless of other rules
+  // ── TIER 0: BLOCKLIST (always active in ALL modes — non-negotiable) ──
   if (isBlocklisted(COMMAND)) {
     console.error(`BLOCKED: Command matches dangerous pattern`);
     process.exit(2);
@@ -193,16 +258,57 @@ async function main() {
     process.exit(2);
   }
 
+  // ── MODE-AWARE FAST PATH ────────────────────────────────────────────
+  // In bypass mode: only Tier 0 blocklist runs, everything else passes through
+  if (PERMISSION_MODE === 'bypassPermissions') {
+    process.exit(0);
+  }
+
+  // In auto mode: skip Tier 1 (allowlist) and Tier 3 (ask) — let Claude's
+  // AI safety classifier handle non-blocklisted commands. Keep Tier 2 (cache)
+  // for ForgeBee's own patterns.
+  if (PERMISSION_MODE === 'auto') {
+    // Tier 2 cache still runs in auto mode for audit/tracking purposes
+    const CACHE_KEY = normalizeCacheKey(COMMAND);
+    try {
+      const cacheContent = fs.readFileSync(CACHE_FILE, 'utf8');
+      const cache = JSON.parse(cacheContent);
+      const cached = cache[CACHE_KEY];
+      if (cached) {
+        const NOW = Math.floor(Date.now() / 1000);
+        let EXPIRE_TS = 0;
+        try {
+          EXPIRE_TS = Math.floor(new Date(cached.expires).getTime() / 1000);
+        } catch (e) {
+          EXPIRE_TS = 999999999999;
+        }
+        if (NOW < EXPIRE_TS && cached.decision === 'deny') {
+          console.error('BLOCKED: Previously denied command pattern (cached)');
+          process.exit(2);
+        }
+      }
+    } catch (e) {
+      // Ignore cache errors
+    }
+    // Pass through to Claude's AI safety classifier
+    process.exit(0);
+  }
+
+  // ── DEFAULT MODE: Full tier cascade ─────────────────────────────────
+
   // ── TIER 1: ALLOWLIST (instant approve) ─────────────────────────────
-  // For simple commands, check directly
-  // For chained/piped commands, check each subcommand
   const subcommands = splitCommands(COMMAND);
   if (subcommands.length > 0 && subcommands.every(isAllowlisted)) {
     allow('Allowlisted safe command');
   }
 
+  // ── TIER 1b: CUSTOM GLOB ALLOWLIST (from settings.json) ───────────
+  if (CUSTOM_ALLOWLIST.length > 0 && CUSTOM_ALLOWLIST.some(p => globMatch(p, COMMAND))) {
+    allow('Custom allowlist match (settings.json)');
+  }
+
   // ── TIER 2: CACHE LOOKUP ────────────────────────────────────────────
-  const CACHE_KEY = COMMAND.replace(/\/[^ ]*/g, '<path>').replace(/\d+/g, '<n>');
+  const CACHE_KEY = normalizeCacheKey(COMMAND);
 
   try {
     const cacheContent = fs.readFileSync(CACHE_FILE, 'utf8');

@@ -8,6 +8,11 @@ color: blue
 
 You are a senior code reviewer. Analyze the staged and unstaged changes in this git repository for code quality issues.
 
+## Use When
+- Staged or recently committed code needs review for logic errors, DRY violations, and error handling gaps
+- User wants a focused code quality check before pushing changes
+- A function or module has known issues and needs a targeted review for type safety, dead code, or API design
+
 ## Instructions
 
 1. Run `git diff HEAD` to see all uncommitted changes (staged + unstaged)

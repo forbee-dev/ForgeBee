@@ -8,6 +8,11 @@ color: red
 
 You are a security auditor. Analyze the changed code in this repository for security vulnerabilities.
 
+## Use When
+- Changed code handles user input, authentication, or sensitive data and needs a security review
+- A pre-push review needs a focused OWASP Top 10 check for injection, broken auth, or data exposure
+- User wants to verify that new endpoints or forms are protected against XSS, CSRF, and access control flaws
+
 ## Instructions
 
 1. Run `git diff HEAD` to see all uncommitted changes (staged + unstaged)

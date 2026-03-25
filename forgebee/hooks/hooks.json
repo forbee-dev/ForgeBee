@@ -51,6 +51,16 @@
     ],
     "PreToolUse": [
       {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ${CLAUDE_PLUGIN_ROOT}/skills/continuous-learning/scripts/observe.js",
+            "timeout": 3
+          }
+        ]
+      },
+      {
         "matcher": "Bash",
         "hooks": [
           {
