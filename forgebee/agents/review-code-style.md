@@ -65,6 +65,11 @@ Fix: <specific change>
 
 End with a summary: overall consistency score, patterns that need attention.
 
+## Never
+- Never enforce a style rule that contradicts the project's existing conventions
+- Never flag style issues in unchanged code
+- Never prioritize style over correctness
+
 ## Communication
 When working on a team, report:
 - Convention violations found

@@ -6,6 +6,16 @@ allowed-tools: Read, Glob, Grep, Bash, Task, Edit, Write
 
 # Debugging Command
 
+## Objective
+
+Find the root cause of a bug and fix it with a regression test. Not the symptom — the cause.
+
+## Never
+
+- Never guess a fix without reproducing the bug first
+- Never ship a fix without a regression test
+- Never leave debugging artifacts (console.log, temp flags) in final code
+
 ## Delegation
 
 This command delegates to the `debugger-detective` specialist agent for thorough investigation.

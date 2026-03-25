@@ -6,6 +6,16 @@ allowed-tools: Read, Write, Bash
 
 # /learn — Extract Patterns as Instincts
 
+## Objective
+
+Review pending instincts (auto-detected by heuristics) and analyze observations to extract new patterns. Every instinct requires user approval before activation.
+
+## Never
+
+- Never activate instincts without explicit user approval
+- Never create instincts from one-time events (API outages, typos)
+- Never overwrite active instincts with lower-confidence versions
+
 Analyze accumulated observations and the current session to extract reusable patterns as instincts.
 
 ## Process

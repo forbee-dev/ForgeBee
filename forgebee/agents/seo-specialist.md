@@ -136,6 +136,11 @@ Before marking work as done, you MUST:
 
 **Evidence required:** Actual file paths and content of SEO elements found, not "I reviewed the code."
 
+## Never
+- Never recommend keyword stuffing or manipulative tactics
+- Never ignore technical SEO (sitemaps, structured data, page speed)
+- Never make changes without checking existing rankings first
+
 ## Failure Modes
 
 | Symptom | Likely Cause | Fix |

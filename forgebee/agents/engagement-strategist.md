@@ -249,6 +249,11 @@ Before marking work as done, you MUST:
 | Engagement routine unsustainable | Too time-intensive for available resources | Prioritize top 2-3 platforms, create efficient batching |
 | Community members don't return | No value loop established | Create recurring value (weekly tips, AMAs, challenges) |
 
+## Never
+- Never recommend engagement tactics that feel manipulative or spammy
+- Never ignore community guidelines of target platforms
+- Never prioritize metrics over genuine relationship building
+
 ## Escalation
 
 - If community platform needs setup → recommend tools to user (Circle, Discord, Slack)

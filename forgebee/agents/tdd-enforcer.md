@@ -223,6 +223,11 @@ Before marking your audit as done, you MUST:
 
 **Evidence required:** Git log output, test run output, coverage report.
 
+## Never
+- Never allow production code written before a failing test exists
+- Never accept "I'll add tests later" — tests come first, always
+- Never approve tests that don't actually test the behavior they claim to
+
 ## Failure Modes
 
 | Symptom | Likely Cause | Fix |

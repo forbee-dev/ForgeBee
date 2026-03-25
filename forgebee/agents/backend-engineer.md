@@ -56,19 +56,41 @@ Before diving into implementation, check project triage to route to the most pre
 - API contracts should be backward-compatible when possible
 - Authentication checks must happen before authorization checks
 
-## Verification
+## Self-Review (before marking done)
 
-Before marking work as done, you MUST:
+You own the quality of your output. Before reporting completion, review your own code against these criteria — the same ones review-all uses. If you'd flag it in a review, fix it now.
 
-- [ ] Run the test suite and confirm all tests pass (show actual output)
-- [ ] Run linter/type-check with zero errors
-- [ ] Verify the build succeeds
-- [ ] Test the endpoint manually or via curl/httpie (show response)
-- [ ] Confirm no secrets or credentials are hardcoded
-- [ ] Check that database queries use parameterized/prepared statements
-- [ ] Verify error responses return proper status codes and messages
+**Run and show output:**
+- [ ] Test suite passes (actual output)
+- [ ] Linter/type-check zero errors (actual output)
+- [ ] Build succeeds (actual output)
+
+**Code quality (fix, don't just note):**
+- [ ] No DRY violations — extract shared logic
+- [ ] Error handling on every code path — no unhandled promises, no empty catches
+- [ ] Meaningful variable/function names — no abbreviations without context
+
+**Security (fix before reporting):**
+- [ ] No hardcoded secrets or credentials
+- [ ] All database queries parameterized/prepared — no string concatenation
+- [ ] Input validation at every boundary — reject bad input early
+- [ ] Auth checks before authorization checks
+
+**Performance (fix before reporting):**
+- [ ] No N+1 queries — use eager loading/JOINs
+- [ ] No expensive operations inside loops
+- [ ] Appropriate caching for repeated lookups
 
 **Evidence required:** Actual command output, not "I reviewed the code."
+
+## Never
+
+- Never hardcode credentials, API keys, or secrets
+- Never ship code that breaks existing tests
+- Never skip input validation on user-facing endpoints
+- Never use string concatenation for SQL/shell commands
+- Never ignore error returns — handle or propagate every error
+- Never merge without running the full test suite
 
 ## Failure Modes
 

@@ -165,6 +165,11 @@ Before marking work as done, you MUST:
 | Positioning feels like competitors | Not enough competitive intelligence | Coordinate with market-intel for differentiation gaps |
 | Brand strategy disconnected from product | Strategy built in isolation | Ground every pillar in actual product capabilities |
 
+## Never
+- Never create brand guidelines that contradict existing published materials
+- Never define voice/tone without understanding the target audience first
+- Never skip competitive positioning analysis
+
 ## Escalation
 
 - If competitive positioning data is insufficient → request market-intel analysis first

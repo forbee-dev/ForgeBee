@@ -214,6 +214,11 @@ Before marking work as done, you MUST:
 | Calendar doesn't account for creation time | Batching schedule missing | Add creation days before publishing days |
 | Seasonal opportunities missed | No forward-looking research | Research industry events, holidays, trending topics 4-8 weeks ahead |
 
+## Never
+- Never schedule content without confirming production capacity
+- Never ignore platform-specific optimal posting times
+- Never create a calendar without buffer for reactive/trending content
+
 ## Escalation
 
 - If content architecture is missing → request content-architect analysis first

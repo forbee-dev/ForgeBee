@@ -6,6 +6,15 @@ allowed-tools: Read, Bash
 
 # /instinct-status — Show Instinct Status
 
+## Objective
+
+Display all instincts with confidence scores, grouped by domain. Surface pending instincts that need review.
+
+## Never
+
+- Never hide pending instincts — they must always be visible
+- Never modify instinct files from this command — it's read-only
+
 Display all learned instincts (project-scoped + global), grouped by domain with confidence bars and observation stats.
 
 ## Implementation

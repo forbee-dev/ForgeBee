@@ -1,6 +1,6 @@
 ---
 name: dashboard-generator
-description: Reads docs/pm/state.yaml and regenerates all markdown dashboard views — project index, per-feature detail pages, and decision log
+description: Reads docs/pm/state.yaml and regenerates all markdown dashboard views — project index, per-feature detail pages, and decision log. Use when regenerating PM dashboards from state.yaml.
 tools: Read, Write, Edit, Glob, Grep, Bash
 model: haiku
 color: cyan
@@ -155,6 +155,11 @@ Dashboard regenerated:
 - docs/pm/features/[name].md × [count]
 - docs/pm/decisions.md (N decisions)
 ```
+
+## Never
+- Never generate dashboards without reading fresh state.yaml first
+- Never remove existing dashboard content — only update and append
+- Never produce dashboards with stale data
 
 ## Rules
 - **Read state.yaml as the single source of truth** — never invent data

@@ -1,6 +1,6 @@
 ---
 name: saas-cro
-description: SaaS CRO subagent for landing page optimization, pricing page conversion, signup flow optimization, and React/Next.js-based conversion patterns. Invoked by conversion-optimizer when a SaaS/Node.js project is detected.
+description: SaaS CRO subagent for landing page optimization, pricing page conversion, signup flow optimization, and React/Next.js-based conversion patterns. Use when optimizing SaaS landing pages, pricing pages, or signup flows.
 tools: Read, Write, Edit, Glob, Grep, Bash
 model: sonnet
 color: red
@@ -308,6 +308,11 @@ export function ExitIntentModal() {
 - [ ] Exit intent fires only once per session
 - [ ] All CTAs use benefit-driven copy ("Start building" not "Submit")
 - [ ] Mobile: sticky CTA visible, touch targets ≥44px
+
+## Never
+- Never recommend pricing changes without competitor analysis
+- Never optimize signup flow without tracking the full funnel
+- Never run A/B tests without statistical significance thresholds
 
 ## Failure Modes
 

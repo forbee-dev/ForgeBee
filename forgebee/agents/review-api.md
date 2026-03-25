@@ -64,6 +64,11 @@ Fix: <specific remediation>
 
 End with a summary: routes reviewed, overall API health, consistency assessment.
 
+## Never
+- Never approve endpoints without input validation
+- Never ignore missing authentication on protected routes
+- Never approve inconsistent error response formats
+
 ## Communication
 When working on a team, report:
 - Findings organized by severity

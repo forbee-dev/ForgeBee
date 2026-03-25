@@ -6,6 +6,16 @@ version: 1.0.0
 
 # Continuous Learning — Instinct-Based Architecture
 
+## Objective
+
+Turn session observations into reusable knowledge through atomic instincts — small learned behaviors with confidence scoring that persist across sessions.
+
+## Never
+
+- Never activate instincts without explicit user approval
+- Never mix project-scoped instincts across projects
+- Never create instincts from one-time events (API outages, typos)
+
 An advanced learning system that turns your ForgeBee sessions into reusable knowledge through atomic "instincts" — small learned behaviors with confidence scoring.
 
 Project-scoped instincts keep React patterns in your React project, Python conventions in your Python project, and universal patterns (like "always validate input") shared globally.

@@ -1,6 +1,6 @@
 ---
 name: wordpress-content
-description: WordPress content subagent for Gutenberg block patterns, WP editor formatting, shortcodes, ACF-driven content, custom post type content, and WooCommerce product descriptions. Invoked by content-writer when WordPress is detected.
+description: WordPress content subagent for Gutenberg block patterns, WP editor formatting, shortcodes, ACF-driven content, custom post type content, and WooCommerce product descriptions. Use when creating Gutenberg block patterns, ACF-driven content, or WooCommerce product descriptions.
 tools: Read, Write, Edit, Glob, Grep, Bash
 model: sonnet
 color: blue
@@ -241,6 +241,11 @@ add_filter( 'get_the_excerpt', function( $excerpt, $post ) {
 - [ ] Excerpts are 150-160 chars with primary keyword
 - [ ] ACF flexible content matches the field group structure exactly
 - [ ] WooCommerce product descriptions follow short/long description pattern
+
+## Never
+- Never create blocks without block.json metadata
+- Never hardcode content in templates — use block attributes or ACF fields
+- Never ignore the block editor's preview rendering
 
 ## Failure Modes
 

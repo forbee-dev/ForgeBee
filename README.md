@@ -50,6 +50,8 @@ Claude Code and OpenClaw are powerful out of the box. ForgeBee makes them **opin
 | Edits break silently | Auto-format, typecheck, and lint on every edit |
 | Permission prompts everywhere | Mode-aware permissions — respects auto-mode and bypass with non-negotiable blocklist |
 | Commands duplicate agent logic | Commands delegate to specialist agents with automatic fallback |
+| Review finds issues that should have been caught | Quality pipeline — specialists self-review, code-skeptic validates, review-all just confirms |
+| Agents take shortcuts under pressure | Every agent has explicit "Never" rules — hard boundaries that can't be rationalized away |
 
 ---
 
@@ -354,6 +356,36 @@ Invoke with a slash: `/review`, `/debug`, `/workflow`, etc.
 |:-----|:------|:------------|
 | `TaskCompleted` | Task marked done | Demands evidence-based verification before accepting |
 | `TeammateIdle` | Agent going idle | Checks for unclaimed tasks to pick up |
+
+---
+
+## Quality Pipeline
+
+ForgeBee embeds quality checks throughout the development flow so that `/review-all` is a **validation gate**, not a discovery phase.
+
+```
+Specialist agents implement + self-review (review-all criteria)
+      │
+      ▼
+Code debate (code-skeptic checks same criteria with file:line refs)
+      │
+      ▼
+Workflow/Team quality gate (tests + lint + build must pass)
+      │
+      ▼
+review-all (final validation — should find zero critical/high issues)
+```
+
+**How it works:**
+
+- **Every command** has an Objective (what success looks like) and Never rules (hard boundaries)
+- **Every code-producing agent** (11 total) has a Self-Review section matching review-all's criteria
+- **Every agent** (69 total) has Never rules — explicit constraints that can't be rationalized away
+- **`/workflow` Phase 6** mandates self-review evidence from specialists before accepting output
+- **`/workflow` Phase 7** code-skeptic runs the same quality checks as review-all
+- **`/team` Phase 4** runs concrete quality checks (test suite, linter, build) before delivery
+
+If the pipeline works correctly, `review-all` finds nothing. Issues caught in review-all mean the pipeline leaked — the specialist agents need to be strengthened.
 
 ---
 

@@ -83,6 +83,11 @@ End with:
 3. **Top 5 priorities** to fix before pushing
 4. **Overall quality score**: 1-10
 
+## Never
+- Never flag issues in unchanged code — only review the diff
+- Never skip a review section because the change "looks small"
+- Never give READY verdict if any Critical issue is open
+
 ## Communication
 When working on a team, report:
 - Push readiness verdict

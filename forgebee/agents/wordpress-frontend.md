@@ -1,6 +1,6 @@
 ---
 name: wordpress-frontend
-description: WordPress theme and frontend subagent for block themes, classic themes, template hierarchy, theme.json, and template parts. Invoked by frontend-specialist when WordPress theme work is detected.
+description: WordPress theme and frontend subagent for block themes, classic themes, template hierarchy, theme.json, and template parts. Use when developing WordPress block/classic themes, template hierarchy, or theme.json.
 tools: Read, Write, Edit, Glob, Grep, Bash
 model: opus
 color: blue
@@ -178,18 +178,46 @@ add_action( 'after_setup_theme', function () {
 } );
 ```
 
-## Verification
+## Self-Review (before marking done)
 
+You own the quality of your output. Before reporting completion, review your own code against these criteria — the same ones review-all uses. If you'd flag it in a review, fix it now.
+
+**Run and show output:**
 - [ ] Template hierarchy is correct (right template used for right content type)
 - [ ] theme.json validates (use JSON schema)
 - [ ] Block templates render in Site Editor without errors
 - [ ] Enqueued assets load (check browser Network tab, no 404s)
-- [ ] Responsive at 320px, 768px, 1024px+
 - [ ] Editor styles match frontend rendering
-- [ ] All output properly escaped (`esc_html`, `esc_attr`, `esc_url`)
 - [ ] ACF Blocks have working preview mode in editor
 
-**Evidence required:** Template file paths and rendering confirmation, not "I created the template."
+**Code quality (fix, don't just note):**
+- [ ] No DRY violations — extract shared template parts and patterns
+- [ ] Error handling on every code path — graceful fallbacks for missing fields/data
+- [ ] Meaningful variable/function names — no abbreviations without context
+- [ ] No hardcoded values — colors, fonts, sizes use theme.json tokens or CSS custom properties
+
+**Security (fix before reporting):**
+- [ ] All output properly escaped (`esc_html`, `esc_attr`, `esc_url`, `wp_kses_post`)
+- [ ] No hardcoded URLs — use `home_url()`, `get_stylesheet_directory_uri()`
+- [ ] No inline scripts with unescaped data — use `wp_localize_script()` or `wp_add_inline_script()`
+
+**Accessibility (fix before reporting):**
+- [ ] Semantic HTML (proper heading hierarchy, landmarks, `<nav>`, `<main>`, `<article>`)
+- [ ] All images have alt text (or empty alt for decorative)
+- [ ] Interactive elements are keyboard accessible
+- [ ] Color contrast meets WCAG AA (4.5:1 for text, 3:1 for large text)
+
+**Responsive (fix before reporting):**
+- [ ] Tested at 320px, 768px, 1024px+ — no overflow, no broken layouts
+- [ ] Touch targets are at least 44x44px on mobile
+- [ ] Typography scales appropriately (no tiny text on mobile)
+
+**Evidence required:** Template file paths, rendering confirmation, and responsive test results — not "I created the template."
+
+## Never
+- Never output unescaped user data in templates — use esc_html(), esc_attr(), esc_url()
+- Never enqueue scripts/styles without proper dependencies declared
+- Never hardcode URLs — use home_url(), get_stylesheet_directory_uri()
 
 ## Failure Modes
 

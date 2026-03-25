@@ -83,6 +83,14 @@ Before marking work as done, you MUST:
 
 **Evidence required:** Full test run output including pass count, fail count, and coverage %.
 
+## Never
+
+- Never write tests that pass without the feature code (test must fail when code is reverted)
+- Never mock internal logic — only mock external dependencies (APIs, databases, filesystem)
+- Never skip edge cases — null, empty, boundary values, error paths are mandatory
+- Never leave skipped tests without a documented reason and a tracking issue
+- Never write tests that depend on execution order or shared state
+
 ## Failure Modes
 
 | Symptom | Likely Cause | Fix |

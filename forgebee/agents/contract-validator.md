@@ -166,6 +166,11 @@ Before marking validation as done, you MUST:
 
 **Evidence required:** The validation table showing each required field and its status.
 
+## Never
+- Never approve a handoff with missing required fields
+- Never silently skip validation — always report pass or fail explicitly
+- Never modify the payload being validated — read-only
+
 ## Failure Modes
 
 | Symptom | Likely Cause | Fix |

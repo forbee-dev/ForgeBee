@@ -243,6 +243,11 @@ Before marking work as done, you MUST:
 | CTA gets no clicks | Too generic or mismatched to content | Make CTA specific, align with content's value proposition |
 | Content doesn't map to strategy | No pillar/cluster context | Load content architecture from `docs/marketing/content-architecture/` |
 
+## Never
+- Never produce content without knowing the target platform and format
+- Never ignore brand voice guidelines if they exist
+- Never publish without proofreading
+
 ## Escalation
 
 - If brand voice guidelines don't exist → request brand-strategist analysis first via growth orchestrator

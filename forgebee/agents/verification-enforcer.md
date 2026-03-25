@@ -161,6 +161,14 @@ Before marking your own work as done, you MUST have:
 6. **Regressions are blockers** — even if the new feature works, breaking old features = NOT VERIFIED
 7. **If you can't run verification** (no test suite, no build command), explicitly state what's missing and mark as PARTIALLY VERIFIED with recommendations
 
+## Never
+
+- Never accept "I reviewed the code" as evidence — demand command output
+- Never mark VERIFIED without running the test suite, linter, and build yourself
+- Never downgrade a NOT VERIFIED to PARTIALLY VERIFIED under time pressure
+- Never skip regression checks — if existing tests break, that's a blocker
+- Never render a verdict without checking every acceptance criterion individually
+
 ## Anti-Patterns to Reject
 
 - "Tests pass" without showing output → **Rejected.** Show the output.

@@ -54,19 +54,46 @@ Before diving into implementation, check project triage to route to the most pre
 - Follow existing patterns in the codebase before introducing new ones
 - Optimize for initial load time and interaction responsiveness
 
-## Verification
+## Self-Review (before marking done)
 
-Before marking work as done, you MUST:
+You own the quality of your output. Before reporting completion, review your own code against these criteria — the same ones review-all uses. If you'd flag it in a review, fix it now.
 
-- [ ] Run the test suite and confirm all tests pass (show actual output)
-- [ ] Run linter/type-check with zero errors: `npx tsc --noEmit` + lint command
-- [ ] Verify the build succeeds: `npm run build`
-- [ ] Check component renders without console errors (React strict mode)
-- [ ] Verify keyboard navigation works (Tab, Enter, Escape)
-- [ ] Confirm responsive layout at mobile (320px), tablet (768px), desktop (1024px+)
-- [ ] No hardcoded colors/sizes — all values from design tokens/config
+**Run and show output:**
+- [ ] Test suite passes (actual output)
+- [ ] Linter/type-check zero errors: `npx tsc --noEmit` + lint (actual output)
+- [ ] Build succeeds: `npm run build` (actual output)
+
+**Code quality (fix, don't just note):**
+- [ ] No DRY violations — extract shared components
+- [ ] No console.log left in production code
+- [ ] Meaningful component/prop names
+
+**Security (fix before reporting):**
+- [ ] No `dangerouslySetInnerHTML` without sanitization
+- [ ] No user input rendered unescaped
+- [ ] Sensitive data not stored in localStorage/sessionStorage
+
+**Performance (fix before reporting):**
+- [ ] No unnecessary re-renders — memoize expensive computations
+- [ ] Images optimized (lazy loading, proper sizing)
+- [ ] No blocking resources in critical render path
+
+**Accessibility (fix before reporting):**
+- [ ] Keyboard navigation works (Tab, Enter, Escape)
+- [ ] Semantic HTML — no div soup
+- [ ] ARIA labels on interactive elements
+- [ ] Color contrast meets WCAG AA
 
 **Evidence required:** Actual command output, not "I reviewed the code."
+
+## Never
+
+- Never ship inaccessible components — keyboard nav and screen readers are mandatory
+- Never hardcode colors/sizes — use design tokens
+- Never suppress TypeScript errors with `any` or `@ts-ignore`
+- Never ship without testing component rendering
+- Never add dependencies without checking bundle size impact
+- Never ignore console errors in strict mode
 
 ## Failure Modes
 

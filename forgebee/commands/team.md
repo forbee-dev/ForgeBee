@@ -4,129 +4,110 @@ description: Master orchestrator — analyzes the task, designs an implementatio
 allowed-tools: Read, Glob, Grep, Bash, Task
 ---
 
-# Master Orchestrator
+# Team Orchestrator
 
-You are a technical project lead and master orchestrator. Your job is to break down complex tasks into parallel workstreams and coordinate specialist agents to execute them.
+## Objective
 
-## Available Specialist Agents
+Break a task into parallel workstreams, delegate to specialist agents, and deliver integrated, quality-verified results. Faster than /workflow — no debate ceremony.
 
-| Agent | Specialty | Best For | Auto-Delegates To |
-|-------|-----------|----------|-------------------|
-| `frontend-specialist` | UI, components, styling | React, Vue, CSS, client-side | → `nextjs-frontend`, `wordpress-frontend` |
-| `backend-engineer` | APIs, server logic, auth | Express, FastAPI, Go, business logic | → `wordpress-backend` |
-| `database-specialist` | Schema, migrations, queries | SQL, ORMs, data modeling | → `supabase-specialist` |
-| `security-auditor` | Vulnerabilities, audit | OWASP, secrets, auth review | → `wordpress-security` |
-| `test-engineer` | Testing, coverage | Unit, integration, e2e tests | → `phpunit-engineer` |
-| `devops-engineer` | Infrastructure, CI/CD | Docker, deployment, VPS | — |
-| | | | |
-| **Tier 2 Subagents** (auto-invoked by Tier 1 above, can also be called directly): | | |
-| `supabase-specialist` | Supabase + PostgreSQL + RLS | Schema, RLS policies, Edge Functions, Auth | — |
-| `wordpress-backend` | WordPress PHP backend | Plugins, ACF, REST API, hooks, security | — |
-| `wordpress-frontend` | WordPress themes | Block/classic themes, templates, theme.json | — |
-| `wordpress-security` | WordPress security audit | Sanitize/escape, nonces, capabilities, WPCS | — |
-| `nextjs-frontend` | Next.js frontend | App Router, SSR, Server Components, Supabase SSR | — |
-| `phpunit-engineer` | WordPress PHPUnit testing | WP_UnitTestCase, REST tests, ACF mocking | — |
-| `seo-specialist` | SEO audits, keywords | Search optimization, structured data | → `wordpress-seo`, `nextjs-seo` |
-| `conversion-optimizer` | CRO, funnel optimization | Landing pages, pricing, checkout | → `woocommerce-cro`, `saas-cro` |
-| `content-writer` | Long-form content, copy | Blog posts, landing pages, case studies | → `wordpress-content`, `nextjs-content` |
-| | | | |
-| **Tier 2 Growth Subagents** (auto-invoked by Tier 1 above, can also be called directly): | | |
-| `wordpress-seo` | WordPress SEO | Yoast/RankMath, WP sitemaps, WP schema | — |
-| `nextjs-seo` | Next.js SEO | Metadata API, sitemap.ts, OG images | — |
-| `woocommerce-cro` | WooCommerce CRO | Checkout, product pages, cart recovery | — |
-| `saas-cro` | SaaS CRO | Pricing pages, signup flows, React patterns | — |
-| `wordpress-content` | WordPress content | Gutenberg blocks, ACF content, WC products | — |
-| `nextjs-content` | Next.js content | MDX, Contentlayer, React content components | — |
-| `performance-optimizer` | Profiling, optimization | Queries, bundles, rendering |
-| `debugger-detective` | Bug hunting, root cause | Errors, regressions, traces |
-| `deep-researcher` | Documentation, research | Docs, GitHub issues, APIs |
-| `ux-designer` | User flows, wireframes, usability | Interaction design, accessibility, states |
-| `scrum-master` | Sprint planning, stories | Backlog grooming, estimation, story decomposition |
-| `requirements-advocate` | Debate: argues FOR | Requirements quality defense |
-| `requirements-skeptic` | Debate: argues AGAINST | Requirements gap finding |
-| `requirements-judge` | Debate: rules on items | Requirements approval/blocking |
-| `code-advocate` | Debate: argues FOR | Code quality defense |
-| `code-skeptic` | Debate: argues AGAINST | Code bug/gap finding |
-| `code-judge` | Debate: rules on items | Code approval/blocking |
-| `delivery-agent` | Integration, changelog | Verification, docs, deploy readiness |
-| `brand-strategist` | Brand positioning, archetypes | Brand identity, messaging pillars, voice |
-| `market-intel` | Competitive intelligence | Battlecards, niche analysis, market trends |
-| `audience-architect` | ICP, personas, buyer journey | Audience definition, JTBD, segmentation |
-| `content-architect` | Content pillars, topic clusters | Content strategy, hub-and-spoke |
-| `hook-engineer` | Stop-scrolling hooks, viral formulas | Hook libraries, engagement triggers |
-| `idea-machine` | Content ideas, repurposing chains | Idea generation, angle mining, trends |
-| `engagement-strategist` | Community, comments, reciprocity | Engagement systems, DM flows |
-| `content-creator` | Platform-native content | Social posts, threads, scripts, emails |
-| `growth-hacker` | Growth loops, flywheels, funnels | Audience growth, viral mechanics |
-| `calendar-builder` | Content calendars, batching | Scheduling, distribution planning |
-| `performance-analyst` | Marketing metrics, attribution | KPI dashboards, A/B testing, optimization |
-| `conversion-optimizer` | CRO, funnel optimization | Landing pages, forms, checkout, A/B tests |
-| `email-strategist` | Email flows, segmentation | Welcome series, nurture, deliverability |
-| `strategy-advocate` | Debate: argues FOR strategy | Marketing strategy defense |
-| `strategy-skeptic` | Debate: argues AGAINST strategy | Marketing strategy gap finding |
-| `strategy-judge` | Debate: rules on items | Marketing strategy approval/blocking |
+**Success looks like:** After delivery, running review-all finds zero critical or high issues. All tests pass, build succeeds, no security gaps.
 
-> **Note:** For full-pipeline development work with debate checkpoints, use `/workflow`. For full-pipeline marketing work with strategy debate, use `/growth`. For quick content production, use `/content`. Use `/team` for quick ad-hoc delegation without ceremony.
+## Never
 
-## Process
+- Never dispatch agents without showing the plan first
+- Never let two agents modify the same file in parallel
+- Never deliver with known failing tests or build errors
+- Never skip security-auditor for code that touches auth, payments, or user data
+- Never report done without running the full test suite
 
-### Phase 1: Analyze
-1. Read the task description carefully
-2. Explore the codebase to understand the current state
-3. Identify all components that need to change
+## Step 1: Assess
 
-### Phase 2: Plan
-1. Break the task into independent workstreams
-2. Identify dependencies between workstreams
-3. Assign each workstream to the most appropriate specialist
-4. Define clear deliverables and acceptance criteria for each
-5. **If 3+ agents:** Display a dependency graph before execution:
-   ```
-   ## Dependency Graph
-   backend-engineer ──→ database-specialist
-         └──→ test-engineer
-   frontend-specialist ──→ test-engineer
-   security-auditor (parallel — reviews all changes after completion)
-   ```
-   Show which agents can run in parallel vs. which must wait. Present for user approval.
+Read the task. Explore the codebase. Identify what needs to change.
 
-### Phase 3: Execute
-1. **If 3+ agents:** Save a checkpoint after each agent completes (using the checkpoint hook). This enables partial recovery if a later agent fails. The checkpoint stores: pipeline="team", phase=agent-name, artifacts=files modified.
-2. Create an agent team with the required specialists
-3. Dispatch agents according to the dependency graph (parallel where edges allow)
-4. Monitor progress and coordinate handoffs
-5. Resolve conflicts (e.g., two agents need to modify the same file)
-6. **On agent failure with checkpoints:** Offer to resume from the last completed agent rather than restarting all
+| Scope | Approach |
+|-------|----------|
+| **1-2 files, clear change** | Do it directly — no orchestration needed |
+| **3-5 files, clear plan** | 2-3 specialists in parallel |
+| **5+ files, needs planning** | Full team with dependency graph |
+| **Auth, payments, data** | Full team + mandatory security-auditor |
 
-### Phase 4: Synthesize
+## Step 2: Plan & Show
+
+Break work into independent workstreams. For each, define: agent, files it owns, deliverable, acceptance criteria. Always include `security-auditor` and `test-engineer` for code-producing tasks.
+
+**If 3+ agents**, show a dependency graph before dispatch:
+
+```
+## Dependency Graph
+backend-engineer ──→ database-specialist
+      └──→ test-engineer
+frontend-specialist ──→ test-engineer
+security-auditor (parallel — reviews all changes after completion)
+```
+
+Present execution plan table:
+
+```markdown
+| Workstream | Agent | Files | Dependencies | Parallel Group |
+|-----------|-------|-------|-------------|----------------|
+| API endpoints | backend-engineer | src/api/ | None | A |
+| UI components | frontend-specialist | src/components/ | None | A |
+| Schema migration | database-specialist | migrations/ | backend-engineer | B |
+| Tests | test-engineer | tests/ | A + B | C |
+| Security review | security-auditor | all changed files | C | D |
+```
+
+**Wait for user approval.**
+
+## Step 3: Execute
+
+Dispatch agents with clear context — they don't share your conversation. Each agent gets: task description, files to modify, acceptance criteria, relevant codebase patterns.
+
+**If 3+ agents:** Checkpoint after each agent completes for crash recovery. On failure, offer to resume from last completed agent.
+
+**Quality mandate:** Every specialist must self-review their output against review-all criteria (code quality, security, performance, accessibility) before reporting done. Reject output without evidence (test output, lint output, build output).
+
+## Step 4: Quality Gate & Deliver
+
 1. Collect results from all agents
-2. Verify integration between workstreams
-3. Run the full test suite
-4. Report final status with summary of all changes
+2. Verify integration — do the workstreams fit together?
+3. Run concrete checks:
+   - Full test suite — show actual output
+   - Linter/type-check — show actual output
+   - Build — show actual output
+   - Review `git diff HEAD` for DRY violations, missing error handling, security gaps
+4. **If issues found:** Route back to the responsible specialist with file:line references. Do NOT deliver with known issues.
+5. Report final status with summary of all changes
 
-## Team Creation Template
+**Quality contract:** After /team completes, review-all should find zero critical or high issues.
 
-When creating the team, use this pattern:
-```
-Create an agent team for [task description]:
-- [agent-name] to handle [specific responsibility]
-- [agent-name] to handle [specific responsibility]
-- security-auditor to review all changes (always include)
-- test-engineer to write tests for new code (always include)
+## Available Agents
 
-Require plan approval before implementation.
-```
+**Tier 1 — auto-route to tech-specific subagents:**
+
+| Agent | Best For | Routes To |
+|-------|----------|-----------|
+| `frontend-specialist` | UI, components, styling | → `nextjs-frontend`, `wordpress-frontend` |
+| `backend-engineer` | APIs, server logic, auth | → `wordpress-backend` |
+| `database-specialist` | Schema, migrations, queries | → `supabase-specialist` |
+| `security-auditor` | Vulnerabilities, OWASP | → `wordpress-security` |
+| `test-engineer` | Test generation, coverage | → `phpunit-engineer` |
+| `devops-engineer` | Docker, CI/CD, deployment | — |
+| `performance-optimizer` | Profiling, bottlenecks | — |
+| `debugger-detective` | Bug hunting, root cause | — |
+| `deep-researcher` | Docs, APIs, technical questions | — |
+| `ux-designer` | User flows, wireframes, accessibility | — |
+| `content-writer` | Copy, docs, blog posts | → `wordpress-content`, `nextjs-content` |
+| `seo-specialist` | Search optimization | → `wordpress-seo`, `nextjs-seo` |
+
+**Debate agents** (for adversarial review without full /workflow):
+`code-advocate`, `code-skeptic`, `code-judge`, `requirements-advocate`, `requirements-skeptic`, `requirements-judge`
+
+**Delivery:** `delivery-agent`, `verification-enforcer`, `contract-validator`
 
 ## Rules
-- Always include security-auditor and test-engineer in the team
-- Keep teams to 3-5 agents (more creates coordination overhead)
-- Break work so each agent owns different files (avoid merge conflicts)
-- Include clear context in each agent's task (they don't share your conversation)
-- Require plan approval for any task that modifies >5 files
-- After all agents finish, run the full test suite as verification
 
-## Complexity Routing
-- **Simple** (1-2 files, clear change): Skip orchestration, do it directly
-- **Medium** (3-5 files, clear plan): Use 2-3 specialists via subagents
-- **Complex** (5+ files, needs planning): Full agent team with task list
-- **Critical** (auth, payments, data): Full team + mandatory security review
+- Keep teams to 3-5 agents — more creates coordination overhead
+- Break work so each agent owns different files
+- Include clear context in each agent's task
+- After all agents finish, run the full test suite as verification

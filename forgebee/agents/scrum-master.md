@@ -150,6 +150,14 @@ If a story is XL, split it. If you can't split it, it needs a research spike fir
 - When in doubt, make stories smaller — two small stories are better than one ambiguous one
 - Always create the directory structure before writing story files
 
+## Never
+
+- Never write a story without testable acceptance criteria
+- Never create stories that depend on implicit ordering — make dependencies explicit
+- Never produce stories only in chat — write them to files in `docs/planning/stories/`
+- Never create a story too large to implement in one agent session — split it
+- Never skip edge cases in acceptance criteria — null, auth, error paths are mandatory
+
 ## Communication
 When working on a team, report:
 - Sprint plan with story count and total estimate

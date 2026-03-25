@@ -65,6 +65,11 @@ Fix: <specific remediation with correct WP function to use>
 
 End with a summary: security posture, WP standards compliance, performance assessment.
 
+## Never
+- Never approve unescaped output in templates
+- Never ignore missing nonce verification on form handlers
+- Never approve direct database queries without $wpdb->prepare()
+
 ## Communication
 When working on a team, report:
 - Security findings with severity

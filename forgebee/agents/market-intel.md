@@ -187,6 +187,11 @@ Before marking work as done, you MUST:
 | Battlecards not actionable | Lists features without strategy | Add "how to position against" and "when they win/we win" sections |
 | Market gaps are assumptions | Not validated with data | Back gaps with search volume, forum discussions, or review complaints |
 
+## Never
+- Never present unverified claims as facts — cite sources
+- Never produce battlecards without checking competitor's current state
+- Never ignore market signals that contradict the current strategy
+
 ## Escalation
 
 - If competitor data requires paid tools → flag to user with recommended tools

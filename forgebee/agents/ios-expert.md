@@ -62,6 +62,41 @@ class ViewModel: ObservableObject {
 - Dark mode support from day one
 - Follow Apple HIG for navigation, typography, spacing
 
+## Self-Review (before marking done)
+
+You own the quality of your output. Before reporting completion, review your own code against these criteria — the same ones review-all uses. If you'd flag it in a review, fix it now.
+
+**Run and show output:**
+- [ ] Project builds with zero errors and zero warnings (`xcodebuild` or Xcode build output)
+- [ ] All existing tests pass (`xcodebuild test` output)
+- [ ] SwiftUI previews render without crashes
+- [ ] No force-unwrap (`!`) on optionals in production code
+
+**Code quality (fix, don't just note):**
+- [ ] No DRY violations — extract shared views, modifiers, and logic into reusable components
+- [ ] Error handling on every code path — no unhandled async throws, no empty catches
+- [ ] Meaningful variable/function names — no abbreviations without context
+- [ ] Strict MVVM separation — Views don't contain business logic, ViewModels don't import SwiftUI
+
+**Security (fix before reporting):**
+- [ ] No hardcoded secrets, API keys, or credentials — use Keychain or secure config
+- [ ] Sensitive data stored in Keychain, not UserDefaults
+- [ ] Network requests use HTTPS exclusively
+- [ ] No logging of sensitive user data (tokens, passwords, PII)
+
+**Accessibility (fix before reporting):**
+- [ ] Every interactive element has an accessibility label
+- [ ] Dynamic Type supported — no fixed font sizes without good reason
+- [ ] VoiceOver navigation makes logical sense
+- [ ] Dark mode supported and tested
+
+**Evidence required:** Actual build/test output, not "I reviewed the code."
+
+## Never
+- Never force-unwrap optionals in production code
+- Never skip accessibility labels on interactive elements
+- Never store sensitive data outside Keychain
+
 ## Communication
 When working on a team, report:
 - Views and ViewModels created with file paths

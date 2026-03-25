@@ -6,6 +6,16 @@ allowed-tools: Read, Write, Bash
 
 # /evolve — Evolve Instincts into Higher-Level Structures
 
+## Objective
+
+Cluster related instincts into reusable skills, commands, or agents. Transform patterns into automation.
+
+## Never
+
+- Never evolve instincts with confidence below 0.7 — they need more evidence
+- Never create a skill/command that duplicates an existing one — check first
+- Never auto-deploy evolved artifacts without user review
+
 Analyze all instincts (project + global) and identify clusters that can be evolved into skills, commands, or agents.
 
 ## Implementation

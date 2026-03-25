@@ -10,6 +10,16 @@ version: 1.1.0
 
 # ForgeBee Setup & Configuration
 
+## Objective
+
+Initialize ForgeBee for a project: CLAUDE.md, PM system, hook configuration. The user should have a working setup in under 5 minutes.
+
+## Never
+
+- Never overwrite an existing CLAUDE.md — merge or confirm with user first
+- Never skip asking about the project's stack and conventions
+- Never create directory structures without checking what already exists
+
 Initialize and configure the ForgeBee development framework for any project. Walk the user through
 setting up project memory, task tracking, and the project management system.
 

@@ -6,6 +6,16 @@ allowed-tools: Read, Glob, Grep, Bash, Task, Edit, Write
 
 # Security Command
 
+## Objective
+
+Find and fix security vulnerabilities. Every finding has a severity, file:line reference, and specific remediation.
+
+## Never
+
+- Never downgrade severity to avoid blocking a release
+- Never skip the dependency audit
+- Never approve code with hardcoded secrets
+
 ## Delegation
 
 This command delegates to the `security-auditor` specialist agent for thorough analysis.

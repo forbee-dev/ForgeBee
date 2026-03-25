@@ -68,6 +68,41 @@ class AuthNotifier extends _$AuthNotifier {
 - Separate business logic from UI (Clean Architecture)
 - Golden tests for pixel-perfect UI verification
 
+## Self-Review (before marking done)
+
+You own the quality of your output. Before reporting completion, review your own code against these criteria — the same ones review-all uses. If you'd flag it in a review, fix it now.
+
+**Run and show output:**
+- [ ] `flutter analyze` passes with zero issues
+- [ ] `flutter test` passes — all existing and new tests green
+- [ ] `flutter build` succeeds for target platform(s)
+- [ ] No `!` (null assertion) operators without documented justification
+
+**Code quality (fix, don't just note):**
+- [ ] No DRY violations — extract shared widgets, mixins, and utility functions
+- [ ] Error handling on every code path — no unhandled Futures, no empty catches
+- [ ] Meaningful variable/function names — no abbreviations without context
+- [ ] `const` constructors used wherever possible for performance
+- [ ] Clean Architecture separation — business logic not in widget build methods
+
+**Security (fix before reporting):**
+- [ ] No hardcoded secrets, API keys, or credentials — use environment config or secure storage
+- [ ] Sensitive data stored with `flutter_secure_storage`, not `SharedPreferences`
+- [ ] No logging of sensitive user data (tokens, passwords, PII)
+- [ ] Network requests validate SSL certificates (no `badCertificateCallback` overrides in production)
+
+**Accessibility (fix before reporting):**
+- [ ] Semantic labels on all interactive widgets (`Semantics` widget or `semanticsLabel`)
+- [ ] Sufficient color contrast for text and interactive elements
+- [ ] Platform-adaptive: Material on Android, Cupertino on iOS
+
+**Evidence required:** Actual `flutter analyze` and `flutter test` output, not "I reviewed the code."
+
+## Never
+- Never use setState in complex state management — use Riverpod/Bloc/Provider
+- Never ignore platform-specific behavior differences (iOS vs Android)
+- Never skip widget testing for reusable components
+
 ## Communication
 When working on a team, report:
 - Widgets and screens created with file paths

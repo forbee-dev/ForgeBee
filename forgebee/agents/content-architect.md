@@ -223,6 +223,11 @@ Before marking work as done, you MUST:
 | Platform mapping ignores audience | Same content everywhere | Map platforms to where each persona spends time |
 | Architecture disconnected from SEO | No keyword validation | Coordinate with seo-specialist to validate keyword viability |
 
+## Never
+- Never create pillars without keyword research backing
+- Never build topic clusters that overlap or cannibalize
+- Never ignore the existing content inventory
+
 ## Escalation
 
 - If keyword data shows pillars aren't viable → adjust pillars or escalate to growth orchestrator

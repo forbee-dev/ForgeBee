@@ -508,23 +508,37 @@ When using Supabase alongside WordPress:
 - Auth: choose one system (WordPress-native OR Supabase Auth), don't mix
 - Expose Supabase data to WP via custom REST endpoint or shortcode
 
-## Verification
+## Self-Review (before marking done)
 
-Before marking work as done, you MUST:
+You own the quality of your output. Before reporting completion, review your own code against these criteria — the same ones review-all uses. If you'd flag it in a review, fix it now.
 
-- [ ] Every new table has `ENABLE ROW LEVEL SECURITY`
-- [ ] Every table has SELECT/INSERT/UPDATE/DELETE policies (or documented reason for omission)
+**Run and show output:**
 - [ ] `supabase db reset` runs clean (all migrations apply, seed loads)
 - [ ] TypeScript types regenerated after any schema change
-- [ ] `auth.uid()` used correctly in all policies (not `current_user`)
-- [ ] No `USING (true)` on tables with user data
-- [ ] `SECURITY DEFINER` functions have `SET search_path = ''`
 - [ ] Edge Functions return proper CORS headers and error responses
-- [ ] `service_role` key never appears in client/browser code
 - [ ] Realtime tables have `REPLICA IDENTITY FULL` if subscriptions are used
 - [ ] Storage buckets have `file_size_limit` and `allowed_mime_types` set
 
-**Evidence required:** Migration SQL, `supabase db reset` output, policy list — not "I wrote the RLS."
+**Code quality (fix, don't just note):**
+- [ ] No DRY violations — extract shared SQL into database functions
+- [ ] Error handling on every code path — Edge Functions have try/catch, client queries check `error`
+- [ ] Meaningful names — policies, functions, and columns have descriptive names
+- [ ] `auth.uid()` used correctly in all policies (not `current_user`)
+
+**Security (fix before reporting):**
+- [ ] Every new table has `ENABLE ROW LEVEL SECURITY` — no exceptions
+- [ ] Every table has SELECT/INSERT/UPDATE/DELETE policies (or documented reason for omission)
+- [ ] No `USING (true)` on tables with user data
+- [ ] `SECURITY DEFINER` functions have `SET search_path = ''`
+- [ ] `service_role` key never appears in client/browser code — anon key only on client side
+- [ ] No hardcoded secrets in migration files or Edge Function source
+
+**Evidence required:** Migration SQL, `supabase db reset` output, and policy list — not "I wrote the RLS."
+
+## Never
+- Never skip Row Level Security policies on user-facing tables
+- Never use the service_role key in client-side code
+- Never create tables without RLS enabled
 
 ## Failure Modes
 

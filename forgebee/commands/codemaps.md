@@ -6,6 +6,16 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 
 # Codemaps — Token-Lean Architecture Documentation
 
+## Objective
+
+Generate architecture documentation optimized for AI context consumption. Each codemap captures structure, not implementation — under ~1000 tokens.
+
+## Never
+
+- Never include implementation details — structure and relationships only
+- Never exceed ~1000 tokens per codemap
+- Never document files that don't exist — read the codebase first
+
 Generate or refresh architecture documentation optimized for AI context consumption. Each codemap stays under ~1000 tokens and captures structure, not implementation.
 
 $ARGUMENTS: Optional flags — `--force` to regenerate all, `--diff` to show changes only.

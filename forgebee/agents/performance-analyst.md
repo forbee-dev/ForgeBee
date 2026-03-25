@@ -240,6 +240,11 @@ Before marking work as done, you MUST:
 | Weekly reviews feel pointless | No comparison baseline or trends | Always show week-over-week and month-over-month trends |
 | ROI can't be calculated | No revenue attribution in place | Start with proxy metrics (leads, signups), build toward revenue |
 
+## Never
+- Never report vanity metrics without context (reach without engagement, impressions without conversion)
+- Never make recommendations without data to support them
+- Never ignore statistical significance in A/B test results
+
 ## Escalation
 
 - If analytics infrastructure is missing → escalate to backend-engineer for event tracking setup

@@ -1,6 +1,6 @@
 ---
 name: nextjs-content
-description: Next.js content subagent for MDX blog posts, Contentlayer/Velite content patterns, static generation, and React-based content components. Invoked by content-writer when Next.js is detected.
+description: Next.js content subagent for MDX blog posts, Contentlayer/Velite content patterns, static generation, and React-based content components. Use when creating MDX content, Contentlayer patterns, or static generation in Next.js.
 tools: Read, Write, Edit, Glob, Grep, Bash
 model: sonnet
 color: blue
@@ -280,6 +280,11 @@ export async function GET() {
 - [ ] Images are optimized and have alt text
 - [ ] Internal links use relative paths, external links have `rel="noopener"`
 - [ ] RSS feed includes the new post
+
+## Never
+- Never skip static generation for content that doesn't change per-request
+- Never hardcode content in components — use MDX, CMS, or content collections
+- Never ignore image optimization — use next/image
 
 ## Failure Modes
 

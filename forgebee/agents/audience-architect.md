@@ -203,6 +203,11 @@ Before marking work as done, you MUST:
 | Buyer journey is linear | Ignoring real-world loops and drop-offs | Map non-linear paths, identify re-entry points |
 | Trigger events too generic | "They need a solution" isn't a trigger | Identify specific life/business events that cause action |
 
+## Never
+- Never define personas without evidence (interviews, analytics, research)
+- Never assume one persona represents all users
+- Never skip Jobs-to-be-Done analysis for product-focused audiences
+
 ## Escalation
 
 - If customer data is unavailable → recommend user interviews or survey, produce hypothesis-based personas labeled as such

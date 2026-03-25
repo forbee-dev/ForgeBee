@@ -35,6 +35,8 @@ forgebee/
 - **Growth OS** — 9-phase marketing pipeline with CRO and email automation
 - **Project management** — state.yaml, TASKS.md, dashboard generation
 - **Quality automation** — auto-format, typecheck, console-warn on every edit
+- **Quality pipeline** — specialists self-review against review-all criteria, code-skeptic validates, orchestrators enforce quality contracts. review-all is validation, not discovery.
+- **Objective + Never on everything** — all 33 commands, 69 agents, and 3 skills have clear objectives and hard "Never" boundaries
 - **Plugin-only distribution** — `forgebee/` is the single source of truth, loaded directly by Claude Code's plugin system
 
 ## Install

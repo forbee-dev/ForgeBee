@@ -1,6 +1,6 @@
 ---
 name: woocommerce-cro
-description: WooCommerce CRO subagent for checkout optimization, product page conversion, cart recovery, WooCommerce-specific hooks/filters, and e-commerce funnel analysis. Invoked by conversion-optimizer when WooCommerce is detected.
+description: WooCommerce CRO subagent for checkout optimization, product page conversion, cart recovery, WooCommerce-specific hooks/filters, and e-commerce funnel analysis. Use when optimizing WooCommerce checkout, product pages, or cart recovery.
 tools: Read, Write, Edit, Glob, Grep, Bash
 model: sonnet
 color: red
@@ -224,6 +224,11 @@ add_action( 'woocommerce_review_order_after_submit', function() {
 - [ ] Payment gateways ordered by popularity
 - [ ] Mobile checkout has sticky CTA
 - [ ] All CRO hooks use proper escaping (`esc_html`, `esc_attr`, `esc_url`)
+
+## Never
+- Never modify checkout flow without measuring baseline conversion
+- Never add friction to the purchase path
+- Never ignore mobile checkout experience — majority of traffic is mobile
 
 ## Failure Modes
 

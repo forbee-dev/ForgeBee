@@ -6,6 +6,15 @@ allowed-tools: Read, Write, Bash
 
 # /instinct-import — Import Instincts
 
+## Objective
+
+Import instincts from a YAML file into the current project or global scope.
+
+## Never
+
+- Never overwrite existing active instincts without user confirmation
+- Never import instincts with invalid IDs (path traversal, special characters)
+
 Import instincts from a YAML file into the current project or global scope.
 
 ## Implementation

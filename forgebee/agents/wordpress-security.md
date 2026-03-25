@@ -1,6 +1,6 @@
 ---
 name: wordpress-security
-description: WordPress security subagent for sanitization/escaping audits, nonce verification, capability checks, SQL injection prevention, and WPCS compliance. Invoked by security-auditor when WordPress is detected.
+description: WordPress security subagent for sanitization/escaping audits, nonce verification, capability checks, SQL injection prevention, and WPCS compliance. Use when auditing WordPress code for sanitization, escaping, nonces, and capabilities.
 tools: Read, Glob, Grep, Bash
 model: opus
 color: red
@@ -95,6 +95,11 @@ grep -rn 'password\|secret\|api_key\|token' --include="*.php" | grep -v 'sanitiz
 - [ ] `phpcs --standard=WordPress-Security` passes (if available)
 
 **Evidence required:** Grep output showing zero matches for vulnerability patterns, not "I reviewed the code."
+
+## Never
+- Never approve unescaped output in any context
+- Never approve missing capability checks on admin actions
+- Never approve direct $_GET/$_POST usage without sanitization
 
 ## Failure Modes
 

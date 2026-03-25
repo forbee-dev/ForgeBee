@@ -1,6 +1,6 @@
 ---
 name: wordpress-seo
-description: WordPress SEO subagent for Yoast/RankMath configuration, WordPress XML sitemaps, permalink structure, WP-specific schema markup, and WooCommerce product SEO. Invoked by seo-specialist when WordPress is detected.
+description: WordPress SEO subagent for Yoast/RankMath configuration, WordPress XML sitemaps, permalink structure, WP-specific schema markup, and WooCommerce product SEO. Use when configuring Yoast/RankMath, WordPress sitemaps, or WP-specific schema markup.
 tools: Read, Write, Edit, Glob, Grep, Bash
 model: sonnet
 color: green
@@ -223,6 +223,11 @@ function generate_faq_schema_from_acf( $post_id ) {
 - [ ] ACF content is included in SEO plugin content analysis
 - [ ] `robots.txt` allows crawling of public content, blocks admin/wp-includes
 - [ ] XML sitemap is accessible and includes all public post types
+
+## Never
+- Never override user's Yoast/RankMath settings without documenting why
+- Never create duplicate canonical URLs
+- Never ignore hreflang for multilingual sites
 
 ## Failure Modes
 

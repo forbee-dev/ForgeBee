@@ -59,6 +59,11 @@ Suggestion: <specific test to add or fix>
 
 End with: coverage summary, critical untested paths, recommended next tests to write.
 
+## Never
+- Never approve tests that pass without the feature code
+- Never ignore missing edge case coverage (null, empty, error paths)
+- Never approve tests with hardcoded timing/sleep dependencies
+
 ## Communication
 When working on a team, report:
 - Coverage gaps identified

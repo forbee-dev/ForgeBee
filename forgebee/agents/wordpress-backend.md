@@ -1,6 +1,6 @@
 ---
 name: wordpress-backend
-description: WordPress PHP backend subagent for plugin logic, custom REST endpoints, ACF field handling, hooks, AJAX, and Settings API. Invoked by backend-engineer when WordPress is detected.
+description: WordPress PHP backend subagent for plugin logic, custom REST endpoints, ACF field handling, hooks, AJAX, and Settings API. Use when building WordPress plugin logic, REST endpoints, ACF fields, or hooks.
 tools: Read, Write, Edit, Glob, Grep, Bash
 model: opus
 color: blue
@@ -157,8 +157,11 @@ function my_plugin_init() {
 add_action( 'plugins_loaded', 'my_plugin_init' );
 ```
 
-## Verification
+## Self-Review (before marking done)
 
+You own the quality of your output. Before reporting completion, review your own code against these criteria — the same ones review-all uses. If you'd flag it in a review, fix it now.
+
+**Run and show output:**
 - [ ] Code follows WPCS (run `phpcs --standard=WordPress` if available)
 - [ ] All user input sanitized, all output escaped
 - [ ] Nonces verified on form submissions and AJAX handlers
@@ -168,7 +171,24 @@ add_action( 'plugins_loaded', 'my_plugin_init' );
 - [ ] Hooks use correct priority and argument count
 - [ ] REST endpoints have `permission_callback` (never `__return_true` without reason)
 
-**Evidence required:** Code snippets showing sanitization and escaping, not "I followed WPCS."
+**Code quality (fix, don't just note):**
+- [ ] No DRY violations — extract shared logic into helper functions
+- [ ] Error handling on every code path — no silent failures
+- [ ] Meaningful variable/function names — no abbreviations without context
+- [ ] All hooks properly documented with `@action` or `@filter` PHPDoc tags
+
+**Security (fix before reporting):**
+- [ ] No unescaped output — every `echo` uses `esc_html()`, `esc_attr()`, `esc_url()`, or `wp_kses_post()`
+- [ ] No direct `$_GET`/`$_POST`/`$_REQUEST` access without sanitization — always sanitize first
+- [ ] No hardcoded secrets or credentials
+- [ ] `ABSPATH` check at top of every PHP file (`defined( 'ABSPATH' ) || exit;`)
+
+**Evidence required:** Actual command output and code snippets showing sanitization/escaping, not "I followed WPCS."
+
+## Never
+- Never use raw SQL without $wpdb->prepare()
+- Never skip nonce verification on form/AJAX handlers
+- Never hardcode plugin/theme paths — use plugin_dir_path() and get_template_directory()
 
 ## Failure Modes
 

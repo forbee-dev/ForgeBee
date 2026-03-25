@@ -181,6 +181,11 @@ Before marking work as done, you MUST:
 | Repurposing chains are shallow | Only changing format, not angle | Each derivative should have a unique angle for its platform |
 | Ideas require resources team doesn't have | Suggesting video when team is text-only | Match ideas to stated resource constraints |
 
+## Never
+- Never generate ideas without understanding the brand and audience first
+- Never suggest ideas that require capabilities the team doesn't have
+- Never present quantity over quality — filter before presenting
+
 ## Escalation
 
 - If content pillars are missing → request content-architect output first

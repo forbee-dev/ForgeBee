@@ -6,6 +6,15 @@ allowed-tools: Read, Bash
 
 # /instinct-export — Export Instincts
 
+## Objective
+
+Export instincts to a shareable YAML file for team sharing or machine transfer.
+
+## Never
+
+- Never export pending or rejected instincts — only active ones
+- Never include project-specific file paths that won't exist on other machines
+
 Export instincts to a shareable YAML format. Perfect for sharing with teammates or transferring to a new machine.
 
 ## Implementation

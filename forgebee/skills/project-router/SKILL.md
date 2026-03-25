@@ -11,6 +11,16 @@ version: 1.0.0
 
 # Project Router
 
+## Objective
+
+Detect the project type, stack, and conventions so all subsequent agents use the right guardrails. Fast and accurate — should complete in under 10 seconds.
+
+## Never
+
+- Never guess the stack — verify by reading config files (package.json, composer.json, etc.)
+- Never cache stale triage results — re-detect if the project structure has changed
+- Never skip WordPress detection when wp-config.php or style.css with "Theme Name" exists
+
 Classify the current project and load the right conventions, guardrails, and domain knowledge
 before any work begins. This is the **first skill that should run** in any development session.
 

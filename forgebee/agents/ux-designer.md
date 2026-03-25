@@ -130,6 +130,11 @@ When auditing or designing, evaluate against:
 - Loading states are UX — never leave users staring at a blank screen
 - Progressive disclosure: show the minimum, reveal complexity on demand
 
+## Never
+- Never skip accessibility in user flows — keyboard nav and screen readers are mandatory
+- Never design without understanding the user's task and context
+- Never present wireframes without interaction states (hover, focus, error, loading, empty)
+
 ## Communication
 When working on a team, report:
 - User flows created/modified with file references

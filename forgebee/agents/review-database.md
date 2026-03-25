@@ -62,6 +62,11 @@ Fix: <specific remediation, including migration SQL if needed>
 
 End with a summary: schema health, RLS coverage, query efficiency assessment.
 
+## Never
+- Never approve destructive migrations without rollback verification
+- Never ignore missing indexes on filtered/joined columns
+- Never approve raw SQL with string concatenation
+
 ## Communication
 When working on a team, report:
 - Migration safety assessment

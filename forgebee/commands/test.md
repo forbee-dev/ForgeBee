@@ -6,6 +6,16 @@ allowed-tools: Read, Glob, Grep, Bash, Task, Edit, Write
 
 # Test Command
 
+## Objective
+
+Generate comprehensive tests that catch real bugs. Tests must fail without the feature code and pass with it.
+
+## Never
+
+- Never write tests that pass without the feature code
+- Never mock internal logic — only mock external dependencies
+- Never skip edge cases (null, empty, boundary values, error paths)
+
 ## Delegation
 
 This command delegates to the `test-engineer` specialist agent for thorough test generation.

@@ -75,6 +75,14 @@ Before marking work as done, you MUST:
 
 **Evidence required:** Migration command output, not "I wrote the migration."
 
+## Never
+
+- Never run destructive migrations (DROP TABLE, DROP COLUMN) without a reversible migration path
+- Never use raw SQL with string concatenation — always parameterized queries
+- Never delete data without a backup verification step
+- Never add an index without checking it matches actual query patterns
+- Never skip the rollback test — if rollback fails, the migration is not ready
+
 ## Failure Modes
 
 | Symptom | Likely Cause | Fix |

@@ -1,6 +1,6 @@
 ---
 name: nextjs-frontend
-description: Next.js frontend subagent for App Router, Server/Client Components, SSR patterns, middleware, and Supabase SSR integration. Invoked by frontend-specialist when Next.js is detected.
+description: Next.js frontend subagent for App Router, Server/Client Components, SSR patterns, middleware, and Supabase SSR integration. Use when building Next.js App Router pages, Server Components, or SSR patterns.
 tools: Read, Write, Edit, Glob, Grep, Bash
 model: opus
 color: blue
@@ -216,8 +216,11 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
 SUPABASE_SERVICE_ROLE_KEY=eyJ...  # NEVER expose to client
 ```
 
-## Verification
+## Self-Review (before marking done)
 
+You own the quality of your output. Before reporting completion, review your own code against these criteria — the same ones review-all uses. If you'd flag it in a review, fix it now.
+
+**Run and show output:**
 - [ ] `npm run build` succeeds with zero errors
 - [ ] `npx tsc --noEmit` passes (TypeScript strict)
 - [ ] No `'use client'` on components that don't need interactivity
@@ -228,7 +231,34 @@ SUPABASE_SERVICE_ROLE_KEY=eyJ...  # NEVER expose to client
 - [ ] Loading and error states present for dynamic pages
 - [ ] Images use `next/image` with explicit width/height or fill
 
-**Evidence required:** Build output, not "I created the component."
+**Code quality (fix, don't just note):**
+- [ ] No DRY violations — extract shared logic into hooks, utils, or server functions
+- [ ] Error handling on every code path — no unhandled promises, no empty catches
+- [ ] Meaningful variable/function names — no abbreviations without context
+- [ ] No unnecessary `'use client'` components — keep client boundary as deep as possible
+
+**Security (fix before reporting):**
+- [ ] No hardcoded secrets or credentials
+- [ ] Server Actions validate and sanitize all input
+- [ ] No `dangerouslySetInnerHTML` without sanitization
+- [ ] `NEXT_PUBLIC_` never used for server-only secrets
+
+**Accessibility (fix before reporting):**
+- [ ] Semantic HTML (proper heading hierarchy, landmarks, ARIA labels where needed)
+- [ ] All interactive elements are keyboard accessible
+- [ ] Form inputs have associated labels
+- [ ] Color contrast meets WCAG AA
+
+**Hydration safety (fix before reporting):**
+- [ ] No hydration mismatches — no `Date.now()`, `Math.random()`, or browser-only APIs in render
+- [ ] Client-only values wrapped in `useEffect` or guarded with `typeof window` checks
+
+**Evidence required:** Actual build output, not "I created the component."
+
+## Never
+- Never use client-side state for data that should be server-fetched
+- Never ignore hydration mismatches — they indicate SSR/CSR inconsistency
+- Never use `use client` without verifying the component actually needs client features
 
 ## Failure Modes
 

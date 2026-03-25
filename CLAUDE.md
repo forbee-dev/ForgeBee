@@ -75,16 +75,16 @@ npm run deploy:production # Deploy to production
 - `/plan` — Phased planning workflow: Brief → Requirements → Architecture → Sprint Stories
 
 **Development:**
-- `/review` — Code review (structural, security, performance)
+- `/review` — Code review with file:line references and fix recommendations
 - `/debug` — Delegates to `debugger-detective` agent; systematic debugging with fallback
-- `/architect` — Architecture decisions with trade-off analysis
+- `/architect` — Architecture decisions with trade-off analysis and ADR output
 - `/refactor` — Safe refactoring with test verification
 - `/test` — Delegates to `test-engineer` agent; test generation with fallback
 - `/docs` — Documentation writing (API, guides, ADRs)
 - `/security` — Delegates to `security-auditor` agent; OWASP audit + anti-rationalization gate
 - `/perf` — Performance optimization (profile, optimize, measure)
-- `/migrate` — Version/framework migrations with rollback plans
-- `/deploy` — Deployment with pre-flight checks and rollback
+- `/migrate` — Version/framework migrations with rollback + anti-rationalization gate
+- `/deploy` — Deployment with pre-flight checks, rollback plan + anti-rationalization gate
 - `/browser-debug` — Client-side debugging (console, network, rendering)
 - `/codemaps` — Token-lean architecture documentation for AI context consumption
 
@@ -131,6 +131,8 @@ npm run deploy:production # Deploy to production
 *CRO:* saas-cro
 
 *Review:* review-all, review-code, review-code-style, review-security, review-performance, review-accessibility, review-api, review-database, review-tests, review-docs, review-best-practices, review-wordpress
+
+**Quality Pipeline:** All commands have Objective + Never rules. All code-producing agents self-review against review-all criteria before reporting done. /workflow and /team enforce quality contracts. review-all is the final validation gate — it should find zero critical issues if the pipeline worked correctly.
 
 ---
 

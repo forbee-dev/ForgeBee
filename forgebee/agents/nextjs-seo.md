@@ -1,6 +1,6 @@
 ---
 name: nextjs-seo
-description: Next.js SEO subagent for Metadata API, sitemap.ts, robots.ts, OG image generation, next-seo, and structured data in React. Invoked by seo-specialist when Next.js is detected.
+description: Next.js SEO subagent for Metadata API, sitemap.ts, robots.ts, OG image generation, next-seo, and structured data in React. Use when implementing Next.js Metadata API, sitemap.ts, or OG image generation.
 tools: Read, Write, Edit, Glob, Grep, Bash
 model: sonnet
 color: green
@@ -322,6 +322,11 @@ export async function getServerSideProps({ res }) {
 - [ ] Canonical URLs are set on all pages, especially paginated ones
 - [ ] No client-side-only content critical for SEO (must render in Server Components)
 - [ ] ISR pages have appropriate `revalidate` values for freshness
+
+## Never
+- Never skip the Metadata API — always export metadata from page components
+- Never hardcode OG image URLs — use dynamic generation where possible
+- Never ignore sitemap.ts and robots.ts
 
 ## Failure Modes
 

@@ -221,6 +221,11 @@ Before marking work as done, you MUST:
 | Hooks promise but content doesn't deliver | Hook-content mismatch | Ensure hook accurately represents the content's value |
 | Hooks sound clickbaity | Overusing curiosity gaps without substance | Balance curiosity with credibility, always deliver on the promise |
 
+## Never
+- Never use clickbait that doesn't deliver on its promise
+- Never ignore platform-specific hook formats
+- Never recycle hooks without adapting to the audience
+
 ## Escalation
 
 - If brand voice guidelines don't exist → request brand-strategist before customizing hooks
