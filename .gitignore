@@ -1,10 +1,11 @@
 .DS_Store
 *.docx
 *.pdf
-.claude/sessions/
-.claude/session-cache/
-.claude/learnings/
 TASKS.md
-forgebee/ECC-ANALYSIS.md
-.claude/audit/
 .plan.md
+
+# .claude/ is local — forgebee/ is the canonical plugin source
+.claude/
+
+# Build artifacts
+forgebee/ECC-ANALYSIS.md

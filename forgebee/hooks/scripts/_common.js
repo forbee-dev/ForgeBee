@@ -577,4 +577,12 @@ module.exports = {
 
   // Permission mode
   detectPermissionMode,
+
+  // Backward-compat aliases for legacy .claude/hooks/ scripts
+  PROJECT_DIR: getProjectDir(),
+  initDirs: initializeProjectDirs,
+  readStdinSync: readStdinJsonSync,
+  readJsonFile: (filepath) => {
+    try { return JSON.parse(fs.readFileSync(filepath, 'utf8')); } catch { return null; }
+  },
 };

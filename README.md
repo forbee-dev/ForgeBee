@@ -1,14 +1,14 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Claude_Code-Plugin-7C3AED?style=for-the-badge&logoColor=white" alt="Claude Code" />
   <img src="https://img.shields.io/badge/OpenClaw-Compatible-FF6B35?style=for-the-badge&logoColor=white" alt="OpenClaw" />
-  <img src="https://img.shields.io/badge/version-3.1.1-blue?style=for-the-badge" alt="Version" />
+  <img src="https://img.shields.io/badge/version-4.0.0-blue?style=for-the-badge" alt="Version" />
   <img src="https://img.shields.io/badge/license-MIT-green?style=for-the-badge" alt="License" />
 </p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/agents-69-orange?style=for-the-badge" alt="Agents" />
   <img src="https://img.shields.io/badge/commands-33-red?style=for-the-badge" alt="Commands" />
-  <img src="https://img.shields.io/badge/hooks-24-blueviolet?style=for-the-badge" alt="Hooks" />
+  <img src="https://img.shields.io/badge/hooks-26-blueviolet?style=for-the-badge" alt="Hooks" />
   <img src="https://img.shields.io/badge/skills-3-teal?style=for-the-badge" alt="Skills" />
 </p>
 
@@ -16,9 +16,9 @@
 
 <p align="center">
   <strong>A colony of AI agents forging your product</strong><br/>
-  69 specialist agents. 33 slash commands. 19 lifecycle hooks. 3 skills.<br/>
-  Continuous learning. Adversarial debate. Growth OS. Project management.<br/>
-  Pure Node.js. Zero external dependencies.<br/>
+  69 specialist agents. 33 slash commands. 26 lifecycle hooks. 3 skills.<br/>
+  Mode-aware permissions. Continuous learning. Adversarial debate. Growth OS.<br/>
+  Command-to-agent delegation. Manifest-driven sync. Pure Node.js. Zero deps.<br/>
   <em>Works with Claude Code and OpenClaw.</em>
 </p>
 
@@ -46,8 +46,10 @@ Claude Code and OpenClaw are powerful out of the box. ForgeBee makes them **opin
 | Single-agent, single-pass | 69 specialists working in parallel with blind review |
 | Manual project tracking | Automated state.yaml + markdown dashboards |
 | No marketing workflow | Full 9-phase Growth OS with 13 marketing agents + 3 strategy debate agents |
-| Every session starts from scratch | Continuous learning — instincts persist across sessions |
+| Every session starts from scratch | Continuous learning — heuristic pattern detection + pending instinct approval |
 | Edits break silently | Auto-format, typecheck, and lint on every edit |
+| Permission prompts everywhere | Mode-aware permissions — respects auto-mode and bypass with non-negotiable blocklist |
+| Commands duplicate agent logic | Commands delegate to specialist agents with automatic fallback |
 
 ---
 
@@ -64,20 +66,11 @@ Claude Code and OpenClaw are powerful out of the box. ForgeBee makes them **opin
 Then edit `CLAUDE.md` with your project details and start working. Hooks activate automatically, commands are available immediately.
 
 <details>
-<summary><strong>Other installation methods</strong></summary>
-
-### Plugin from local directory
+<summary><strong>Install from local directory</strong></summary>
 
 ```bash
 git clone git@github.com:forbee-dev/ForgeBee.git
 claude --plugin-dir ./ForgeBee/forgebee
-```
-
-### Manual install (legacy)
-
-```bash
-git clone git@github.com:forbee-dev/ForgeBee.git
-node ForgeBee/install.js /path/to/your/project
 ```
 
 </details>
@@ -108,15 +101,15 @@ Invoke with a slash: `/review`, `/debug`, `/workflow`, etc.
 | Command | Description |
 |:--------|:------------|
 | `/review` | Multi-dimensional code review (structure, security, perf, correctness) |
-| `/debug` | Systematic: reproduce &rarr; isolate &rarr; diagnose &rarr; fix &rarr; prevent |
+| `/debug` | Delegates to `debugger-detective` agent; systematic reproduce &rarr; isolate &rarr; fix |
 | `/architect` | Architecture decisions with trade-off matrices and ADR generation |
 | `/refactor` | Safe refactoring with test verification at each step |
-| `/test` | Test generation: unit &rarr; integration &rarr; e2e |
+| `/test` | Delegates to `test-engineer` agent; unit &rarr; integration &rarr; e2e |
 | `/docs` | API docs, READMEs, ADRs, guides |
-| `/security` | OWASP Top 10 audit with threat modeling |
+| `/security` | Delegates to `security-auditor` agent; OWASP Top 10 + anti-rationalization gate |
 | `/perf` | Profile &rarr; optimize &rarr; measure |
-| `/migrate` | Version/framework migration with rollback plans |
-| `/deploy` | Pre-flight checks, rollout, post-deploy verification |
+| `/migrate` | Version/framework migration with rollback plans + anti-rationalization gate |
+| `/deploy` | Pre-flight checks, rollout, post-deploy verification + anti-rationalization gate |
 | `/browser-debug` | Console, network, rendering, Core Web Vitals |
 | `/codemaps` | Token-lean architecture docs for AI context consumption |
 
@@ -139,7 +132,7 @@ Invoke with a slash: `/review`, `/debug`, `/workflow`, etc.
 
 | Command | Description |
 |:--------|:------------|
-| `/learn` | Analyze session observations and extract patterns as instincts |
+| `/learn` | Review pending instincts (auto-detected) + analyze observations for new patterns |
 | `/evolve` | Cluster related instincts into skills, commands, or agents |
 | `/instinct-status` | Show all learned instincts (project + global) with confidence scores |
 | `/instinct-export` | Export instincts to a shareable file |
@@ -149,8 +142,8 @@ Invoke with a slash: `/review`, `/debug`, `/workflow`, etc.
 
 | Command | Description |
 |:--------|:------------|
-| `/workflow` | **Full pipeline**: Plan &rarr; Debate &rarr; Architect &rarr; Scrum &rarr; Execute &rarr; Debate &rarr; Verify &rarr; Deliver |
-| `/team` | Lightweight multi-agent orchestration (no debate ceremony) |
+| `/workflow` | **Full pipeline**: Plan &rarr; Batched Debate &rarr; Architect &rarr; Scrum &rarr; Execute (JSON contracts) &rarr; Debate &rarr; Deliver |
+| `/team` | Multi-agent orchestration with dependency graphs + checkpoints at 3+ agents |
 | `/idea` | Idea &rarr; validate &rarr; debate &rarr; MVP &rarr; roadmap |
 | `/pm` | Project dashboard from `state.yaml` |
 | `/audit` | Governance audit trail — permission decisions, debate rulings, verification results |
@@ -313,7 +306,7 @@ Invoke with a slash: `/review`, `/debug`, `/workflow`, etc.
 
 ## Hooks
 
-19 hook scripts run automatically on Claude Code lifecycle events across 9 event types. No invocation needed.
+26 hooks run automatically on Claude Code lifecycle events across 9 event types. No invocation needed.
 
 **Session & state management:**
 
@@ -335,7 +328,7 @@ Invoke with a slash: `/review`, `/debug`, `/workflow`, etc.
 | `post-edit-typecheck` | `PostToolUse` (Edit) | Runs `tsc --noEmit` after editing .ts/.tsx files |
 | `post-edit-console-warn` | `PostToolUse` (Edit) | Warns about `console.log` in edited files |
 | `console-log-audit` | `Stop` | Audits all modified files for console.log at session end |
-| `permission-guard` | `PreToolUse` (Bash) | 4-tier command safety: blocklist &rarr; allowlist &rarr; cache &rarr; ask |
+| `permission-guard` | `PreToolUse` (Bash) | Mode-aware command safety: detects auto/bypass/default; Tier 0 blocklist always active |
 | `dev-server-blocker` | `PreToolUse` (Bash) | Blocks `npm run dev` outside tmux |
 | `git-push-reminder` | `PreToolUse` (Bash) | Warns before pushing to main/master |
 | `suggest-compact` | `PreToolUse` (Edit\|Write) | Suggests `/compact` at logical breakpoints |
@@ -344,14 +337,14 @@ Invoke with a slash: `/review`, `/debug`, `/workflow`, etc.
 
 | Hook | Event | What it does |
 |:-----|:------|:------------|
-| `observe` | `PostToolUse` (*) | Captures every tool call for pattern extraction |
+| `observe` | `PreToolUse` + `PostToolUse` (*) | Captures every tool call lifecycle for pattern extraction |
 
 **Intelligence & governance:**
 
 | Hook | Event | What it does |
 |:-----|:------|:------------|
 | `skill-activator` | `UserPromptSubmit` | Intent detection + skill recommendations |
-| `self-improve` | `Stop` | Captures patterns into learnings |
+| `self-improve` | `Stop` | Captures patterns + runs heuristic engine to flag pending instincts |
 | `checkpoint` | Phase transitions | Saves pipeline state for crash recovery |
 | `audit-trail` | All governance events | Append-only JSONL log of permissions, debates, verifications |
 
@@ -366,16 +359,19 @@ Invoke with a slash: `/review`, `/debug`, `/workflow`, etc.
 
 ## Continuous Learning
 
-ForgeBee learns from your sessions automatically. Every tool call is observed, patterns are extracted as **instincts** — atomic learned behaviors with confidence scoring.
+ForgeBee learns from your sessions automatically. Every tool call is observed (PreToolUse + PostToolUse), patterns are detected by a heuristic engine, and candidates are surfaced for your approval.
 
 ```
 Session Activity (every tool call)
       │
       ▼
-  observations.jsonl (automatic)
+  observations.jsonl (automatic — Pre + Post)
       │
-      ▼  /learn
-  instincts/personal/ (project-scoped)
+      ▼  Stop hook heuristics (no API calls)
+  pending-instincts.jsonl (auto-detected candidates)
+      │
+      ▼  /learn (review + approve/reject)
+  instincts/personal/ (project-scoped, active)
       │
       ▼  /evolve
   evolved/ → skills, commands, agents
@@ -383,6 +379,8 @@ Session Activity (every tool call)
 
 **Key concepts:**
 
+- **Two-stage pipeline** — heuristics flag candidates automatically; `/learn` lets you review and approve
+- **Pending instincts** — auto-detected patterns start in `pending` state, never activate without your approval
 - **Instincts** are atomic patterns: one trigger, one action, confidence-scored (0.3–0.9)
 - **Project-scoped** by default — React patterns stay in your React project, Python conventions in your Python project
 - **Global promotion** — when the same instinct appears in 2+ projects with ≥0.8 confidence, it's promoted to global
@@ -463,8 +461,10 @@ your-project/
     ├── settings.json
     ├── sessions/                      # Session snapshots
     ├── session-cache/                 # Permissions + skill manifest
+    ├── audit/                         # Governance audit trail (JSONL)
     └── learnings/
-        └── learnings.md              # Auto-captured patterns
+        ├── learnings.md              # Auto-captured patterns
+        └── pending-instincts.jsonl   # Heuristic-detected candidates
 
 ~/.claude/forgebee-learning/           # Continuous learning (persists globally)
 ├── projects.json                      # Project registry

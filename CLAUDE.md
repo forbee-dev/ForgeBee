@@ -76,12 +76,12 @@ npm run deploy:production # Deploy to production
 
 **Development:**
 - `/review` — Code review (structural, security, performance)
-- `/debug` — Systematic debugging (reproduce, isolate, fix)
+- `/debug` — Delegates to `debugger-detective` agent; systematic debugging with fallback
 - `/architect` — Architecture decisions with trade-off analysis
 - `/refactor` — Safe refactoring with test verification
-- `/test` — Test generation (unit, integration, e2e)
+- `/test` — Delegates to `test-engineer` agent; test generation with fallback
 - `/docs` — Documentation writing (API, guides, ADRs)
-- `/security` — Security audit (OWASP, secrets, dependencies)
+- `/security` — Delegates to `security-auditor` agent; OWASP audit + anti-rationalization gate
 - `/perf` — Performance optimization (profile, optimize, measure)
 - `/migrate` — Version/framework migrations with rollback plans
 - `/deploy` — Deployment with pre-flight checks and rollback
@@ -101,15 +101,15 @@ npm run deploy:production # Deploy to production
 - `/analytics` — Event tracking, dashboards, marketing performance metrics
 
 **Learning:**
-- `/learn` — Analyze session observations and extract patterns as instincts
+- `/learn` — Review pending instincts (auto-detected) + analyze observations for new patterns
 - `/evolve` — Cluster related instincts into skills, commands, or agents
 - `/instinct-status` — Show all learned instincts (project + global) with confidence scores
 - `/instinct-export` — Export instincts to a shareable file
 - `/instinct-import` — Import instincts from a file
 
 **Meta:**
-- `/workflow` — Full pipeline orchestrator: Plan → Debate → Architect → Scrum → Execute → Debate → Deliver (with adversarial review). Auto-tracks in PM system.
-- `/team` — Lightweight multi-agent orchestration (ad-hoc delegation without debate ceremony)
+- `/workflow` — Full pipeline orchestrator: Plan → Batched Debate → Architect → Scrum → Execute (JSON contracts) → Debate → Deliver. Auto-tracks in PM system.
+- `/team` — Multi-agent orchestration with dependency graphs + checkpoints at 3+ agents
 - `/idea` — Idea-to-product validation and MVP planning (with debate). Auto-tracks in PM system.
 - `/pm` — Automated project management: reads state.yaml, syncs TASKS.md, regenerates dashboards, surfaces blockers
 - `/audit` — Governance audit trail: query permission decisions, debate rulings, verification results, escalations

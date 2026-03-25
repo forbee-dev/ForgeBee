@@ -1,7 +1,7 @@
 {
   "name": "forgebee",
-  "version": "3.1.2",
-  "description": "Batteries-included development and growth framework for Claude Code — 33 slash commands, 69 specialist agents (including 12 review sub-agents), 24 lifecycle hooks across 9 events, 3 skills, adversarial debate system (dev + strategy), continuous learning with instinct-based pattern extraction and confidence scoring, evidence-based verification gates, TDD enforcement, intent detection, crash recovery checkpointing, governance audit trail, agent contract validation, Growth OS 9-phase marketing pipeline with CRO and email automation, and automated project management.",
+  "version": "4.0.0",
+  "description": "Batteries-included development and growth framework for Claude Code — 33 slash commands, 69 specialist agents (including 12 review sub-agents), 26 lifecycle hooks across 9 events, 3 skills, mode-aware permission system (auto/bypass/default with non-negotiable blocklist), adversarial debate system with batched debates (dev + strategy), continuous learning with heuristic pattern detection and pending-instinct approval workflow, command-to-agent delegation with fallback, manifest-driven sync tooling, JSON handoff contracts, anti-rationalization gates, evidence-based verification gates, TDD enforcement, crash recovery checkpointing, governance audit trail, agent contract validation, Growth OS 9-phase marketing pipeline with CRO and email automation, and automated project management.",
   "author": {
     "name": "Forbee Dev"
   },
@@ -45,6 +45,13 @@
     "continuous-learning",
     "instincts",
     "pattern-extraction",
-    "observation-hooks"
+    "observation-hooks",
+    "permission-modes",
+    "auto-mode",
+    "command-delegation",
+    "sync-tooling",
+    "handoff-contracts",
+    "anti-rationalization",
+    "heuristic-learning"
   ]
 }
