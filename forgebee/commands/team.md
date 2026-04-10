@@ -65,7 +65,18 @@ Dispatch agents with clear context — they don't share your conversation. Each 
 
 **If 3+ agents:** Checkpoint after each agent completes for crash recovery. On failure, offer to resume from last completed agent.
 
-**Quality mandate:** Every specialist must self-review their output against review-all criteria (code quality, security, performance, accessibility) before reporting done. Reject output without evidence (test output, lint output, build output).
+**Agent Status Protocol:** Every specialist must report one of:
+
+| Status | Meaning | Your response |
+|--------|---------|---------------|
+| `DONE` | Work complete, self-review passed | Proceed |
+| `DONE_WITH_CONCERNS` | Complete but has trade-offs/risks | Show concerns to user, proceed unless they say stop |
+| `BLOCKED` | Cannot complete | Show blocker, re-route or escalate to user |
+| `NEEDS_CONTEXT` | Missing info from the session | Re-dispatch with additional context |
+
+Reject any response without a status. If `BLOCKED` twice on same issue → escalate to user.
+
+**Quality mandate:** Every specialist must self-review their output against review-all criteria (code quality, security, performance, accessibility) before reporting `DONE`. Reject output without evidence (test output, lint output, build output).
 
 ## Step 4: Quality Gate & Deliver
 

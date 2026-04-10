@@ -2,6 +2,18 @@
 
 > Auto-managed by ForgeBee. Edit freely — hooks will append to the bottom sections.
 
+## Instruction Priority
+
+When instructions conflict, follow this precedence (highest first):
+
+1. **User's explicit instructions** — CLAUDE.md overrides, direct requests in chat
+2. **Inline skills** — skills running in session context (e.g., review-all)
+3. **Forked skills** — skills with `context: fork` (e.g., debate agents)
+4. **Subagents** — specialist agents dispatched by orchestrators
+5. **Default system prompt** — Claude Code's built-in behavior
+
+User instructions always win. Skills override agent defaults. When a skill says one thing and an agent says another, the skill takes precedence.
+
 ## Me
 <!-- Your role and team context -->
 - Role: [Your role, e.g. "Senior Backend Engineer"]
@@ -118,9 +130,9 @@ npm run deploy:production # Deploy to production
 
 *Development:* frontend, backend, database, security, testing, devops, perf, debug, research, content, seo, supabase, ios, flutter, n8n, session-librarian, ux-designer, scrum-master, delivery-agent, dashboard-generator, verification-enforcer, tdd-enforcer, contract-validator
 
-*Dev Debate:* requirements-advocate, requirements-skeptic, requirements-judge, code-advocate, code-skeptic, code-judge
+*Dev Debate (context:fork skills):* requirements-advocate, requirements-skeptic, requirements-judge, code-advocate, code-skeptic, code-judge
 
-*Strategy Debate:* strategy-advocate, strategy-skeptic, strategy-judge
+*Strategy Debate (context:fork skills):* strategy-advocate, strategy-skeptic, strategy-judge
 
 *Growth OS:* brand-strategist, market-intel, audience-architect, content-architect, hook-engineer, idea-machine, engagement-strategist, content-creator, growth-hacker, calendar-builder, performance-analyst, conversion-optimizer, email-strategist
 
@@ -130,9 +142,11 @@ npm run deploy:production # Deploy to production
 
 *CRO:* saas-cro
 
-*Review:* review-all, review-code, review-code-style, review-security, review-performance, review-accessibility, review-api, review-database, review-tests, review-docs, review-best-practices, review-wordpress
+*Review (context:fork skills):* review-code, review-code-style, review-security, review-performance, review-accessibility, review-api, review-database, review-tests, review-docs, review-best-practices, review-wordpress
 
-**Quality Pipeline:** All commands have Objective + Never rules. All code-producing agents self-review against review-all criteria before reporting done. /workflow and /team enforce quality contracts. review-all is the final validation gate — it should find zero critical issues if the pipeline worked correctly.
+*Review (inline skill):* review-all — runs in session context for efficiency, delegates to review agents for large diffs (>500 lines)
+
+**Quality Pipeline:** All commands have Objective + Never rules. All code-producing agents self-review against review-all criteria before reporting `DONE`. Agents report status: `DONE`, `DONE_WITH_CONCERNS`, `BLOCKED`, or `NEEDS_CONTEXT`. /workflow and /team enforce quality contracts and handle each status. review-all is the final validation gate — only Critical/High issues block the push.
 
 ---
 

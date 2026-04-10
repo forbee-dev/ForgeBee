@@ -91,15 +91,11 @@ When the user wants to initialize ForgeBee for their project:
 - `/pm` — Automated project management dashboards
 - `/audit` — Governance audit trail: permissions, debates, verifications
 
-## Specialist Agents (53)
+## Specialist Agents (48)
 
 For Agent Teams delegation:
 
 *Development:* frontend, backend, database, security, testing, devops, perf, debug, research, content, seo, supabase, ios, flutter, n8n, session-librarian, ux-designer, scrum-master, delivery-agent, dashboard-generator, verification-enforcer, tdd-enforcer, contract-validator
-
-*Dev Debate:* requirements-advocate, requirements-skeptic, requirements-judge, code-advocate, code-skeptic, code-judge
-
-*Strategy Debate:* strategy-advocate, strategy-skeptic, strategy-judge
 
 *Growth OS:* brand-strategist, market-intel, audience-architect, content-architect, hook-engineer, idea-machine, engagement-strategist, content-creator, growth-hacker, calendar-builder, performance-analyst, conversion-optimizer, email-strategist
 
@@ -108,6 +104,32 @@ For Agent Teams delegation:
 *Next.js:* nextjs-frontend, nextjs-content, nextjs-seo
 
 *CRO:* saas-cro
+
+## Skills (24)
+
+*Review (inline):* review-all
+
+*Review (context:fork):* review-code, review-code-style, review-security, review-performance, review-accessibility, review-api, review-database, review-tests, review-docs, review-best-practices, review-wordpress
+
+*Dev Debate (context:fork):* requirements-advocate, requirements-skeptic, requirements-judge, code-advocate, code-skeptic, code-judge
+
+*Strategy Debate (context:fork):* strategy-advocate, strategy-skeptic, strategy-judge
+
+*Utility:* forgebee-setup, project-router, continuous-learning
+
+## Permission Mode Recommendation
+
+For experienced users, recommend **auto mode** for the best ForgeBee experience:
+
+```bash
+claude --permission-mode auto
+```
+
+Auto mode uses Claude's AI safety classifier to approve safe operations automatically while blocking dangerous ones. ForgeBee's Tier 0 blocklist still fires before the classifier for maximum safety.
+
+**Requirements:** Team/Enterprise plan, Anthropic API, Sonnet 4.6 or Opus 4.6.
+
+For users who can't use auto mode, the default permission mode works well — ForgeBee's built-in allowlist handles common safe commands.
 
 ## Additional Resources
 

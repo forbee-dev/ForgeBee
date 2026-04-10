@@ -29,11 +29,6 @@
             "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/pm-sync.js",
             "timeout": 5
           },
-          {
-            "type": "command",
-            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/context-guard.js",
-            "timeout": 10
-          }
         ]
       }
     ],
@@ -172,6 +167,18 @@
         ]
       }
     ],
+    "PermissionDenied": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/permission-denied-logger.js",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
     "Notification": [
       {
         "matcher": "",
@@ -190,7 +197,7 @@
         "hooks": [
           {
             "type": "prompt",
-            "prompt": "A task was marked as completed. Before accepting, you MUST collect concrete evidence:\n\n1. Run the test suite and capture output (not just 'tests pass' — show the actual output)\n2. Check build status if applicable\n3. Verify each acceptance criterion has specific evidence\n\nIf you cannot run verification commands, or if any test fails, or if acceptance criteria lack evidence, respond with {\"ok\": false, \"reason\": \"[specific missing evidence]\"}.\n\nOnly respond {\"ok\": true} if you have ACTUAL command output proving completion. 'I reviewed the code' is NOT verification — running commands is.",
+            "prompt": "A task was marked as completed. Verify it is actually done:\n\n1. If the task involved code changes: check that the relevant files exist and contain the expected changes (use Read/Grep)\n2. If there is a test suite: run it and confirm tests pass\n3. If the task was skipped by design or is config/documentation only: accept with {\"ok\": true}\n\nRespond {\"ok\": true} if the work is done. Respond {\"ok\": false, \"reason\": \"...\"} only if you find concrete evidence the task is NOT done (missing files, broken syntax, etc). Do NOT reject just because you cannot run a test suite — many tasks are config/markdown changes with no tests.",
             "timeout": 30
           }
         ]

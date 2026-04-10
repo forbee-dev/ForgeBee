@@ -1,6 +1,6 @@
 ---
 name: workflow
-description: Full-pipeline orchestrator — delegates through Plan → Debate → Architect → Scrum → Execute → Debate → Deliver. Never executes tasks directly; connects the dots and ships requirements to specialist agents.
+description: Full-pipeline orchestrator — delegates through Plan → Debate → Architect → Work Breakdown → Execute → Debate → Deliver. Scrum phase is optional (user-prompted). Never executes tasks directly; connects the dots and ships requirements to specialist agents.
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Task, WebSearch
 ---
 
@@ -27,10 +27,10 @@ Before anything else, determine the right pipeline depth. Propose to the user an
 | Complexity | Signal | Pipeline |
 |------------|--------|----------|
 | **Trivial** | Bug fix, typo, config change | Skip /workflow — use /team or do directly |
-| **Small** | 1-2 files, clear scope, no auth/payments/data | Plan → Stories → Execute → Deliver |
-| **Medium** | 3-5 files, new feature | Plan → Req Debate → Architect → Stories → Execute → Deliver |
-| **Large** | 5+ files, cross-cutting concerns | Full pipeline (all phases) |
-| **Critical** | Auth, payments, data model, security | Full pipeline with mandatory debates |
+| **Small** | 1-2 files, clear scope, no auth/payments/data | Plan → Delegate → Execute → Deliver |
+| **Medium** | 3-5 files, new feature | Plan → Req Debate → Architect → **Prompt** → Execute → Deliver |
+| **Large** | 5+ files, cross-cutting concerns | Full pipeline (all phases, **Prompt** before scrum) |
+| **Critical** | Auth, payments, data model, security | Full pipeline with mandatory debates (**Prompt** before scrum) |
 
 If the task touches auth, payments, or data models — always route to Critical regardless of file count.
 
@@ -97,14 +97,28 @@ Delegate to `/architect` with:
 
 ---
 
-### Stories
+### Work Breakdown (user choice required)
 
-Delegate to `scrum-master` with:
-- Approved requirements
-- Architecture decisions
-- Dependency constraints
+After architecture is ready, present:
 
-**Output required:** Story files in `docs/planning/stories/`
+```markdown
+## Work Breakdown
+
+Brief and architecture are ready. How do you want to proceed?
+
+1. **Full sprint planning** → scrum-master creates stories with estimates, acceptance criteria, dependency graph in `docs/planning/stories/`
+2. **Direct delegation** → I'll build an execution plan directly from the architecture decisions (no story files, no estimation ceremony)
+```
+
+**Wait for user choice.**
+
+**Option 1 — Full sprint planning:**
+Delegate to `scrum-master` with approved requirements, architecture decisions, and dependency constraints. Output: story files in `docs/planning/stories/`.
+
+**Option 2 — Direct delegation:**
+Build the execution plan yourself (next section) by decomposing the architecture decisions into workstreams. Each workstream gets: agent, files to modify, acceptance criteria derived from the ADR. No story files, no T-shirt sizing.
+
+For **Small** complexity: always use Option 2 (skip this prompt entirely).
 
 ---
 
@@ -159,7 +173,18 @@ All three keys required. Do NOT dispatch without them.
 - Always include `security-auditor` for auth/data stories
 - Always include `test-engineer` for code-producing stories
 
-**Quality mandate:** Every specialist MUST self-review before reporting done — same criteria as review-all: code quality (DRY, error handling), security (no injection, no secrets, input validation), performance (no N+1), accessibility (if UI). Reject output without self-review evidence. Phase 7 validates — it should not discover basic quality issues.
+**Agent Status Protocol:** Every specialist must report one of:
+
+| Status | Meaning | Your response |
+|--------|---------|---------------|
+| `DONE` | Work complete, self-review passed | Proceed to next phase |
+| `DONE_WITH_CONCERNS` | Work complete but has trade-offs or risks | Show concerns to user, proceed unless they say stop |
+| `BLOCKED` | Cannot complete — missing info, failing deps, unclear requirements | Show blocker, offer to re-route to another agent or escalate to user |
+| `NEEDS_CONTEXT` | Needs information from the session that wasn't in the handoff | Re-dispatch with additional context from the conversation |
+
+Reject any response that doesn't include a status. If an agent reports `BLOCKED` twice on the same issue, escalate to the user.
+
+**Quality mandate:** Every specialist MUST self-review before reporting `DONE` — same criteria as review-all: code quality (DRY, error handling), security (no injection, no secrets, input validation), performance (no N+1), accessibility (if UI). Reject output without self-review evidence. Phase 7 validates — it should not discover basic quality issues.
 
 ---
 

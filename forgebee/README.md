@@ -9,11 +9,16 @@ forgebee/
 ├── hooks/
 │   ├── hooks.json           # Hook event wiring (26 hooks across 9 events)
 │   └── scripts/             # 20 lifecycle hook scripts (Node.js)
-├── agents/                  # 69 specialist agents (including 12 review sub-agents)
+├── agents/                  # 48 specialist agents (execution & routing)
 ├── commands/                # 33 slash commands
 ├── contexts/                # 3 session modes (dev, research, review)
 ├── rules/                   # Language-specific conventions (common, TS, PHP, Python)
 ├── skills/
+│   ├── review-all/          # Inline skill — pre-push quality gate (session context)
+│   ├── review-*/            # 11 context:fork review skills (delegated for large diffs)
+│   ├── code-*/              # 3 context:fork debate skills (blind code debate)
+│   ├── requirements-*/      # 3 context:fork debate skills (blind requirements debate)
+│   ├── strategy-*/          # 3 context:fork debate skills (blind strategy debate)
 │   ├── continuous-learning/ # Instinct-based learning system
 │   ├── forgebee-setup/      # Project initialization
 │   └── project-router/      # Auto-detect project type and conventions
@@ -24,19 +29,21 @@ forgebee/
 ## Key Features
 
 - **33 slash commands** — planning, development, growth, marketing, meta, learning
-- **69 specialist agents** — dev, debate, strategy, growth OS, review sub-agents (all with "Use When" triggers)
-- **26 lifecycle hooks** across 9 events — session management, quality gates, observation
-- **Mode-aware permissions** — detects auto/bypass/default from Claude Code settings; Tier 0 blocklist active in ALL modes; configurable glob allowlist; command substitution blocking
-- **Command-to-agent delegation** — `/debug`, `/security`, `/test` delegate to specialist agents with automatic fallback
-- **Anti-rationalization gates** — `/deploy`, `/security`, `/migrate` include hard gates against common rationalizations
-- **Continuous learning** — two-stage pipeline: heuristic pattern detection (Stop hook, no API calls) + pending instinct approval via `/learn`
-- **Adversarial debate** — advocate/skeptic/judge for requirements, code, and strategy — batched (max 10 items) for cost efficiency
+- **48 specialist agents** — dev, growth OS, WordPress, Next.js, CRO specialists
+- **24 skills** — 1 inline (review-all), 20 context:fork (reviews + debates), 3 utility
+- **26 lifecycle hooks** across 10 events — session management, quality gates, observation, PermissionDenied logging
+- **Three execution modes** — inline skills (session context, lowest tokens), context:fork skills (isolated, medium), subagents (parallel, highest)
+- **Agent status protocol** — agents report DONE/DONE_WITH_CONCERNS/BLOCKED/NEEDS_CONTEXT; orchestrators handle each
+- **Adaptive pipeline** — `/workflow` scrum phase is promptable (full sprint planning OR direct delegation)
+- **Review calibration** — only Critical/High block push; Medium/Low are recommendations
+- **Instruction priority** — CLAUDE.md > Inline skills > Forked skills > Subagents > Defaults
+- **Mode-aware permissions** — detects auto/bypass/default; Tier 0 blocklist in ALL modes; auto mode recommended for experienced users
+- **Adversarial debate** — advocate/skeptic/judge as context:fork skills — blind isolation with less overhead
 - **JSON handoff contracts** — structured context packages for workflow-to-agent dispatch
 - **Growth OS** — 9-phase marketing pipeline with CRO and email automation
 - **Project management** — state.yaml, TASKS.md, dashboard generation
-- **Quality automation** — auto-format, typecheck, console-warn on every edit
-- **Quality pipeline** — specialists self-review against review-all criteria, code-skeptic validates, orchestrators enforce quality contracts. review-all is validation, not discovery.
-- **Objective + Never on everything** — all 33 commands, 69 agents, and 3 skills have clear objectives and hard "Never" boundaries
+- **Quality pipeline** — specialists self-review before reporting DONE, review-all runs inline with session context as final gate
+- **Objective + Never on everything** — all 33 commands, 48 agents, and 24 skills have clear objectives and hard "Never" boundaries
 - **Plugin-only distribution** — `forgebee/` is the single source of truth, loaded directly by Claude Code's plugin system
 
 ## Install
