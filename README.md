@@ -1,24 +1,24 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Claude_Code-Plugin-7C3AED?style=for-the-badge&logoColor=white" alt="Claude Code" />
   <img src="https://img.shields.io/badge/OpenClaw-Compatible-FF6B35?style=for-the-badge&logoColor=white" alt="OpenClaw" />
-  <img src="https://img.shields.io/badge/version-4.0.0-blue?style=for-the-badge" alt="Version" />
+  <img src="https://img.shields.io/badge/version-4.1.0-blue?style=for-the-badge" alt="Version" />
   <img src="https://img.shields.io/badge/license-MIT-green?style=for-the-badge" alt="License" />
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/agents-69-orange?style=for-the-badge" alt="Agents" />
+  <img src="https://img.shields.io/badge/agents-48-orange?style=for-the-badge" alt="Agents" />
   <img src="https://img.shields.io/badge/commands-33-red?style=for-the-badge" alt="Commands" />
   <img src="https://img.shields.io/badge/hooks-26-blueviolet?style=for-the-badge" alt="Hooks" />
-  <img src="https://img.shields.io/badge/skills-3-teal?style=for-the-badge" alt="Skills" />
+  <img src="https://img.shields.io/badge/skills-24-teal?style=for-the-badge" alt="Skills" />
 </p>
 
 <h1 align="center">ForgeBee</h1>
 
 <p align="center">
   <strong>A colony of AI agents forging your product</strong><br/>
-  69 specialist agents. 33 slash commands. 26 lifecycle hooks. 3 skills.<br/>
-  Mode-aware permissions. Continuous learning. Adversarial debate. Growth OS.<br/>
-  Command-to-agent delegation. Manifest-driven sync. Pure Node.js. Zero deps.<br/>
+  48 specialist agents. 24 skills. 33 slash commands. 26 lifecycle hooks.<br/>
+  Three execution modes: inline skills, context:fork, subagents.<br/>
+  Adaptive pipeline. Agent status protocol. Review calibration. Continuous learning.<br/>
   <em>Works with Claude Code and OpenClaw.</em>
 </p>
 
@@ -43,7 +43,7 @@ Claude Code and OpenClaw are powerful out of the box. ForgeBee makes them **opin
 |:--|:--|
 | Agent jumps straight into coding | Agent plans, debates requirements, then codes |
 | "It should work" | Evidence-based verification with actual test output |
-| Single-agent, single-pass | 69 specialists working in parallel with blind review |
+| Single-agent, single-pass | 48 agents + 24 skills working in parallel with blind review |
 | Manual project tracking | Automated state.yaml + markdown dashboards |
 | No marketing workflow | Full 9-phase Growth OS with 13 marketing agents + 3 strategy debate agents |
 | Every session starts from scratch | Continuous learning — heuristic pattern detection + pending instinct approval |
@@ -144,7 +144,7 @@ Invoke with a slash: `/review`, `/debug`, `/workflow`, etc.
 
 | Command | Description |
 |:--------|:------------|
-| `/workflow` | **Full pipeline**: Plan &rarr; Batched Debate &rarr; Architect &rarr; Scrum &rarr; Execute (JSON contracts) &rarr; Debate &rarr; Deliver |
+| `/workflow` | **Full pipeline**: Plan &rarr; Debate &rarr; Architect &rarr; **Work Breakdown** (promptable) &rarr; Execute &rarr; Debate &rarr; Deliver |
 | `/team` | Multi-agent orchestration with dependency graphs + checkpoints at 3+ agents |
 | `/idea` | Idea &rarr; validate &rarr; debate &rarr; MVP &rarr; roadmap |
 | `/pm` | Project dashboard from `state.yaml` |
@@ -154,7 +154,9 @@ Invoke with a slash: `/review`, `/debug`, `/workflow`, etc.
 
 ## Agents
 
-69 specialist agents for Claude Code's Agent Teams. Use them directly or let `/team` and `/workflow` orchestrate automatically.
+48 specialist agents + 24 skills for Claude Code's Agent Teams. Use them directly or let `/team` and `/workflow` orchestrate automatically.
+
+> **v4.1 migration:** 21 agents moved to skills — 9 debate agents and 12 review agents now use `context:fork` for efficient isolated execution. `review-all` is an inline skill that runs in session context.
 
 <details>
 <summary><strong>Development</strong> (8 agents)</summary>
@@ -186,26 +188,26 @@ Invoke with a slash: `/review`, `/debug`, `/workflow`, etc.
 </details>
 
 <details>
-<summary><strong>Dev Debate</strong> (6 agents)</summary>
+<summary><strong>Dev Debate</strong> (6 context:fork skills)</summary>
 
-| Agent | Role |
+| Skill | Role |
 |:------|:-----|
-| `requirements-advocate` | Defends planning artifacts (blind) |
-| `requirements-skeptic` | Challenges planning artifacts (blind) |
+| `requirements-advocate` | Defends planning artifacts (blind, isolated) |
+| `requirements-skeptic` | Challenges planning artifacts (blind, isolated) |
 | `requirements-judge` | Rules: approve / block / flag |
-| `code-advocate` | Defends implementation (blind) |
-| `code-skeptic` | Challenges implementation (blind) |
+| `code-advocate` | Defends implementation (blind, isolated) |
+| `code-skeptic` | Challenges implementation (blind, isolated) |
 | `code-judge` | Rules: approve / block / flag |
 
 </details>
 
 <details>
-<summary><strong>Strategy Debate</strong> (3 agents)</summary>
+<summary><strong>Strategy Debate</strong> (3 context:fork skills)</summary>
 
-| Agent | Role |
+| Skill | Role |
 |:------|:-----|
-| `strategy-advocate` | Defends marketing strategy (blind) |
-| `strategy-skeptic` | Challenges marketing strategy (blind) |
+| `strategy-advocate` | Defends marketing strategy (blind, isolated) |
+| `strategy-skeptic` | Challenges marketing strategy (blind, isolated) |
 | `strategy-judge` | Rules: approve / block / flag |
 
 </details>
@@ -285,22 +287,24 @@ Invoke with a slash: `/review`, `/debug`, `/workflow`, etc.
 </details>
 
 <details>
-<summary><strong>Review Sub-Agents</strong> (12 agents) &mdash; NEW in v3.1</summary>
+<summary><strong>Review Skills</strong> (12 skills) &mdash; migrated to skills in v4.1</summary>
 
-| Agent | Focus |
-|:------|:------|
-| `review-all` | Full pre-push quality gate (all checks) |
-| `review-code` | Logic errors, DRY, error handling, dead code |
-| `review-code-style` | Convention adherence, imports, naming, file org |
-| `review-security` | OWASP Top 10, injection, auth, secrets |
-| `review-performance` | N+1 queries, memory leaks, missing caching |
-| `review-accessibility` | WCAG 2.1 AA compliance |
-| `review-api` | API design, validation, rate limiting, REST consistency |
-| `review-database` | Migrations, RLS, schema, query patterns |
-| `review-tests` | Coverage, test quality, mocking, structure |
-| `review-docs` | Docblocks, comments, parameter docs |
-| `review-best-practices` | SOLID, design patterns, architecture health |
-| `review-wordpress` | WP coding standards, security, plugin architecture |
+| Skill | Type | Focus |
+|:------|:-----|:------|
+| `review-all` | **Inline** (session context) | Full pre-push quality gate with severity calibration |
+| `review-code` | context:fork | Logic errors, DRY, error handling, dead code |
+| `review-code-style` | context:fork | Convention adherence, imports, naming, file org |
+| `review-security` | context:fork | OWASP Top 10, injection, auth, secrets |
+| `review-performance` | context:fork | N+1 queries, memory leaks, missing caching |
+| `review-accessibility` | context:fork | WCAG 2.1 AA compliance |
+| `review-api` | context:fork | API design, validation, rate limiting, REST consistency |
+| `review-database` | context:fork | Migrations, RLS, schema, query patterns |
+| `review-tests` | context:fork | Coverage, test quality, mocking, structure |
+| `review-docs` | context:fork | Docblocks, comments, parameter docs |
+| `review-best-practices` | context:fork | SOLID, design patterns, architecture health |
+| `review-wordpress` | context:fork | WP coding standards, security, plugin architecture |
+
+`review-all` runs inline for maximum efficiency. For large diffs (>500 lines), it delegates to specialized review skills via `context:fork`.
 
 </details>
 
@@ -308,7 +312,7 @@ Invoke with a slash: `/review`, `/debug`, `/workflow`, etc.
 
 ## Hooks
 
-26 hooks run automatically on Claude Code lifecycle events across 9 event types. No invocation needed.
+26 hooks run automatically on Claude Code lifecycle events across 10 event types. No invocation needed.
 
 **Session & state management:**
 
@@ -349,12 +353,13 @@ Invoke with a slash: `/review`, `/debug`, `/workflow`, etc.
 | `self-improve` | `Stop` | Captures patterns + runs heuristic engine to flag pending instincts |
 | `checkpoint` | Phase transitions | Saves pipeline state for crash recovery |
 | `audit-trail` | All governance events | Append-only JSONL log of permissions, debates, verifications |
+| `permission-denied-logger` | `PermissionDenied` | Logs auto-mode classifier denials to audit trail |
 
 **Quality gate hooks** (for Agent Teams):
 
 | Hook | Event | What it does |
 |:-----|:------|:------------|
-| `TaskCompleted` | Task marked done | Demands evidence-based verification before accepting |
+| `TaskCompleted` | Task marked done | Verifies completion — accepts config/markdown tasks, demands evidence for code tasks |
 | `TeammateIdle` | Agent going idle | Checks for unclaimed tasks to pick up |
 
 ---
@@ -364,28 +369,30 @@ Invoke with a slash: `/review`, `/debug`, `/workflow`, etc.
 ForgeBee embeds quality checks throughout the development flow so that `/review-all` is a **validation gate**, not a discovery phase.
 
 ```
-Specialist agents implement + self-review (review-all criteria)
+Specialist agents implement + self-review → report DONE/DONE_WITH_CONCERNS/BLOCKED/NEEDS_CONTEXT
       │
       ▼
-Code debate (code-skeptic checks same criteria with file:line refs)
+Code debate (context:fork skills — blind advocate/skeptic/judge)
       │
       ▼
 Workflow/Team quality gate (tests + lint + build must pass)
       │
       ▼
-review-all (final validation — should find zero critical/high issues)
+review-all (inline skill — runs in session context, only Critical/High block push)
 ```
 
 **How it works:**
 
 - **Every command** has an Objective (what success looks like) and Never rules (hard boundaries)
-- **Every code-producing agent** (11 total) has a Self-Review section matching review-all's criteria
-- **Every agent** (69 total) has Never rules — explicit constraints that can't be rationalized away
-- **`/workflow` Phase 6** mandates self-review evidence from specialists before accepting output
-- **`/workflow` Phase 7** code-skeptic runs the same quality checks as review-all
-- **`/team` Phase 4** runs concrete quality checks (test suite, linter, build) before delivery
+- **Every code-producing agent** has a Self-Review section matching review-all's criteria
+- **Agent status protocol** — agents report `DONE`, `DONE_WITH_CONCERNS`, `BLOCKED`, or `NEEDS_CONTEXT`; orchestrators handle each appropriately
+- **Review calibration** — only Critical/High issues block the push; Medium/Low are informational
+- **`/workflow` Work Breakdown** is promptable — full sprint planning OR direct delegation (your choice)
+- **`/workflow` code debate** uses `context:fork` skills for blind isolation with less token overhead
+- **`/team` quality gate** invokes review-all as an inline skill (session context, ~93% fewer tokens)
+- **Instruction priority** — CLAUDE.md > Inline skills > Forked skills > Subagents > Defaults
 
-If the pipeline works correctly, `review-all` finds nothing. Issues caught in review-all mean the pipeline leaked — the specialist agents need to be strengthened.
+If the pipeline works correctly, `review-all` finds nothing. Issues caught in review-all mean the pipeline leaked.
 
 ---
 
@@ -520,7 +527,7 @@ The `self-improve` hook appends patterns to the **Learned Patterns** section aut
 
 ## OpenClaw
 
-ForgeBee is fully compatible with [OpenClaw](https://github.com/openclaw/openclaw). All 69 agents and 33 commands convert to OpenClaw skills.
+ForgeBee is fully compatible with [OpenClaw](https://github.com/openclaw/openclaw). All 48 agents and 33 commands convert to OpenClaw skills.
 
 ```bash
 # Clone ForgeBee
