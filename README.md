@@ -1,7 +1,7 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Claude_Code-Plugin-7C3AED?style=for-the-badge&logoColor=white" alt="Claude Code" />
   <img src="https://img.shields.io/badge/OpenClaw-Compatible-FF6B35?style=for-the-badge&logoColor=white" alt="OpenClaw" />
-  <img src="https://img.shields.io/badge/version-4.1.0-blue?style=for-the-badge" alt="Version" />
+  <img src="https://img.shields.io/badge/version-4.1.1-blue?style=for-the-badge" alt="Version" />
   <img src="https://img.shields.io/badge/license-MIT-green?style=for-the-badge" alt="License" />
 </p>
 
@@ -48,7 +48,7 @@ Claude Code and OpenClaw are powerful out of the box. ForgeBee makes them **opin
 | No marketing workflow | Full 9-phase Growth OS with 13 marketing agents + 3 strategy debate agents |
 | Every session starts from scratch | Continuous learning — heuristic pattern detection + pending instinct approval |
 | Edits break silently | Auto-format, typecheck, and lint on every edit |
-| Permission prompts everywhere | Mode-aware permissions — respects auto-mode and bypass with non-negotiable blocklist |
+| Permission prompts everywhere | Mode-aware permissions — fully yields to auto-mode's classifier; enforces blocklist in default and bypass |
 | Commands duplicate agent logic | Commands delegate to specialist agents with automatic fallback |
 | Review finds issues that should have been caught | Quality pipeline — specialists self-review, code-skeptic validates, review-all just confirms |
 | Agents take shortcuts under pressure | Every agent has explicit "Never" rules — hard boundaries that can't be rationalized away |
@@ -334,7 +334,7 @@ Invoke with a slash: `/review`, `/debug`, `/workflow`, etc.
 | `post-edit-typecheck` | `PostToolUse` (Edit) | Runs `tsc --noEmit` after editing .ts/.tsx files |
 | `post-edit-console-warn` | `PostToolUse` (Edit) | Warns about `console.log` in edited files |
 | `console-log-audit` | `Stop` | Audits all modified files for console.log at session end |
-| `permission-guard` | `PreToolUse` (Bash) | Mode-aware command safety: detects auto/bypass/default; Tier 0 blocklist always active |
+| `permission-guard` | `PreToolUse` (Bash) | Mode-aware command safety: yields to classifier in auto-mode; blocklist + ask-cascade in default; blocklist-only in bypass |
 | `dev-server-blocker` | `PreToolUse` (Bash) | Blocks `npm run dev` outside tmux |
 | `git-push-reminder` | `PreToolUse` (Bash) | Warns before pushing to main/master |
 | `suggest-compact` | `PreToolUse` (Edit\|Write) | Suggests `/compact` at logical breakpoints |

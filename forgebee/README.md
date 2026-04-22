@@ -37,7 +37,7 @@ forgebee/
 - **Adaptive pipeline** — `/workflow` scrum phase is promptable (full sprint planning OR direct delegation)
 - **Review calibration** — only Critical/High block push; Medium/Low are recommendations
 - **Instruction priority** — CLAUDE.md > Inline skills > Forked skills > Subagents > Defaults
-- **Mode-aware permissions** — detects auto/bypass/default; Tier 0 blocklist in ALL modes; auto mode recommended for experienced users
+- **Mode-aware permissions** — fully yields to auto-mode's classifier (no double-gating); blocklist enforced in default and bypass modes
 - **Adversarial debate** — advocate/skeptic/judge as context:fork skills — blind isolation with less overhead
 - **JSON handoff contracts** — structured context packages for workflow-to-agent dispatch
 - **Growth OS** — 9-phase marketing pipeline with CRO and email automation

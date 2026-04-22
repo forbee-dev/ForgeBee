@@ -9,7 +9,7 @@
       "name": "forgebee",
       "source": "./forgebee",
       "description": "Batteries-included development and growth framework — 33 slash commands, 48 specialist agents, 24 skills (inline + context:fork), 26 hooks across 10 events, three execution modes, agent status protocol, adaptive pipeline with promptable scrum, review calibration, instruction priority hierarchy, PermissionDenied audit logging, adversarial debate as context:fork skills, continuous learning, Growth OS 9-phase marketing pipeline, and automated project management.",
-      "version": "4.1.0"
+      "version": "4.1.1"
     }
   ]
 }

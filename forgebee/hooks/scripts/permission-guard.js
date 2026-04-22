@@ -3,6 +3,11 @@
  * permission-guard.js — Smart permission system for Claude Code
  * Tiered: Blocklist → Allowlist → Cache → Ask User
  *
+ * Mode behavior:
+ *   - default:           full tier cascade
+ *   - bypassPermissions: Tier 0 blocklist only (classifier absent)
+ *   - auto:              fully disabled — Claude Code's classifier decides
+ *
  * Exit codes:
  *   0 = allow (with JSON permissionDecision)
  *   2 = block (dangerous command)
@@ -246,9 +251,36 @@ async function main() {
     process.exit(0);
   }
 
-  // ── TIER 0: BLOCKLIST (always active in ALL modes — non-negotiable) ──
+  // ── MODE-AWARE FAST PATH ────────────────────────────────────────────
+  // Auto mode: Claude Code's built-in classifier is the sole decision-maker.
+  // ForgeBee stays out of the way entirely — no blocklist, no allowlist, no cache.
+  // Rationale: the classifier already covers the blocklist surface (curl|bash,
+  // production deploys, destructive fs ops, force push) and double-gating causes
+  // friction. See: https://code.claude.com/docs/en/permission-modes
+  if (PERMISSION_MODE === 'auto') {
+    process.exit(0);
+  }
+
+  // Bypass mode: permission layer skipped entirely by Claude Code. We still
+  // enforce Tier 0 blocklist because bypassPermissions has no classifier backstop.
+  // (Auto mode does — that's why it short-circuits above.)
+  if (PERMISSION_MODE === 'bypassPermissions') {
+    if (isBlocklisted(COMMAND)) {
+      console.error('BLOCKED: Command matches dangerous pattern');
+      process.exit(2);
+    }
+    if (/DELETE FROM/i.test(COMMAND) && !/DELETE FROM.*WHERE/i.test(COMMAND)) {
+      console.error('BLOCKED: DELETE FROM without WHERE clause');
+      process.exit(2);
+    }
+    process.exit(0);
+  }
+
+  // ── DEFAULT MODE: Full tier cascade ─────────────────────────────────
+
+  // ── TIER 0: BLOCKLIST ───────────────────────────────────────────────
   if (isBlocklisted(COMMAND)) {
-    console.error(`BLOCKED: Command matches dangerous pattern`);
+    console.error('BLOCKED: Command matches dangerous pattern');
     process.exit(2);
   }
 
@@ -257,44 +289,6 @@ async function main() {
     console.error('BLOCKED: DELETE FROM without WHERE clause');
     process.exit(2);
   }
-
-  // ── MODE-AWARE FAST PATH ────────────────────────────────────────────
-  // In bypass mode: only Tier 0 blocklist runs, everything else passes through
-  if (PERMISSION_MODE === 'bypassPermissions') {
-    process.exit(0);
-  }
-
-  // In auto mode: skip Tier 1 (allowlist) and Tier 3 (ask) — let Claude's
-  // AI safety classifier handle non-blocklisted commands. Keep Tier 2 (cache)
-  // for ForgeBee's own patterns.
-  if (PERMISSION_MODE === 'auto') {
-    // Tier 2 cache still runs in auto mode for audit/tracking purposes
-    const CACHE_KEY = normalizeCacheKey(COMMAND);
-    try {
-      const cacheContent = fs.readFileSync(CACHE_FILE, 'utf8');
-      const cache = JSON.parse(cacheContent);
-      const cached = cache[CACHE_KEY];
-      if (cached) {
-        const NOW = Math.floor(Date.now() / 1000);
-        let EXPIRE_TS = 0;
-        try {
-          EXPIRE_TS = Math.floor(new Date(cached.expires).getTime() / 1000);
-        } catch (e) {
-          EXPIRE_TS = 999999999999;
-        }
-        if (NOW < EXPIRE_TS && cached.decision === 'deny') {
-          console.error('BLOCKED: Previously denied command pattern (cached)');
-          process.exit(2);
-        }
-      }
-    } catch (e) {
-      // Ignore cache errors
-    }
-    // Pass through to Claude's AI safety classifier
-    process.exit(0);
-  }
-
-  // ── DEFAULT MODE: Full tier cascade ─────────────────────────────────
 
   // ── TIER 1: ALLOWLIST (instant approve) ─────────────────────────────
   const subcommands = splitCommands(COMMAND);
