@@ -8,6 +8,10 @@ The format roughly follows [Keep a Changelog](https://keepachangelog.com/) and t
 
 ## [Unreleased]
 
+---
+
+## [5.6.0] — 2026-09-24
+
 - **`grill` skill + `/grill` command** — interviews the user on a plan in rounds (decision tree, frontier, one recommended answer per question) and writes a resolved decision log. `/workflow` gains a Grill phase before Plan (on for ambiguous or auth/payments/data specs; `--grill` / `--no-grill`). `/team` gains a conditional Step 2 grill (Medium/Large or ambiguous, max 2 rounds).
 - **P7 — Lean Output** — comments say why, minimal docblocks (WPCS minimum form), no filler in reports. Added to `CLAUDE.md`, every karpathy block, `inject-principles.js`, and the rules files; `check-agent-contract.js` now fails an agent that drops it. `review-code-style` and `review-docs` flag over-commenting.
 - **Agent and skill refresh** — all 45 agents and 34 skills trimmed to current prompt practice: what+when descriptions, one copy per rule, least-privilege tools, long catalogues moved to reference files. Fixes wrong code in several agents (exit-code capture, WPCS sniff name, WooCommerce short description, Supabase admin check, gateway-order filter).

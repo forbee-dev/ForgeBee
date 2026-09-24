@@ -1,6 +1,6 @@
 {
   "name": "forgebee",
-  "version": "5.5.0",
+  "version": "5.6.0",
   "description": "Full-stack agent framework — 37 slash commands, 44 specialist agents, 33 skills, 25 hooks. Karpathy principles on every code agent, adversarial debate triads, two-stage review, /investigate, /elicit (18 methods), checkpoint-preview, budget circuit breaker, continuous learning, Growth OS, /audit-self.",
   "author": {
     "name": "Forbee Dev",
