@@ -40,13 +40,18 @@ for (const file of files) {
   const missingStatuses = REQUIRED_STATUSES.filter((s) => !content.includes(s));
   if (missingStatuses.length) missing.push(`status value(s): ${missingStatuses.join(', ')}`);
 
+  // Code-writing agents carry the karpathy block; P7 inside it keeps comments and reports lean.
+  if (/<!--\s*karpathy-principles\s*-->/.test(content) && !content.includes('**P7 — Lean Output:**')) {
+    missing.push('P7 — Lean Output in the karpathy-principles block');
+  }
+
   if (missing.length) problems.push({ file, missing });
 }
 
 console.log(`Agent contract check: ${files.length} agents`);
 
 if (problems.length === 0) {
-  console.log('✓ All agents carry the load-bearing contract (Adversarial Input Hardening + Status protocol).');
+  console.log('✓ All agents carry the load-bearing contract (Adversarial Input Hardening + Status protocol + P7).');
   process.exit(0);
 }
 

@@ -1,140 +1,98 @@
 # nextjs-content — Reference Material
 
-Frameworks and templates referenced by `forgebee/agents/nextjs-content.md`. Moved here to keep the persona file under the 200-line budget (W16). The agent file holds discipline, Never rules, and self-review — this file holds the working library.
+Working library for `forgebee/agents/nextjs-content.md`. The persona holds rules; this file holds patterns.
 
 ---
 
-## Next.js Content Patterns
-
-### MDX Blog Post
+## MDX Blog Post
 
 ```mdx
 ---
 title: "Ship 10x Faster with Zero-Downtime Deploys"
-description: "Learn how modern deployment pipelines eliminate downtime and reduce deploy anxiety."
+description: "How modern deploy pipelines remove downtime."
 publishedAt: "2026-02-15"
 author: "Sarah Chen"
 category: "Engineering"
-tags: ["deployment", "devops", "ci-cd"]
+tags: ["deployment", "ci-cd"]
 image: "/blog/zero-downtime-deploys.png"
 featured: true
 ---
 
 import { Callout } from '@/components/mdx/callout'
-import { CodeBlock } from '@/components/mdx/code-block'
 
-Every deploy shouldn't feel like defusing a bomb. Yet for most teams, pushing to production
-means crossing fingers and watching logs.
+Every deploy shouldn't feel like defusing a bomb.
 
 ## The Problem with Traditional Deploys
 
-Most deployment pipelines follow a dangerous pattern: stop the old version, start the new one,
-and hope nothing breaks in between.
-
 <Callout type="warning">
   Average downtime per traditional deploy: 4.2 minutes.
-  At 3 deploys/day, that's 12+ minutes of daily downtime.
 </Callout>
-
-## Zero-Downtime Deploy Strategies
-
-### Blue-Green Deployment
-
-Run two identical environments. Route traffic to the new one only after it's healthy.
-
-<CodeBlock language="yaml" title="deploy.yml">
-{`steps:
-  - deploy-to: green
-  - health-check: green
-  - switch-traffic: blue -> green
-  - teardown: blue`}
-</CodeBlock>
-
-### Rolling Updates
-
-Replace instances one at a time. Never take all instances offline simultaneously.
 
 ## The Results
 
-After switching to zero-downtime deploys:
-
 - **Deploy frequency**: 3/week → 12/day
 - **Mean time to recovery**: 45 min → 90 seconds
-- **Developer confidence**: "I deploy on Fridays now"
 
 <Callout type="info">
-  Want to try this yourself? [Start your free trial](/signup) — no credit card required.
+  [Start your free trial](/signup) — no credit card required.
 </Callout>
 ```
 
-### Contentlayer Schema
+## Velite Collection (preferred for new projects)
 
 ```ts
-// contentlayer.config.ts
-import { defineDocumentType, makeSource } from 'contentlayer/source-files';
+// velite.config.ts
+import { defineConfig, defineCollection, s } from 'velite';
 
-export const Post = defineDocumentType(() => ({
+const posts = defineCollection({
   name: 'Post',
-  filePathPattern: 'blog/**/*.mdx',
-  contentType: 'mdx',
-  fields: {
-    title:       { type: 'string', required: true },
-    description: { type: 'string', required: true },
-    publishedAt: { type: 'date', required: true },
-    author:      { type: 'string', required: true },
-    category:    { type: 'string', required: true },
-    tags:        { type: 'list', of: { type: 'string' }, default: [] },
-    image:       { type: 'string' },
-    featured:    { type: 'boolean', default: false },
-  },
-  computedFields: {
-    slug: {
-      type: 'string',
-      resolve: (doc) => doc._raw.flattenedPath.replace('blog/', ''),
-    },
-    readingTime: {
-      type: 'string',
-      resolve: (doc) => {
-        const words = doc.body.raw.split(/\s+/).length;
-        return `${Math.ceil(words / 200)} min read`;
-      },
-    },
-  },
-}));
-
-export default makeSource({
-  contentDirPath: 'content',
-  documentTypes: [Post],
+  pattern: 'blog/**/*.mdx',
+  schema: s
+    .object({
+      title: s.string().max(99),
+      description: s.string().max(200),
+      publishedAt: s.isodate(),
+      author: s.string(),
+      category: s.string(),
+      tags: s.array(s.string()).default([]),
+      image: s.string().optional(),
+      featured: s.boolean().default(false),
+      slug: s.path(),
+      metadata: s.metadata(), // reading time + word count
+      body: s.mdx(),
+    })
+    .transform((d) => ({ ...d, slug: d.slug.replace(/^blog\//, '') })),
 });
+
+export default defineConfig({ root: 'content', collections: { posts } });
 ```
 
-### Blog Post Page Component
+Contentlayer (archived): keep `contentlayer.config.ts` only in projects that already use it. Its `computedFields` map to Velite `.transform()`. Add a migration note in the report.
+
+## Blog Post Page
 
 ```tsx
 // app/blog/[slug]/page.tsx
-import { allPosts } from 'contentlayer/generated';
-import { getMDXComponent } from 'next-contentlayer/hooks';
+import { posts } from '#site/content';
 import { notFound } from 'next/navigation';
-import { mdxComponents } from '@/components/mdx';
 import type { Metadata } from 'next';
+import { MDXContent } from '@/components/mdx-content';
 
 type Props = { params: Promise<{ slug: string }> };
 
-export async function generateStaticParams() {
-  return allPosts.map((post) => ({ slug: post.slug }));
+const getPost = (slug: string) => posts.find((p) => p.slug === slug);
+
+export function generateStaticParams() {
+  return posts.map(({ slug }) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params;
-  const post = allPosts.find((p) => p.slug === slug);
+  const post = getPost((await params).slug);
   if (!post) return {};
-
   return {
     title: post.title,
     description: post.description,
     openGraph: {
-      title: post.title,
-      description: post.description,
       type: 'article',
       publishedTime: post.publishedAt,
       images: post.image ? [{ url: post.image }] : [],
@@ -143,108 +101,84 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function BlogPost({ params }: Props) {
-  const { slug } = await params;
-  const post = allPosts.find((p) => p.slug === slug);
+  const post = getPost((await params).slug);
   if (!post) notFound();
-
-  const MDXContent = getMDXComponent(post.body.code);
-
   return (
     <article className="prose prose-lg mx-auto max-w-3xl">
-      <header>
-        <time dateTime={post.publishedAt}>{formatDate(post.publishedAt)}</time>
-        <h1>{post.title}</h1>
-        <p className="lead">{post.description}</p>
-        <span>{post.readingTime}</span>
-      </header>
-      <MDXContent components={mdxComponents} />
+      <h1>{post.title}</h1>
+      <time dateTime={post.publishedAt}>{post.publishedAt}</time>
+      <MDXContent code={post.body} />
     </article>
   );
 }
 ```
 
-### Custom MDX Components
+## MDX Components Map
 
 ```tsx
 // components/mdx/index.tsx
+import Image from 'next/image';
 import { Callout } from './callout';
-import { CodeBlock } from './code-block';
 import { Tabs, Tab } from './tabs';
 
 export const mdxComponents = {
   Callout,
-  CodeBlock,
   Tabs,
   Tab,
-  // Override default elements
-  h2: ({ children, ...props }: any) => (
-    <h2 id={slugify(children)} {...props}>
-      <a href={`#${slugify(children)}`} className="anchor">{children}</a>
-    </h2>
-  ),
-  img: ({ src, alt, ...props }: any) => (
-    <figure>
-      <img src={src} alt={alt} loading="lazy" {...props} />
-      {alt && <figcaption>{alt}</figcaption>}
-    </figure>
-  ),
-  a: ({ href, children, ...props }: any) => {
-    const isExternal = href?.startsWith('http');
-    return (
-      <a
-        href={href}
-        {...(isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-        {...props}
-      >
-        {children}
-      </a>
-    );
+  h2: ({ children, ...props }: React.ComponentProps<'h2'>) => {
+    const id = slugify(String(children));
+    return <h2 id={id} {...props}><a href={`#${id}`}>{children}</a></h2>;
   },
+  img: ({ src = '', alt = '' }: React.ComponentProps<'img'>) => (
+    <Image src={String(src)} alt={alt} width={1200} height={630} />
+  ),
+  a: ({ href = '', ...props }: React.ComponentProps<'a'>) =>
+    href.startsWith('http')
+      ? <a href={href} target="_blank" rel="noopener noreferrer" {...props} />
+      : <a href={href} {...props} />,
 };
 ```
 
-### RSS Feed Generation
+## RSS Feed
 
-```tsx
+```ts
 // app/feed.xml/route.ts
-import { allPosts } from 'contentlayer/generated';
+import { posts } from '#site/content';
 
-export async function GET() {
-  const posts = allPosts
-    .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
-    .slice(0, 20);
+export const dynamic = 'force-static';
 
-  const feed = `<?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>Company Blog</title>
-    <link>https://example.com/blog</link>
-    <description>Engineering and product insights</description>
-    <atom:link href="https://example.com/feed.xml" rel="self" type="application/rss+xml"/>
-    ${posts.map((post) => `
+export function GET() {
+  const items = [...posts]
+    .sort((a, b) => b.publishedAt.localeCompare(a.publishedAt))
+    .slice(0, 20)
+    .map((p) => `
     <item>
-      <title>${escapeXml(post.title)}</title>
-      <link>https://example.com/blog/${post.slug}</link>
-      <guid>https://example.com/blog/${post.slug}</guid>
-      <pubDate>${new Date(post.publishedAt).toUTCString()}</pubDate>
-      <description>${escapeXml(post.description)}</description>
-    </item>`).join('')}
-  </channel>
-</rss>`;
+      <title>${escapeXml(p.title)}</title>
+      <link>https://example.com/blog/${p.slug}</link>
+      <guid>https://example.com/blog/${p.slug}</guid>
+      <pubDate>${new Date(p.publishedAt).toUTCString()}</pubDate>
+      <description>${escapeXml(p.description)}</description>
+    </item>`)
+    .join('');
 
-  return new Response(feed, {
-    headers: { 'Content-Type': 'application/xml' },
-  });
+  return new Response(
+    `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"><channel>
+  <title>Company Blog</title>
+  <link>https://example.com/blog</link>
+  <description>Engineering and product insights</description>${items}
+</channel></rss>`,
+    { headers: { 'Content-Type': 'application/xml' } },
+  );
 }
 ```
 
-## Content Guidelines for Next.js
+## Content Rules
 
-1. **MDX** — use custom components for callouts, code blocks, tabs (not raw HTML)
-2. **Frontmatter** — all required fields filled, dates in ISO format
-3. **Images** — use `next/image` or lazy loading, include alt text
-4. **Links** — external links get `target="_blank" rel="noopener noreferrer"`
-5. **Headings** — H2 for sections, H3 for subsections (H1 is the post title in the layout)
-6. **Code blocks** — use language annotation and title for context
-7. **CTAs** — use custom CTA component, not raw links, for conversion tracking
-
+1. Use MDX components for callouts, code, and tabs. Do not use raw HTML.
+2. Fill every required frontmatter field. Use ISO dates.
+3. Images: `next/image` with alt text.
+4. External links: `target="_blank" rel="noopener noreferrer"`.
+5. H2 for sections, H3 for subsections. The layout owns H1.
+6. Code blocks: language annotation and title.
+7. CTAs: use the CTA component, not raw links, so conversion tracking works.

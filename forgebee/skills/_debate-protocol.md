@@ -1,92 +1,76 @@
 # Debate Protocol (shared spine)
 
-> Shared rules for all ForgeBee adversarial debates: requirements (`/workflow` planning),
-> code (`/workflow` code phase), and strategy (`/growth`). Each debate skill points here
-> for the common spine and keeps only its domain-specific payload in its own `SKILL.md`.
-> When this file and a skill disagree on a rule, **this file wins** — do not maintain a
-> parallel copy of these rules that can drift.
+> Shared rules for all ForgeBee debates: requirements (`/workflow` planning), code (`/workflow` code phase), and strategy (`/growth`). Each debate skill links here and keeps only its domain payload. If this file and a skill disagree, this file wins. Do not keep a parallel copy of these rules.
 
 ## Roles
 
-A debate has three roles, each running in its own forked context (`context: fork`):
+Each role runs in its own forked context (`context: fork`):
 
 - **Advocate** — argues FOR the artifact. Builds the strongest honest case that it is ready.
-- **Skeptic** — argues AGAINST the artifact. Finds the gaps, bugs, risks, and weak points.
-- **Judge** — reads both blind cases and rules. Verifies claims independently.
+- **Skeptic** — argues AGAINST the artifact. Finds gaps, bugs, risks, and weak points.
+- **Judge** — reads both blind cases, verifies claims independently, and rules.
 
 ## Blind-Debate Rules
 
-1. **Advocate and Skeptic argue blind.** Neither sees the other's case. They reason
-   from the artifact and the codebase/market only — never from each other.
-2. **One argument per item.** No rebuttals, no back-and-forth. You get one shot per item;
-   lead with your strongest point.
-3. **Evidence beats rhetoric.** Every claim must cite something concrete — `file:line`,
-   an acceptance criterion, a market signal, a competitor example. "It's fine" / "it's weak"
-   with no reference is worthless to the Judge.
-4. **Argue honestly.** Advocates concede real weaknesses; Skeptics concede when something
-   is genuinely clean. Calibration (your own confidence/severity) is part of the deliverable.
-5. **Stay in your lane.** Argue about the artifact's quality. Do not rewrite it, redesign
-   the system, or make the decision yourself — that is the Judge's and the user's job.
+1. **Advocate and Skeptic argue blind.** Neither sees the other's case. Reason from the artifact and the codebase/market only.
+2. **One argument per item.** No rebuttals. Lead with your strongest point.
+3. **Evidence beats rhetoric.** Cite `file:line`, an acceptance criterion, a market signal, or a competitor example for every claim. A claim with no reference has no value to the Judge.
+4. **Argue honestly.** Advocates concede real weaknesses. Skeptics concede clean items. Your confidence/severity rating is part of the output.
+5. **Stay in your lane.** Argue about quality. Do not rewrite the artifact, redesign the system, or make the decision.
+6. **Terse output.** One line per claim. Evidence as `path:line`. Skip empty dimensions.
 
 ## Verdict Lattice
 
-Each role has its own verdict vocabulary. They are NOT symmetric — an Advocate can decline
-to defend, and a Skeptic can affirm something is clean.
+Each role has its own words. They are not symmetric.
 
 **Advocate** (one per item):
-- **APPROVE** — strong case; the artifact is ready as-is.
-- **APPROVE-WITH-CAVEATS** — ready to proceed, but with named limitations the Judge should weigh.
-- **CANNOT-DEFEND** — after honest review, no credible case for readiness exists. This is a
-  signal to the Judge as strong as any Skeptic BLOCK — say it plainly rather than manufacturing a defense.
+- **APPROVE** — strong case; ready as-is.
+- **APPROVE-WITH-CAVEATS** — ready, with named limitations for the Judge to weigh.
+- **CANNOT-DEFEND** — no credible case for readiness. As strong a signal as a Skeptic BLOCK. Say it plainly; do not manufacture a defense.
 
 **Skeptic** (one per item):
-- **BLOCK** — a concrete, specific problem that should stop the artifact from proceeding.
-- **FLAG** — a real concern that can be tracked and proceeded past, not a stopper.
-- **CLEAN** — after rigorous review, no significant concern found. Affirming clean is honest
-  and expected for genuinely solid items; do not invent issues to seem rigorous.
+- **BLOCK** — a concrete problem that must stop the artifact.
+- **FLAG** — a real concern to track and proceed past.
+- **CLEAN** — no significant concern after rigorous review. Do not invent issues to seem rigorous.
 
-**Judge** (one per item) — maps both blind cases onto the final ruling:
-- **APPROVE** — proceed. Advocate's case holds, or Skeptic's concerns aren't material.
+**Judge** (one per item):
+- **APPROVE** — proceed.
 - **FLAG** — proceed with acknowledged risk; create a tracked follow-up.
 - **BLOCK** — do not proceed; specific changes required before re-debate.
 
-Verdict-mapping defaults (Judge):
+Judge mapping defaults:
 - Advocate CANNOT-DEFEND, or Skeptic BLOCK with concrete evidence → lean **BLOCK**.
 - Advocate APPROVE-WITH-CAVEATS, or Skeptic FLAG → lean **FLAG**.
 - Advocate APPROVE + Skeptic CLEAN → **APPROVE**.
-- Both sides weak / both sides strong → **FLAG** with a note; surface the tradeoff to the user.
+- Both sides weak or both strong → **FLAG** with a note; surface the trade-off to the user.
 
-## Severity Scale (CLAUDE.md P6 — single standard)
+## Severity Scale (CLAUDE.md P6)
 
-Use this vocabulary everywhere. Do NOT introduce alternates (Warning/Suggestion/etc.).
+Use only these words. Alternates (Warning, Suggestion) break aggregation.
 
-- **Critical** — blocks merge/execution; will fail or cause harm if unaddressed.
-- **High** — must fix before the next sprint/iteration; materially degrades the outcome.
+- **Critical** — blocks merge/execution; will fail or cause harm.
+- **High** — fix before the next sprint/iteration; degrades the outcome.
 - **Medium** — fix when convenient; the artifact works without it.
-- **Low** — nice-to-have; perfectionism.
+- **Low** — nice-to-have.
 
 ## Judge Input Contract
 
-For each debated item the Judge receives, and must read in full before ruling:
-1. The original artifact (requirement/story + acceptance criteria, code diff + criteria,
-   or strategy artifact) under debate.
-2. The **Advocate's** blind case — with its verdict and strength/confidence rating.
-3. The **Skeptic's** blind case — with its verdict, severity rating, and proposed fix.
+For each item the Judge reads in full before ruling:
+1. The artifact under debate (story + ACs, code diff + criteria, or strategy artifact).
+2. The **Advocate's** blind case, with verdict and strength rating.
+3. The **Skeptic's** blind case, with verdict, severity, and proposed fix.
 
-The Judge verifies independently (reads the code, checks the criteria, tests the market claim)
-rather than trusting either side's assertion.
+The Judge verifies independently (reads the code, checks the criteria, tests the market claim).
 
 ## Escalation Rules (Judge)
 
-- **Low/Medium severity** → rule and move on; the decision stands unless the user overrides.
-- **High/Critical severity** → rule AND escalate to the user with full context; the ruling is a recommendation, the user has final authority.
-- All **BLOCK** items are compiled into an escalation report regardless of severity.
+- **Low/Medium** → rule and move on. The ruling stands unless the user overrides.
+- **High/Critical** → rule AND escalate to the user with full context. The ruling is a recommendation; the user has final authority.
+- Compile all **BLOCK** items into an escalation report, at any severity.
 
 ## Blindness-Leak Guard (Judge)
 
-The Judge must police the integrity of the blind debate. If **either** case references,
-quotes, anticipates, or rebuts the **other** side ("as the Skeptic will surely claim…",
-"contrary to the Advocate…"), the blind constraint has leaked:
-- **Flag the leak explicitly** in the ruling for that item.
-- **Discount** the leaked portion — it was not produced under blind conditions.
-- Rule on the artifact on the strength of the clean, non-leaked evidence only.
+If either case references, quotes, anticipates, or rebuts the other side ("as the Skeptic will claim…", "contrary to the Advocate…"), the blind constraint has leaked:
+- **Flag the leak** in the ruling for that item.
+- **Discount** the leaked portion.
+- Rule on the clean evidence only.

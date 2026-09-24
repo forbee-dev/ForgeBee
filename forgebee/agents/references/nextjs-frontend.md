@@ -1,105 +1,79 @@
 # nextjs-frontend — Reference Material
 
-Sections extracted from `forgebee/agents/nextjs-frontend.md` to keep the persona file under the 250-line budget. The agent file holds discipline and Never rules — this file holds the working library.
+Working library for `forgebee/agents/nextjs-frontend.md`. The persona holds rules; this file holds patterns.
 
 ---
 
-## App Router Directory Structure
+## App Router Structure
 
 ```
 app/
-├── layout.tsx          # Root layout (wraps entire app)
-├── page.tsx            # Home page (/)
-├── loading.tsx         # Loading UI (Suspense boundary)
-├── error.tsx           # Error boundary ('use client')
-├── not-found.tsx       # 404 page
-├── globals.css
-├── (auth)/             # Route group (no URL segment)
+├── layout.tsx          # root layout
+├── page.tsx            # /
+├── loading.tsx         # Suspense boundary
+├── error.tsx           # error boundary ('use client')
+├── not-found.tsx
+├── (auth)/             # route group, no URL segment
 │   ├── login/page.tsx
 │   └── signup/page.tsx
 ├── dashboard/
-│   ├── layout.tsx      # Nested layout
-│   ├── page.tsx
-│   └── settings/
-│       └── page.tsx
-└── api/
-    └── webhooks/
-        └── route.ts    # Route Handler
+│   ├── layout.tsx
+│   └── settings/page.tsx
+└── api/webhooks/route.ts
 ```
-
 
 ## Server vs Client Components
 
 ```tsx
-// Server Component (default — no directive needed)
-// Can: fetch data, access backend, read files, import server-only
-// Cannot: useState, useEffect, onClick, browser APIs
 async function PostList() {
-  const posts = await getPosts(); // Direct async data fetch
-  return (
-    <ul>
-      {posts.map(post => <li key={post.id}>{post.title}</li>)}
-    </ul>
-  );
-}
-
-// Client Component — add 'use client' directive
-'use client';
-import { useState } from 'react';
-
-function LikeButton({ postId }: { postId: string }) {
-  const [liked, setLiked] = useState(false);
-  return (
-    <button onClick={() => setLiked(!liked)}>
-      {liked ? '❤️' : '🤍'}
-    </button>
-  );
+  const posts = await getPosts();
+  return <ul>{posts.map((p) => <li key={p.id}>{p.title}</li>)}</ul>;
 }
 ```
 
-**Rule of thumb:** Keep 'use client' as deep as possible. Only the interactive leaf needs it.
+```tsx
+'use client';
+import { useState } from 'react';
 
+export function LikeButton() {
+  const [liked, setLiked] = useState(false);
+  return <button onClick={() => setLiked(!liked)}>{liked ? 'Liked' : 'Like'}</button>;
+}
+```
+
+Server Components fetch data and read the backend; they cannot use state, effects, event handlers, or browser APIs. Put `'use client'` on the interactive leaf only.
 
 ## Server Actions
 
+A Server Action is a public POST endpoint. Check auth and validate input inside it.
+
 ```tsx
-// app/posts/new/page.tsx
-import { createPost } from './actions';
-
-export default function NewPostPage() {
-  return (
-    <form action={createPost}>
-      <input name="title" required />
-      <textarea name="content" required />
-      <button type="submit">Create</button>
-    </form>
-  );
-}
-
 // app/posts/new/actions.ts
 'use server';
+import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
-export async function createPost(formData: FormData) {
-  const title = formData.get('title') as string;
-  const content = formData.get('content') as string;
+const PostInput = z.object({ title: z.string().min(1).max(200), content: z.string().min(1) });
 
-  // Validate
-  if (!title || !content) throw new Error('Missing fields');
+export async function createPost(_prev: unknown, formData: FormData) {
+  const user = await getUser();
+  if (!user) return { error: 'Not signed in' };
 
-  // Insert (via Supabase, Prisma, etc.)
-  await db.insert({ title, content });
+  const parsed = PostInput.safeParse(Object.fromEntries(formData));
+  if (!parsed.success) return { error: 'Title and content are required' };
 
+  await db.posts.insert({ ...parsed.data, authorId: user.id });
   revalidatePath('/posts');
   redirect('/posts');
 }
 ```
 
+Bind it in a Client Component with `useActionState(createPost, null)` to show the error; use `useFormStatus` for the pending state.
 
-## Supabase SSR Integration
+## Supabase SSR
 
-```tsx
+```ts
 // lib/supabase/server.ts
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
@@ -112,70 +86,60 @@ export async function createSupabaseServer() {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        getAll() { return cookieStore.getAll(); },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) =>
-            cookieStore.set(name, value, options));
-        },
+        getAll: () => cookieStore.getAll(),
+        setAll: (toSet) => toSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options)),
       },
-    }
-  );
-}
-
-// lib/supabase/client.ts
-'use client';
-import { createBrowserClient } from '@supabase/ssr';
-import type { Database } from '@/types/database';
-
-export function createSupabaseBrowser() {
-  return createBrowserClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    },
   );
 }
 ```
 
-**Routing rules:**
+```ts
+// lib/supabase/client.ts
+import { createBrowserClient } from '@supabase/ssr';
+import type { Database } from '@/types/database';
+
+export const createSupabaseBrowser = () =>
+  createBrowserClient<Database>(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);
+```
+
 - Server Components, Route Handlers, Server Actions → `createSupabaseServer()`
 - Client Components → `createSupabaseBrowser()`
-- Middleware → `createServerClient` with request/response cookie handling
-- NEVER import browser client in server code or vice versa
+- Middleware/proxy → `createServerClient` with request/response cookies (below)
+- Do not import the browser client in server code, or the reverse.
 
+## Middleware (Next 16: `proxy.ts`, export `proxy`)
 
-## Middleware Pattern
-
-```tsx
+```ts
 // middleware.ts
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
 export async function middleware(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({ request });
+  let response = NextResponse.next({ request });
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        getAll() { return request.cookies.getAll(); },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
-          supabaseResponse = NextResponse.next({ request });
-          cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options));
+        getAll: () => request.cookies.getAll(),
+        setAll(toSet) {
+          toSet.forEach(({ name, value }) => request.cookies.set(name, value));
+          response = NextResponse.next({ request });
+          toSet.forEach(({ name, value, options }) => response.cookies.set(name, value, options));
         },
       },
-    }
+    },
   );
 
+  // getUser() refreshes the session cookie; getSession() does not revalidate the JWT.
   const { data: { user } } = await supabase.auth.getUser();
 
-  // Protect routes
   if (!user && request.nextUrl.pathname.startsWith('/dashboard')) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
-
-  return supabaseResponse;
+  return response;
 }
 
 export const config = {
@@ -183,15 +147,12 @@ export const config = {
 };
 ```
 
-
 ## Environment Variables
 
 ```bash
-# Public (exposed to browser)
 NEXT_PUBLIC_SUPABASE_URL=https://xxx.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
-
-# Server-only (never NEXT_PUBLIC_ prefix)
-SUPABASE_SERVICE_ROLE_KEY=eyJ...  # NEVER expose to client
+SUPABASE_SERVICE_ROLE_KEY=eyJ...   # server-only: bypasses RLS
 ```
 
+`NEXT_PUBLIC_` values ship to the browser. Never put the service role key or other secrets behind that prefix.

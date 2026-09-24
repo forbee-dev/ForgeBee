@@ -1,6 +1,6 @@
 # tdd-enforcer — Reference Material
 
-Sections extracted from `forgebee/agents/tdd-enforcer.md` to keep the persona file under the 250-line budget. The agent file holds discipline and Never rules — this file holds the working library.
+Working library for `forgebee/agents/tdd-enforcer.md`. The persona holds rules; this file holds the protocol and templates.
 
 ---
 
@@ -8,154 +8,111 @@ Sections extracted from `forgebee/agents/tdd-enforcer.md` to keep the persona fi
 
 ### Step 1: Analyze the Task
 
-Read the task/story and extract:
-- **Behaviors** — what should the code DO?
-- **Inputs** — what goes in?
-- **Outputs** — what comes out?
-- **Edge cases** — what could go wrong?
-- **Error conditions** — what should be rejected?
+Extract behaviors, inputs, outputs, edge cases, and error conditions from the story.
 
 ### Step 2: Define Required Tests
 
-For each behavior, specify the test:
-
 ```markdown
-
 ## Required Tests Before Implementation
 
-### [Feature/Function Name]
-
-1. **Happy path:** should [expected behavior] when [normal input]
-   - Input: [specific input]
-   - Expected: [specific output]
-
-2. **Edge case:** should [expected behavior] when [boundary input]
-   - Input: [edge case]
-   - Expected: [specific output]
-
-3. **Error case:** should [expected behavior] when [invalid input]
-   - Input: [invalid input]
-   - Expected: [error type or rejection]
+### [Function Name]
+1. **Happy path:** should [behavior] when [normal input] — Input: […] → Expected: […]
+2. **Edge case:** should [behavior] when [boundary input] — Input: […] → Expected: […]
+3. **Error case:** should [behavior] when [invalid input] — Input: […] → Expected: [error]
 
 ### Test Checklist
-- [ ] All happy paths covered
-- [ ] Boundary values tested
-- [ ] Error conditions tested
-- [ ] Null/empty/undefined handled
-- [ ] Async behavior tested (if applicable)
-- [ ] Integration points mocked appropriately
+- [ ] Happy paths
+- [ ] Boundary values
+- [ ] Error conditions
+- [ ] Null/empty/undefined
+- [ ] Async behavior (if any)
+- [ ] Integration points mocked
 ```
 
-### Step 3: Verify RED Phase
-
-Before allowing implementation:
+### Step 3: Verify RED
 
 ```bash
-# Run the new tests — they MUST fail
-npm test -- --testPathPattern="[new-test-file]" 2>&1
-echo "Exit code: $?"
+set -o pipefail
+npm test -- --testPathPattern="[new-test-file]" 2>&1 | tail -20; echo "Exit code: $?"
 ```
 
-**Required result: tests FAIL (exit code 1)**
+Required: tests fail (non-zero exit). If they pass before the implementation exists, they do not test new behavior. Reject them.
 
-If tests pass without implementation → the tests are wrong. They're not testing new behavior. Reject them.
+`pipefail` matters: without it, `$?` is the exit code of `tail`, which is always 0.
 
-### Step 4: Allow GREEN Phase
+### Step 4: Allow GREEN
 
-Only after RED is confirmed:
-- Allow the minimum implementation to make tests pass
-- No extra code, no premature optimization, no "while I'm here" additions
+After RED is confirmed, allow the minimum implementation that makes the tests pass. No extra code, no premature optimization.
 
 ```bash
-# Verify GREEN — all tests pass now
-npm test 2>&1 | tail -20
-echo "Exit code: $?"
+set -o pipefail
+npm test 2>&1 | tail -20; echo "Exit code: $?"
 ```
 
-**Required result: ALL tests pass (exit code 0)**
+Required: all tests pass (exit 0).
 
-### Step 5: Allow REFACTOR Phase
+### Step 5: Allow REFACTOR
 
-Only after GREEN is confirmed:
-- Allow cleanup, extraction, renaming
-- Tests must stay green throughout
-
-```bash
-# Verify still GREEN after refactor
-npm test 2>&1 | tail -20
-echo "Exit code: $?"
-```
-
+After GREEN, allow cleanup, extraction, and renaming. Re-run the same command after each change; tests stay green.
 
 ## Post-Implementation Audit
 
 ### Check 1: Test-to-Code Ratio
 
 ```bash
-# Count new test lines vs new implementation lines
-git diff --stat HEAD~1 -- "**/*.test.*" "**/*.spec.*" "**/test_*" "**/*_test.*"
-git diff --stat HEAD~1 -- --not "**/*.test.*" "**/*.spec.*" "**/test_*" "**/*_test.*"
+git diff --stat HEAD~1 -- '*.test.*' '*.spec.*' 'test_*' '*_test.*'
+git diff --stat HEAD~1 -- . ':!*.test.*' ':!*.spec.*' ':!test_*' ':!*_test.*'
 ```
 
-Rule of thumb: test code should be >= 60% of implementation code
+Rule of thumb: new test code ≥ 60% of new implementation code.
 
 ### Check 2: Coverage of New Code
 
 ```bash
-# Run coverage for changed files only
 npm test -- --coverage --changedSince=HEAD~1 2>&1 | tail -30
 ```
 
-Minimum thresholds:
-- **Statements:** 80%+
-- **Branches:** 75%+
-- **Functions:** 90%+
-- **Lines:** 80%+
+Minimums: statements 80%, branches 75%, functions 90%, lines 80%.
 
 ### Check 3: Test Quality
-
-Read each new test and check:
 
 | Quality Check | Pass/Fail |
 |--------------|-----------|
 | Tests behavior, not implementation | |
-| One assertion per test (or closely related group) | |
-| Descriptive test names (should...when...) | |
+| One assertion (or one related group) per test | |
+| Descriptive names (should…when…) | |
 | No test interdependencies | |
-| Mocks external deps only, not internal logic | |
-| AAA structure (Arrange-Act-Assert) | |
-| No hardcoded magic values without explanation | |
+| Mocks external deps only | |
+| Arrange-Act-Assert structure | |
+| No unexplained magic values | |
 | Edge cases covered | |
 
 ### Check 4: Git History Order
 
 ```bash
-# Verify tests were committed before or with implementation
-git log --oneline --diff-filter=A -- "**/*.test.*" "**/*.spec.*" | head -5
-git log --oneline --diff-filter=A -- "src/**" "lib/**" | head -5
+git log --oneline --diff-filter=A -- '*.test.*' '*.spec.*' | head -5
+git log --oneline --diff-filter=A -- 'src/**' 'lib/**' | head -5
 ```
 
-If implementation files appear in commits BEFORE their test files → TDD violation.
-
+An implementation file committed before its test file is a TDD violation.
 
 ## Audit Verdict
 
 ```markdown
-
 ## TDD Audit Report
 
 **Task:** [description]
 **Verdict:** TDD COMPLIANT | PARTIAL COMPLIANCE | TDD VIOLATION
 
 ### Cycle Verification
-| Phase | Status | Evidence |
+| Phase | Result | Evidence |
 |-------|--------|----------|
 | RED (tests fail first) | PASS/FAIL | [git log or test output] |
-| GREEN (minimal impl) | PASS/FAIL | [test pass output] |
-| REFACTOR (clean + green) | PASS/FAIL | [test still passing] |
+| GREEN (minimal impl) | PASS/FAIL | [test output] |
+| REFACTOR (still green) | PASS/FAIL | [test output] |
 
 ### Coverage
-| Metric | Value | Threshold | Status |
+| Metric | Value | Threshold | Result |
 |--------|-------|-----------|--------|
 | Statements | X% | 80% | PASS/FAIL |
 | Branches | X% | 75% | PASS/FAIL |
@@ -164,9 +121,8 @@ If implementation files appear in commits BEFORE their test files → TDD violat
 ### Test Quality Score: X/8
 
 ### Violations Found
-- [List any TDD violations with specific files and line numbers]
+- [file:line — violation]
 
 ### Required Actions
-- [What must be fixed before this is accepted]
+- [fix required before acceptance]
 ```
-

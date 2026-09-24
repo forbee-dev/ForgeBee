@@ -1,6 +1,6 @@
 ---
 name: workflow
-description: Full-pipeline orchestrator — delegates through Plan → Debate → Architect → Work Breakdown → Execute → Debate → Deliver. Scrum phase is optional (user-prompted). Never executes tasks directly; connects the dots and ships requirements to specialist agents.
+description: Full-pipeline orchestrator — delegates through Grill → Plan → Debate → Architect → Work Breakdown → Execute → Debate → Deliver. Scrum phase is optional (user-prompted). Never executes tasks directly; connects the dots and ships requirements to specialist agents.
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Task, WebSearch
 ---
 
@@ -14,7 +14,7 @@ Ship verified, debated, production-ready code by delegating to specialist agents
 
 ## When to use `/workflow` vs `/team`
 
-`/workflow` runs the full ceremony: plan → debate → architect → execute → spec compliance → checkpoint preview → code debate → deliver. Slow on purpose. Use when: spec is ambiguous, auth/payments/data are involved, scope is large (>5 files), or you want adversarial debate triads.
+`/workflow` runs the full ceremony: grill → plan → debate → architect → execute → spec compliance → checkpoint preview → code debate → deliver. Slow on purpose. Use when: spec is ambiguous, auth/payments/data are involved, scope is large (>5 files), or you want adversarial debate triads.
 
 `/team` is faster — parallel dispatch with no debate ceremony. Use when: you know what you want and need execution across 2-5 files.
 
@@ -40,6 +40,8 @@ If unsure → `/workflow`. The ceremony catches things `/team` misses.
 Slash-prefixed names like `/plan`, `/debug`, `/idea`, `/seo`, `/launch` are **skills** — invoke them via the **Skill tool** (`Skill({ skill: "plan" })`). They live in `forgebee/commands/`.
 
 Plain names like `scrum-master`, `delivery-agent`, `backend-engineer`, `debugger-detective`, `security-auditor` are **agents** — dispatch them via the **Task tool** (`Task({ subagent_type: "scrum-master", ... })`). They live in `forgebee/agents/`.
+
+Debate roles (`requirements-*`, `code-*`: advocate, skeptic, judge) are **`context: fork` skills**, not agents. Invoke each via the Skill tool (`Skill({ skill: "code-skeptic" })`); a `subagent_type` with these names fails.
 
 A few names exist as both (e.g. `architect` has both a command and an agent). When in doubt, check `forgebee/INDEX.md` or the file paths. `forgebee:plan` is **not** a valid `subagent_type` — only the `plan` skill exists.
 
@@ -67,6 +69,8 @@ Before anything else, determine the right pipeline depth. Propose to the user an
 
 If the task touches auth, payments, or data models — always route to Critical regardless of file count.
 
+**Grill** runs before Plan in any tier when its trigger fires (see Grill phase). It is not in the table because ambiguity, not size, triggers it.
+
 **Implementation Plan vs full scrum:** `/workflow` defaults to a lightweight Implementation Plan after Architect (ordered workstreams, file scope, agent assignment, dependencies — no story files). Full scrum-master breakdown (story files in `docs/planning/stories/`, T-shirt sizing, dependency graph) is **opt-in only** via `/workflow --scrum` or when the user explicitly asks for sprint planning. The plugin still exposes `scrum-master` for direct invocation — it just isn't on the default `/workflow` path.
 
 ## Step 2: Execute the Pipeline
@@ -75,11 +79,25 @@ Run the phases determined by Step 1. Complete each phase before starting the nex
 
 ---
 
+### Grill (default when triggered — `--grill` forces, `--no-grill` skips)
+
+Settle open decisions before planning. Runs when any of these is true:
+
+- The spec is ambiguous: 2+ valid readings of scope, behaviour, or acceptance.
+- The work touches auth, payments, or data models.
+- The user passed `--grill`.
+
+`--no-grill` skips the phase. A spec approved in Step 0 counts as settled; grill only the gaps it leaves.
+
+Invoke the `grill` skill via the Skill tool (`Skill({ skill: "grill" })`). It writes D-NNN entries (phase `grill`) to `docs/planning/requirements/YYYY-MM-DD-<feature>.decision-log.md`. Do not start Plan until the user confirms the log. Tentative entries go to Plan as named risks.
+
+---
+
 ### Plan
 
 1. Check `docs/planning/briefs/`, `docs/planning/requirements/`, `docs/planning/stories/`
 2. If artifacts exist → load them, summarize to user, confirm they're current
-3. **Check for existing decision log** at `docs/planning/requirements/YYYY-MM-DD-<feature>.decision-log.md` — if present, read it and treat all prior decisions as binding context (don't re-litigate, only extend)
+3. **Check for existing decision log** at `docs/planning/requirements/YYYY-MM-DD-<feature>.decision-log.md` — if present, read it and treat all prior decisions as binding context (don't re-litigate, only extend). This includes the Grill phase output — pass the log path to the `plan` skill as input
 4. If missing → ask: "No planning artifacts found. Run /plan first?"
 5. If user says yes → invoke the `plan` skill via the Skill tool (`Skill({ skill: "plan" })`) → wait → continue. **Do NOT** dispatch `forgebee:plan` as a `subagent_type` — no such agent exists, `/plan` is skill-only (see Routing reference below).
 

@@ -6,6 +6,16 @@ The format roughly follows [Keep a Changelog](https://keepachangelog.com/) and t
 
 ---
 
+## [Unreleased]
+
+- **`grill` skill + `/grill` command** — interviews the user on a plan in rounds (decision tree, frontier, one recommended answer per question) and writes a resolved decision log. `/workflow` gains a Grill phase before Plan (on for ambiguous or auth/payments/data specs; `--grill` / `--no-grill`). `/team` gains a conditional Step 2 grill (Medium/Large or ambiguous, max 2 rounds).
+- **P7 — Lean Output** — comments say why, minimal docblocks (WPCS minimum form), no filler in reports. Added to `CLAUDE.md`, every karpathy block, `inject-principles.js`, and the rules files; `check-agent-contract.js` now fails an agent that drops it. `review-code-style` and `review-docs` flag over-commenting.
+- **Agent and skill refresh** — all 45 agents and 34 skills trimmed to current prompt practice: what+when descriptions, one copy per rule, least-privilege tools, long catalogues moved to reference files. Fixes wrong code in several agents (exit-code capture, WPCS sniff name, WooCommerce short description, Supabase admin check, gateway-order filter).
+- **`load-context-rules.js` now injects rules** — it only logged before. Rules and the active context go in as `additionalContext` under a 3.2 KB budget; files that do not fit are listed by path.
+- **Debate roles invoked as skills** — `/workflow`, `/growth`, and `/idea` state that advocate/skeptic/judge are `context: fork` skills, not `subagent_type` agents.
+
+---
+
 ## [5.5.0] — 2026-09-01
 
 **Minor: `/team` now sizes the task before it spends.** A single 5-file change measured 905 API calls and 131.6M billed-equivalent tokens across 7 sessions in 37 minutes — roughly 205,000 tokens per line of code written. Three rules in `/team` produced it, and all three are fixed.

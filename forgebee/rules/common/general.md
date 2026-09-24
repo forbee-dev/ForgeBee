@@ -2,7 +2,7 @@
 
 ## Code Quality
 
-- Every function that can fail MUST handle the error path
+- Every function that can fail handles the error path
 - Never swallow errors silently — at minimum, log them
 - Use early returns to reduce nesting
 - Keep functions under 50 lines; extract when longer
@@ -17,7 +17,7 @@
 
 ## Security Baseline
 
-- Validate ALL user input at the boundary (API handlers, form processors)
+- Validate all user input at the boundary (API handlers, form processors)
 - Use parameterized queries — never concatenate SQL
 - Sanitize output to prevent XSS
 - Never log sensitive data (passwords, tokens, PII)
@@ -33,5 +33,13 @@
 ## Documentation
 
 - Update README when adding new commands, endpoints, or config options
-- Add inline comments for WHY (not what) when logic is non-obvious
 - Keep API docs in sync with implementation
+- Docs: no preamble, no recap, no restating the heading
+
+## Comments and Docblocks
+
+- Comment only WHY: a constraint, a workaround, a non-obvious decision. Skip the comment when the name says it.
+- No changelog, ticket, author, or "added by" notes in code. Git keeps history.
+- Docblocks only where the language standard requires them. Write the minimum the linter accepts.
+- Never restate the function or parameter name in prose.
+- Language-specific forms: see "Comments and Docblocks" in `rules/php`, `rules/typescript`, and `rules/python`.

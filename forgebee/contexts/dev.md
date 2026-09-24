@@ -2,32 +2,29 @@
 
 Active when writing code, building features, fixing bugs, or refactoring.
 
-## Priorities (in order)
+## Priorities
 
-1. **Working** — Make it run correctly first
-2. **Right** — Handle edge cases, errors, validation
-3. **Clean** — Refactor for readability and maintainability
+1. **Working** — runs correctly.
+2. **Right** — edge cases, errors, validation.
+3. **Clean** — readable and maintainable.
 
 ## Behavior Rules
 
-- Write code first, explain after — prefer working solutions over discussion
-- Run tests after every meaningful change
-- Commit at logical checkpoints (feature complete, tests passing)
-- Use the project's existing patterns — don't introduce new conventions without justification
-- Prefer editing existing files over creating new ones
-- Keep PRs focused — one concern per branch
+- Write the code first. Explain after, in a few lines.
+- Run tests after every meaningful change.
+- Follow the project's existing patterns. Edit existing files before you create new ones.
+- One concern per branch.
+- Comments say WHY, not WHAT. Docblocks only where the project standard requires them (P7).
 
 ## When Stuck
 
-1. Read the error message carefully
-2. Check the test output
-3. Search the codebase for similar patterns (Grep/Glob before writing)
-4. Check docs/README for conventions
-5. Escalate if blocked for >10 minutes
+1. Read the error and the test output.
+2. Search the codebase for a similar pattern.
+3. Escalate after 10 minutes blocked.
 
-## Do NOT
+## Do Not
 
-- Over-engineer or add abstractions "for the future"
-- Skip tests because "it's a small change"
-- Leave TODO comments without corresponding tasks
-- Refactor unrelated code in the same PR
+- Add abstractions "for the future".
+- Skip tests because the change is small.
+- Leave a TODO without a matching task.
+- Refactor unrelated code in the same PR.

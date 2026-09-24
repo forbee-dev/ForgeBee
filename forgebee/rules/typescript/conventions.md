@@ -29,6 +29,29 @@
 - Always handle Promise rejections — no floating promises
 - Use `unknown` in catch blocks: `catch (error: unknown)`
 
+## Comments and Docblocks
+
+- JSDoc only on exported API, and only for what the types do not already say.
+- No comments on typed params. No `@param {string}` when TypeScript has the type.
+- No JSDoc on internal functions. Name them well instead.
+
+Bad:
+```ts
+/**
+ * Formats the price.
+ * @param {number} amount - The amount
+ * @param {string} currency - The currency
+ * @returns {string} The formatted price
+ */
+export function formatPrice(amount: number, currency: string): string {
+```
+
+Good:
+```ts
+/** Rounds half-up to the currency's minor unit before formatting. */
+export function formatPrice(amount: number, currency: string): string {
+```
+
 ## React (when applicable)
 
 - Use function components with `FC` only when you need `children` type

@@ -1,192 +1,202 @@
 # wordpress-seo — Reference Material
 
-Sections extracted from `forgebee/agents/wordpress-seo.md` to keep the persona under the 250-line budget. Persona file holds discipline + Never rules.
+Working library for `forgebee/agents/wordpress-seo.md`. The persona holds rules; this file holds patterns. Code follows WPCS (tabs, Yoda, spaces in parentheses).
 
 ---
 
-## WordPress SEO Patterns
-
-### Yoast SEO Programmatic Control
+## Yoast SEO
 
 ```php
-// Set meta title/description programmatically
-add_filter( 'wpseo_title', function( $title ) {
-    if ( is_post_type_archive( 'product' ) ) {
-        return 'Shop All Products | ' . get_bloginfo( 'name' );
-    }
-    return $title;
-});
+add_filter(
+	'wpseo_title',
+	function ( $title ) {
+		if ( is_post_type_archive( 'product' ) ) {
+			return 'Shop All Products | ' . get_bloginfo( 'name' );
+		}
+		return $title;
+	}
+);
 
-add_filter( 'wpseo_metadesc', function( $desc ) {
-    if ( is_singular( 'product' ) ) {
-        $short = get_post_meta( get_the_ID(), '_short_description', true );
-        return wp_trim_words( $short, 25 );
-    }
-    return $desc;
-});
+add_filter(
+	'wpseo_metadesc',
+	function ( $desc ) {
+		if ( is_singular( 'product' ) && '' === $desc ) {
+			return wp_trim_words( get_the_excerpt(), 25 );
+		}
+		return $desc;
+	}
+);
 
-// Add custom schema
-add_filter( 'wpseo_schema_graph_pieces', function( $pieces, $context ) {
-    $pieces[] = new My_Custom_Schema_Piece( $context );
-    return $pieces;
-}, 10, 2 );
+add_filter(
+	'wpseo_schema_graph_pieces',
+	function ( $pieces, $context ) {
+		$pieces[] = new Myplugin_Schema_Piece( $context );
+		return $pieces;
+	},
+	10,
+	2
+);
 ```
 
-### RankMath Programmatic Control
+## RankMath
 
 ```php
-// Change title via RankMath
-add_filter( 'rank_math/frontend/title', function( $title ) {
-    if ( is_post_type_archive( 'product' ) ) {
-        return 'Shop All Products | ' . get_bloginfo( 'name' );
-    }
-    return $title;
-});
+add_filter(
+	'rank_math/frontend/title',
+	function ( $title ) {
+		return is_post_type_archive( 'product' ) ? 'Shop All Products | ' . get_bloginfo( 'name' ) : $title;
+	}
+);
 
-// Add JSON-LD via RankMath
-add_filter( 'rank_math/json_ld', function( $data, $jsonld ) {
-    if ( is_singular( 'product' ) ) {
-        $data['product'] = [
-            '@type'  => 'Product',
-            'name'   => get_the_title(),
-            'offers' => [
-                '@type' => 'Offer',
-                'price' => get_post_meta( get_the_ID(), '_price', true ),
-            ],
-        ];
-    }
-    return $data;
-}, 10, 2 );
+add_filter(
+	'rank_math/json_ld',
+	function ( $data, $jsonld ) {
+		if ( is_singular( 'service' ) ) {
+			$data['service'] = array(
+				'@type'    => 'Service',
+				'name'     => get_the_title(),
+				'provider' => array( '@id' => home_url( '/#organization' ) ),
+			);
+		}
+		return $data;
+	},
+	10,
+	2
+);
 ```
 
-### WordPress XML Sitemap Customization
+## Core XML Sitemap (no SEO plugin)
 
 ```php
-// Add custom post types to sitemap (WP 5.5+ core sitemaps)
-add_filter( 'wp_sitemaps_post_types', function( $post_types ) {
-    unset( $post_types['attachment'] ); // Remove attachments
-    return $post_types;
-});
+add_filter(
+	'wp_sitemaps_post_types',
+	function ( $post_types ) {
+		unset( $post_types['attachment'] );
+		return $post_types;
+	}
+);
 
-// Exclude specific posts
-add_filter( 'wp_sitemaps_posts_query_args', function( $args, $post_type ) {
-    if ( $post_type === 'page' ) {
-        $args['post__not_in'] = [ get_option( 'page_on_front' ) ];
-    }
-    return $args;
-}, 10, 2 );
-
-// Add custom entries (Yoast)
-add_filter( 'wpseo_sitemap_index', function( $sitemap_custom_items ) {
-    $sitemap_custom_items .= '
-    <sitemap>
-        <loc>' . home_url( '/custom-sitemap.xml' ) . '</loc>
-        <lastmod>' . date( 'c' ) . '</lastmod>
-    </sitemap>';
-    return $sitemap_custom_items;
-});
+add_filter(
+	'wp_sitemaps_posts_query_args',
+	function ( $args, $post_type ) {
+		if ( 'page' === $post_type ) {
+			$args['post__not_in'] = array( (int) get_option( 'page_on_front' ) );
+		}
+		return $args;
+	},
+	10,
+	2
+);
 ```
 
-### WordPress Permalink Structure
+Yoast owns the sitemap when active. Add custom sitemaps with `wpseo_sitemap_index` (append `<sitemap><loc>…</loc><lastmod>` with `gmdate( 'c' )`).
+
+## Permalinks for CPTs and Taxonomies
 
 ```php
-// Custom post type with SEO-friendly rewrite
-register_post_type( 'service', [
-    'rewrite' => [
-        'slug'       => 'services',    // /services/service-name/
-        'with_front' => false,          // Don't prepend /blog/ if set as front
-    ],
-    'has_archive'   => 'services',     // /services/ archive page
-    'hierarchical'  => false,
-]);
+register_post_type(
+	'service',
+	array(
+		'public'      => true,
+		'has_archive' => 'services',
+		'rewrite'     => array(
+			'slug'       => 'services',
+			'with_front' => false, // Keep a "/blog/" permalink base out of CPT URLs.
+		),
+	)
+);
 
-// Custom taxonomy with SEO-friendly rewrite
-register_taxonomy( 'service_category', 'service', [
-    'rewrite' => [
-        'slug'         => 'services/category',
-        'with_front'   => false,
-        'hierarchical' => true,
-    ],
-]);
+register_taxonomy(
+	'service_category',
+	'service',
+	array(
+		'rewrite' => array(
+			'slug'         => 'services/category',
+			'with_front'   => false,
+			'hierarchical' => true,
+		),
+	)
+);
 
-// Flush rewrite rules on activation only
-register_activation_hook( __FILE__, function() {
-    // Register CPTs first, then flush
-    register_custom_post_types();
-    flush_rewrite_rules();
-});
+register_activation_hook(
+	__FILE__,
+	function () {
+		// Rules for the CPT exist only after it is registered.
+		myplugin_register_post_types();
+		flush_rewrite_rules();
+	}
+);
 ```
 
-### WooCommerce Product Schema
+Flush rewrite rules on activation only, never on `init`.
+
+## WooCommerce Product Schema
 
 ```php
-// Enhanced product schema
-add_filter( 'woocommerce_structured_data_product', function( $markup, $product ) {
-    // Add brand
-    $brand = get_term( get_post_meta( $product->get_id(), '_brand', true ), 'product_brand' );
-    if ( $brand && ! is_wp_error( $brand ) ) {
-        $markup['brand'] = [
-            '@type' => 'Brand',
-            'name'  => $brand->name,
-        ];
-    }
+add_filter(
+	'woocommerce_structured_data_product',
+	function ( $markup, $product ) {
+		$brands = get_the_terms( $product->get_id(), 'product_brand' );
+		if ( $brands && ! is_wp_error( $brands ) ) {
+			$markup['brand'] = array(
+				'@type' => 'Brand',
+				'name'  => $brands[0]->name,
+			);
+		}
 
-    // Add GTIN/SKU
-    if ( $product->get_sku() ) {
-        $markup['sku']  = $product->get_sku();
-        $markup['gtin'] = $product->get_sku(); // If SKU is GTIN
-    }
+		$gtin = $product->get_global_unique_id();
+		if ( $gtin ) {
+			$markup['gtin'] = $gtin;
+		}
 
-    // Availability mapping
-    $markup['offers']['availability'] = $product->is_in_stock()
-        ? 'https://schema.org/InStock'
-        : 'https://schema.org/OutOfStock';
-
-    return $markup;
-}, 10, 2 );
+		return $markup;
+	},
+	10,
+	2
+);
 ```
 
-### ACF Content SEO
+WooCommerce 9.2+ has a core GTIN field (`get_global_unique_id()`). Never copy the SKU into `gtin` — a false GTIN fails Merchant Center validation.
+
+## ACF Content and SEO Analysis
+
+Yoast and RankMath analyze content in the editor with JavaScript. PHP filters do not feed that analysis.
+- Yoast: install "ACF Content Analysis for Yoast SEO", or register a YoastSEO.js content modification.
+- RankMath: add field text through the `rank_math_content` JS filter (`wp.hooks.addFilter`).
+
+## FAQ Schema from an ACF Repeater
 
 ```php
-// Include ACF fields in Yoast content analysis
-add_filter( 'wpseo_pre_analysis_post_content', function( $content, $post ) {
-    // Add ACF flexible content to analysis
-    if ( have_rows( 'page_sections', $post->ID ) ) {
-        while ( have_rows( 'page_sections', $post->ID ) ) {
-            the_row();
-            $content .= ' ' . get_sub_field( 'heading' );
-            $content .= ' ' . get_sub_field( 'content' );
-        }
-    }
-    return $content;
-}, 10, 2 );
+/**
+ * Builds FAQPage JSON-LD from the ACF "faq" repeater.
+ *
+ * @param int $post_id Post ID.
+ * @return array|null Schema array, or null when the repeater is empty.
+ */
+function myplugin_faq_schema( $post_id ) {
+	$items = array();
+	while ( have_rows( 'faq', $post_id ) ) {
+		the_row();
+		$items[] = array(
+			'@type'          => 'Question',
+			'name'           => wp_strip_all_tags( get_sub_field( 'question' ) ),
+			'acceptedAnswer' => array(
+				'@type' => 'Answer',
+				'text'  => wp_kses_post( get_sub_field( 'answer' ) ),
+			),
+		);
+	}
 
-// Generate FAQ schema from ACF repeater
-function generate_faq_schema_from_acf( $post_id ) {
-    $faq_items = [];
-    if ( have_rows( 'faq', $post_id ) ) {
-        while ( have_rows( 'faq', $post_id ) ) {
-            the_row();
-            $faq_items[] = [
-                '@type'          => 'Question',
-                'name'           => get_sub_field( 'question' ),
-                'acceptedAnswer' => [
-                    '@type' => 'Answer',
-                    'text'  => wp_strip_all_tags( get_sub_field( 'answer' ) ),
-                ],
-            ];
-        }
-    }
+	if ( ! $items ) {
+		return null;
+	}
 
-    if ( ! empty( $faq_items ) ) {
-        return [
-            '@context'   => 'https://schema.org',
-            '@type'      => 'FAQPage',
-            'mainEntity' => $faq_items,
-        ];
-    }
-    return null;
+	return array(
+		'@context'   => 'https://schema.org',
+		'@type'      => 'FAQPage',
+		'mainEntity' => $items,
+	);
 }
 ```
 
+Print it with `wp_json_encode()` in a `<script type="application/ld+json">` tag. Google shows FAQ rich results only for authoritative government and health sites; the markup still helps other consumers. If Yoast/RankMath is active, add the piece to their graph instead of a second script.

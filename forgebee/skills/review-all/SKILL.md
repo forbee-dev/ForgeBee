@@ -8,99 +8,54 @@ version: 1.0.0
 
 ## Objective
 
-Find bugs, security holes, performance issues, and quality problems in changed code. Every issue has a file:line reference and a recommended fix. Runs inline — leverages session context (what you've been editing, why, what trade-offs were discussed).
+Find bugs, security holes, performance issues, and quality problems in changed code. Every issue has a `file:line` and a fix. Runs inline, so use session context: what was edited, why, and which trade-offs were discussed.
 
-**Success looks like:** A clear READY/NEEDS FIXES/BLOCKED verdict with actionable items.
+Output: a READY / NEEDS FIXES / BLOCKED verdict with actionable items.
 
-> Findings (own and delegated) use the shared format: `forgebee/skills/_review-finding-contract.md`. As the aggregator, sum the per-skill footer counts into one combined footer so `/audit-self` can parse the whole pass.
+> Findings (own and delegated) use `forgebee/skills/_review-finding-contract.md`. As the aggregator, sum the per-skill footer counts into one combined footer so `/audit-self` can parse the whole pass.
 
-## Karpathy Principle (P2 — Senior Engineer Test)
+## P2 — Senior Engineer Test
 
-Before issuing a `READY` verdict, ask explicitly: **would a senior engineer call this overcomplicated?** If yes, the verdict is `NEEDS FIXES` — list the simplification as a `High` issue. Do not pass overcomplicated code on the grounds that it "works."
+Before a `READY` verdict, ask: would a senior engineer call this overcomplicated? If yes, the verdict is `NEEDS FIXES`; list the simplification as `High`. "It works" does not pass overcomplicated code.
 
 ## Never
 
-- Never flag issues in unchanged code — only review the diff
-- Never skip a review section because the change "looks small"
-- Never give READY verdict if any Critical issue is open
-- Never nitpick stylistic preferences — focus on substance
+- Never flag issues in unchanged code. Review the diff only.
+- Never skip a review section because the change looks small.
+- Never give READY with a Critical issue open.
+- Never report style preferences as High.
+- Never run more than 3 review iterations on the same diff.
 
 ## Calibration
 
-Only flag issues that actually matter. Use this severity guide:
+Severity words and meanings are in the contract. Only Critical and High block the push. With Critical/High clean, say READY even with Medium/Low open. Mention Medium/Low in one line each.
 
-| Severity | Blocks push? | Examples |
-|----------|-------------|----------|
-| **Critical** | YES — must fix | SQL injection, secret exposure, data loss, broken auth |
-| **High** | YES — must fix | Missing error handling on external calls, N+1 queries, XSS |
-| **Medium** | No — recommend fix | DRY violations, missing edge cases, unclear naming |
-| **Low** | No — informational | Missing docblocks, minor style issues, optional optimizations |
-
-Only Critical and High block the push. Medium and Low are recommendations — mention them briefly, don't belabor them. If the diff is clean on Critical/High, say READY even if there are Medium/Low items.
-
-**Anti-patterns to avoid:**
-- Flagging pre-existing issues in unchanged code
-- Suggesting refactors unrelated to the change
-- Reporting style issues as High severity
-- Reviewing more than 3 iterations on the same diff
-
-## Engineering Preferences
-
-- DRY is important — flag repetition aggressively (but as Medium, not Critical)
-- Code should be "engineered enough" — not fragile, not over-abstracted
-- Handle edge cases — err on the side of more, not fewer
-- Explicit over clever — readability wins
+Project preferences:
+- Flag repetition as Medium (DRY matters here).
+- "Engineered enough": not fragile, not over-abstracted.
+- Explicit over clever.
+- Do not suggest refactors unrelated to the change.
 
 ## Before Starting
 
-1. Check session context — what files have been discussed? What was the goal?
-2. Run `git diff HEAD` to see all uncommitted changes. If none, run `git diff HEAD~1` for the last commit.
-3. Run `git log --oneline -5` for context.
-4. Only report issues on **changed code**.
+1. Check session context: files discussed, goal.
+2. Run `git diff HEAD`. If empty, run `git diff HEAD~1`.
+3. Run `git log --oneline -5`.
 
 ## Review Sections
 
-Work through each section systematically.
+Work through each section. The model knows the generic checks; these are the ones to not miss.
 
-### 1. CODE QUALITY
-- Code organization and module structure
-- DRY violations
-- Error handling patterns and missing edge cases
-- Areas that are over-engineered or under-engineered
-- Naming and readability
-
-### 2. PERFORMANCE
-- N+1 queries and database access patterns
-- Missing caching opportunities
-- Memory concerns and expensive loops
-- Slow or high-complexity code paths
-
-### 3. SECURITY
-- Injection vulnerabilities (SQL, XSS, command)
-- Unescaped output, missing sanitization
-- Hardcoded secrets, broken auth
-- CSRF, access control issues
-- Framework-specific sanitization and escaping
-
-### 4. ACCESSIBILITY (if UI changes)
-- Missing alt text, ARIA labels
-- Keyboard navigation, focus management
-- Color contrast, semantic HTML
-- WCAG 2.1 AA compliance
-
-### 5. DOCUMENTATION (brief — don't over-flag)
-- Missing/outdated docblocks on public APIs
-- Undocumented complex logic
-
-### 6. BEST PRACTICES
-- SOLID principles violations that affect maintainability
-- Coding standards for the project's language/framework
-- File organization, separation of concerns
+1. **Code quality** — structure, DRY, error handling at trust boundaries, missing edge cases, over/under-engineering, naming. WHAT-comments / padded docblocks (P7) → Low.
+2. **Performance** — N+1, missing cache, expensive loops, hot-path complexity.
+3. **Security** — injection (SQL, XSS, command), unescaped output, missing sanitization, hardcoded secrets, broken auth, CSRF, access control, framework-specific escaping.
+4. **Accessibility** (UI changes only) — alt text, ARIA, keyboard, focus, contrast, semantic HTML, WCAG 2.1 AA.
+5. **Documentation** (brief) — missing/outdated docblocks on public APIs only where the project standard requires them; undocumented non-obvious logic.
+6. **Best practices** — SOLID violations that hurt maintainability, project coding standard, separation of concerns.
 
 ## For Large Diffs (>500 lines changed)
 
-Delegate to specialized review skills with `context:fork` for parallel deep review.
-Map the change type to the skill so high-blast-radius areas (schema, public API, untested code) always get a deep pass — mirror checkpoint-preview's `[schema]` / `[public API]` hot-spot tags:
+Delegate to review skills with `context:fork` for parallel deep review. Map change type to skill so high-blast-radius areas (schema, public API, untested code) always get a deep pass. This mirrors checkpoint-preview's `[schema]` / `[public API]` hot-spot tags.
 
 | Change includes… | Delegate to |
 |---|---|
@@ -113,36 +68,35 @@ Map the change type to the skill so high-blast-radius areas (schema, public API,
 | WordPress plugin/theme files | `review-wordpress` |
 | prompts, tool definitions, LLM calls, model output handling | `review-prompt` |
 
-Synthesize their findings into your final report.
+Merge their findings into your final report.
 
-## For Each Issue Found
+## For Each Issue
 
-1. Describe the problem concretely, with **file and line references**
-2. Present **2-3 options**, including "do nothing" where reasonable
-3. Give your **recommended option and why**
-4. Assign severity (Critical/High/Medium/Low)
+Give `file:line`, severity, and the recommended fix. For Critical/High with a real trade-off, add 1-2 alternatives (including "do nothing" where reasonable) in one line.
 
-## Example (Critical vs Low)
+## Example
 
 ```
 [Critical] Auth check missing on a state-changing route
 File: src/routes/admin.ts:14
-Issue: `POST /admin/users/:id/role` updates roles with no session/permission check — any caller can grant themselves admin.
-Fix: Require an authenticated session and `requireRole('admin')` before the handler runs.
+Issue: `POST /admin/users/:id/role` updates roles with no session/permission check; any caller can grant admin.
+Fix: Require an authenticated session and `requireRole('admin')` before the handler.
 
 [Low] Console.log left in shipped code path
 File: src/lib/cart.ts:27
-Issue: `console.log(cart)` in the add-to-cart path leaks state to the browser console.
+Issue: `console.log(cart)` leaks state to the browser console.
 Fix: Remove it or route through the project logger gated to dev.
 ```
 
-## Final Summary
+## Final Report
+
+Findings tables and verdict only. No prose recap, no praise section.
 
 ```markdown
 ## Review: [Target]
 
 ### Verdict: READY | NEEDS FIXES | BLOCKED
-**Quality score:** <0-100> (per `_review-finding-contract.md` — same scale as the footer below)
+**Quality score:** <0-100>
 
 ### Blocking Issues (Critical + High)
 | # | Issue | File:Line | Severity | Fix |
@@ -151,22 +105,16 @@ Fix: Remove it or route through the project logger gated to dev.
 ### Recommendations (Medium + Low)
 | # | Issue | File:Line | Severity | Suggestion |
 |---|-------|-----------|----------|------------|
-
-### Positive Notes
-[What's done well — always include at least 2]
 ```
 
-End with the combined machine-parseable footer from the shared contract (counts summed across all sections and any delegated review skills):
+Omit an empty table. End with the combined footer from the contract (counts summed across sections and delegated skills):
 
 ```
 SCORE: <0-100> | {critical:N, high:N, medium:N, low:N} | verdict: <pass|block>
 ```
 
-`READY` maps to `verdict: pass`; `NEEDS FIXES`/`BLOCKED` map to `verdict: block`.
+`READY` maps to `verdict: pass`. `NEEDS FIXES` and `BLOCKED` map to `verdict: block`.
 
 ## Communication
 
-When working on a team, report:
-- Push readiness verdict
-- Critical blockers (if any)
-- Issue count by category and severity
+On a team, report: push-readiness verdict, Critical blockers, issue count by category and severity.

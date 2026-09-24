@@ -1,276 +1,113 @@
 # email-strategist — Reference Material
 
-Frameworks and templates referenced by `forgebee/agents/email-strategist.md`. Moved here to keep the persona file under the 200-line budget (W16). The agent file holds discipline, Never rules, and self-review — this file holds the working library.
+Worked templates for `forgebee/agents/email-strategist.md`. The persona holds the method, gates, and Never rules.
 
 ---
 
-## Email Strategy Architecture
+## The 5 Core Flows — Worked Examples
 
-### The 5 Core Automation Flows
+### 1. Welcome (5 emails, 14 days)
 
-Every email program needs these 5 flows running before anything else:
+| # | Timing | Subject | Goal | CTA |
+|---|--------|---------|------|-----|
+| 1 | Immediate | "Welcome to [Company]!" | Set expectations, deliver promised value | "See how it works" |
+| 2 | Day 2 | "[Benefit] our customers love most" | First win | "Try [feature]" |
+| 3 | Day 5 | "Quick question about your [goal]" | Qualify and engage | "Take the 2-minute assessment" |
+| 4 | Day 10 | "How [Customer] achieved [result]" | Social proof | "See the full story" |
+| 5 | Day 14 | "[Resource] most new users request" | Value before the harder ask | "Grab your [guide]" |
 
-#### 1. Welcome Series (3-5 emails over 14 days)
+### 2. Cart Abandonment (3 emails; expected recovery 10-30%)
 
-```
-Email 1 (Immediate):
-  Subject: "Welcome to [Company]!"
-  Goal: Set expectations, deliver promised value
-  CTA: "See how it works" (video/feature tour)
-  Tone: Warm, grateful
+| # | Timing | Subject | Content | CTA |
+|---|--------|---------|---------|-----|
+| 1 | 1 hour | "You left something behind" | Product image, minimal copy, low pressure | "Complete my purchase" |
+| 2 | 24 hours | "Why [Product] is worth it (+ what others say)" | Benefits, social proof, shipping info | "Claim my order" |
+| 3 | 3-5 days | "15% off expires tomorrow" | Urgency, objection handling, trust signals | "Get my discount" |
 
-Email 2 (Day 2):
-  Subject: "[Benefit] Our Customers Love Most"
-  Goal: Demonstrate quick value, first win
-  CTA: "Try [feature]"
-  Tone: Helpful, educational
+### 3. Post-Purchase / Onboarding
+Immediate: confirmation + what's next → after delivery: quick-start + first win → day 10: feedback + NPS → day 30: feature discovery.
 
-Email 3 (Day 5):
-  Subject: "Quick question about your [goal]"
-  Goal: Qualify and engage
-  CTA: "Take the 2-minute assessment"
-  Tone: Consultative
+### 4. Nurture (5-7 emails, 2-3 days apart; match intensity to engagement)
+Educational (primary pain) → framework (your approach) → case study → common mistakes → tool/resource → soft pitch → direct offer (proof + urgency).
 
-Email 4 (Day 10):
-  Subject: "How [Customer] achieved [specific result]"
-  Goal: Social proof, build credibility
-  CTA: "See the full story"
-  Tone: Inspiring
-
-Email 5 (Day 14):
-  Subject: "[Resource] most new users request"
-  Goal: Final value delivery before harder ask
-  CTA: "Grab your [guide/template]"
-  Tone: Generous
-```
-
-#### 2. Cart Abandonment (3 emails)
-
-```
-Email 1 (1 hour after):
-  Subject: "You left something behind"
-  Content: Product image, minimal copy, gentle reminder
-  CTA: "Complete my purchase"
-  Psychology: Low pressure, guilt-free
-
-Email 2 (24 hours after):
-  Subject: "Why [Product] is worth it (+ what others say)"
-  Content: Benefits, social proof, shipping info
-  CTA: "Claim my order"
-  Psychology: Social proof + value reinforcement
-
-Email 3 (3-5 days after):
-  Subject: "15% off expires tomorrow"
-  Content: Urgency, objection handling, trust signals
-  CTA: "Get my discount"
-  Psychology: Limited-time incentive
-```
-
-**Expected recovery rate:** 10-30% of abandoned carts
-
-#### 3. Post-Purchase / Onboarding (3-4 emails)
-
-```
-Email 1 (Immediate): Order confirmation + what's next
-Email 2 (After delivery): Quick-start guide + first win
-Email 3 (Day 10): Feedback request + NPS survey
-Email 4 (Day 30): Feature discovery + usage tips
-```
-
-#### 4. Nurture Sequence (5-7 emails, ongoing)
-
-```
-Email 1: Educational content (addresses primary pain point)
-Email 2: Framework/method (teaches your approach)
-Email 3: Case study (proof it works)
-Email 4: Common mistakes (positions you as expert)
-Email 5: Tool/resource (delivers high value)
-Email 6: Soft pitch (bridge to product)
-Email 7: Direct offer (with social proof + urgency)
-```
-
-**Cadence:** 2-3 days between emails. Match intensity to engagement.
-
-#### 5. Re-Engagement / Win-Back (2-3 emails)
-
-```
-Email 1 (90+ days inactive):
-  Subject: "We miss you! Here's what's new"
-  Content: Product updates, new features, special offer
-  CTA: "See what's new"
-
-Email 2 (14 days later):
-  Subject: "[Specific value] that [similar company] loves"
-  Content: Case study, repositioned value
-  CTA: "Explore latest features"
-
-Email 3 (14 days later):
-  Subject: "Last chance: 30% off to welcome you back"
-  Content: Final offer, clear value prop
-  CTA: "Claim my discount"
-  Note: This is the last email before removal from active list
-```
+### 5. Re-Engagement / Win-Back
+| # | Timing | Subject | CTA |
+|---|--------|---------|-----|
+| 1 | 90+ days inactive | "We miss you! Here's what's new" | "See what's new" |
+| 2 | +14 days | "[Specific value] that [similar company] loves" | "Explore latest features" |
+| 3 | +14 days | "Last chance: 30% off to welcome you back" | "Claim my discount" — last email before removal from the active list |
 
 ## Subject Line Formulas
 
-**2025 benchmarks:** Average open rate 22-42% (varies by industry). 47% of recipients judge email solely on subject line.
+| Formula | Template |
+|---------|----------|
+| Personalization | "[Name], [specific benefit]" |
+| Curiosity gap | "We [achieved result]. Here's how." |
+| Problem-solution | "Tired of [problem]? [Solution]." |
+| Question | "How would you [benefit] in [timeframe]?" |
+| Scarcity | "[Limited resource] + [time window]" |
+| Listicle | "[Number] [adjective] ways to [benefit]" |
+| Social proof | "[Number] [people] [achieved result] using [product]" |
+| Benefit-first | "[Benefit] without [common objection]" |
+| Time-specific | "Learn [skill] in [timeframe]" |
 
-### High-Converting Formulas
-
-| Formula | Template | Impact |
-|---------|----------|--------|
-| **Personalization** | "[Name], [specific benefit]" | +22% opens |
-| **Curiosity gap** | "We [achieved result]. Here's how." | High CTR |
-| **Problem-solution** | "Tired of [problem]? [Solution]." | Pain-aware audience |
-| **Question** | "How would you [benefit] in [timeframe]?" | Engagement driver |
-| **Scarcity** | "[Limited resource] + [time window]" | Urgency-driven opens |
-| **Listicle** | "[Number] [adjective] ways to [benefit]" | Predictable, proven |
-| **Social proof** | "[Number] [people] [achieved result] using [product]" | Trust-building |
-| **Benefit-first** | "[Benefit] without [common objection]" | Objection-handling |
-| **Time-specific** | "Learn [skill] in [timeframe]" | Commitment clarity |
-| **Emoji** | Strategic emoji at start (checkmark, arrow) | +56% opens when relevant |
-
-**Optimal length:** 40-50 characters / 9-14 words
-
-**Always A/B test.** Even tiny changes ("my" vs. "this", "you" vs. "your") shift open rates 5-10%.
+Length: 40-50 characters. A/B test always; small wording changes ("my" vs. "this") move results.
 
 ## Email Body Structure
 
 ```
-PREHEADER: 50 chars — extends the subject line promise
-  ↓
-HERO: Compelling image or text hook
-  ↓
-BODY: 3-5 short paragraphs max
-  - Opening: Hook / relevance statement
-  - Middle: Benefit or use case
-  - Closing: Why now (urgency/value)
-  ↓
-PRIMARY CTA: Big contrasting button + benefit text
-  ↓
-SECONDARY CTA: Text link (lower commitment alternative)
-  ↓
-FOOTER: Unsubscribe, company info, social links
+PREHEADER (≈50 chars, extends the subject promise)
+HERO (image or text hook)
+BODY (3-5 short paragraphs: hook → benefit/use case → why now)
+PRIMARY CTA (contrasting button, benefit text)
+SECONDARY CTA (lower-commitment text link)
+FOOTER (unsubscribe, company info, social)
 ```
 
-**Copy rules:**
-- Sentence length: 10-15 words max
-- Paragraph length: 2-3 sentences max
-- Generous white space and line breaks
-- Anchor text describes benefit ("Get my guide" not "Click here")
-- Personalization beyond name — reference past actions, segment-specific content
+Copy: sentences 10-15 words, paragraphs 2-3 sentences, anchor text names the benefit ("Get my guide", not "Click here"). Personalize on past actions, not only the name. 1-2 product-focused images.
 
-**Image impact:**
-- With images: 43% open rate, 4.8% click rate
-- Without images: 36% open rate, 1.6% click rate
-- Best practice: 1-2 images per email, product-focused
-
-## Segmentation Strategy
-
-### 5 Core Segments
+## Segmentation
 
 | Segment | Definition | Goal | Frequency |
 |---------|-----------|------|-----------|
-| **New subscribers** | 0-30 days | Build relationship, prevent churn | Welcome series + 1-2x/week |
-| **Active customers** | Recent purchasers | Maximize LTV, cross-sell | 1-2x/week |
-| **Cart abandoners** | Unfinished purchase | Recover revenue | 3-email automated series |
-| **Inactive** | No engagement 60-90 days | Re-engage or sunset | Re-engagement series |
-| **VIP** | High LTV, frequent buyers | Deepen loyalty, exclusive access | 2-3x/month |
+| New subscribers | 0-30 days | Build relationship | Welcome + 1-2x/week |
+| Active customers | Recent purchasers | LTV, cross-sell | 1-2x/week |
+| Cart abandoners | Unfinished purchase | Recover revenue | 3-email series |
+| Inactive | No engagement 60-90 days | Re-engage or sunset | Re-engagement series |
+| VIP | High LTV, frequent buyers | Loyalty, exclusive access | 2-3x/month |
 
-### Advanced Segmentation Layers
+Layers: behavioral (usage, adoption, content engagement) · demographic (industry, size, role, location) · RFM (recency × frequency × monetary) · lifecycle (awareness → retention).
 
-| Layer | Dimensions | Use Case |
-|-------|-----------|----------|
-| **Behavioral** | Product usage, feature adoption, content engagement | Targeted upsell, feature education |
-| **Demographic** | Industry, company size, role, location | Relevant messaging, case studies |
-| **RFM** | Recency × Frequency × Monetary value | LTV optimization, churn prediction |
-| **Lifecycle** | Awareness → Consideration → Decision → Retention | Stage-appropriate content |
-
-### Automation Rules
+### Engagement Scoring
 
 ```
-Engagement scoring:
-  - Email open = +1 point
-  - Email click = +3 points
-  - Website visit = +2 points
-  - Purchase = +10 points
-  - No activity 30 days = -5 points
-
-Segment triggers:
-  - Score > 20 in 30 days → Move to "Engaged" → increase frequency
-  - Score < 5 in 60 days → Move to "At Risk" → trigger re-engagement
-  - Score = 0 in 90 days → Move to "Inactive" → trigger win-back
-  - 3+ purchases in 90 days → Move to "VIP" → exclusive content
+open +1 · click +3 · site visit +2 · purchase +10 · 30 days no activity -5
+score > 20 in 30 days  → Engaged  → raise frequency
+score < 5 in 60 days   → At Risk  → re-engagement
+score = 0 in 90 days   → Inactive → win-back
+3+ purchases in 90 days → VIP     → exclusive content
 ```
 
 ## Deliverability & List Hygiene
 
-### Authentication (non-negotiable)
+- Authentication: SPF, DKIM, and DMARC are all required. Bulk senders to Gmail/Yahoo also need one-click unsubscribe (RFC 8058).
+- Complaint rate below 0.1%; higher rates damage sender reputation.
+- Cleaning cadence: 50K-250K quarterly · 250K-1M every 6-8 weeks · 1M+ every 4-6 weeks. Expect 25-30% annual decay (B2B 30-50%).
+- Sunset: 60 days no opens → suppress · 90 days → re-engagement · no response → quarterly digest · 180 days → remove.
+- Bounces: hard → remove now · soft → retry 2-3 times, then remove · spam complaint → remove after the first.
+- Validate at signup (NeverBounce, ZeroBounce, Clearout). Double opt-in gives near-100% valid addresses but loses ~30% who never confirm.
 
-| Protocol | What it does | Priority |
-|----------|-------------|----------|
-| **SPF** | Authorizes sending servers | Required |
-| **DKIM** | Cryptographic signature verification | Required |
-| **DMARC** | Policy for failed authentication | Required |
+## Metrics
 
-### List Hygiene Schedule
+| Metric | Benchmark | Measures |
+|--------|-----------|----------|
+| Open rate | 22-42% | Subject line + deliverability (inflated by Apple Mail Privacy Protection — do not optimize on opens alone) |
+| Click rate | 2-5% | Relevance + CTA |
+| Click-to-open | 10-15% | Content quality |
+| Conversion | 1-5% | End-to-end effectiveness |
+| Unsubscribe | <0.5% | Content-audience fit |
+| Bounce | <2% | List quality |
+| Complaint | <0.1% | Relevance + permission |
+| List growth | 2-5%/month | Acquisition health |
 
-| List Size | Cleaning Frequency |
-|-----------|-------------------|
-| 50K-250K | Quarterly |
-| 250K-1M | Every 6-8 weeks |
-| 1M+ | Every 4-6 weeks |
-
-**Expected annual list decay:** 25-30% (higher for B2B: 30-50%)
-
-### Sunset Policy
-
-```
-No opens in 60 days → Suppress from regular sends
-No opens in 90 days → Trigger re-engagement series
-No opens after re-engagement → Move to quarterly digest
-No engagement in 180 days → Remove from list
-```
-
-### Bounce Management
-
-| Type | Action |
-|------|--------|
-| Hard bounce (invalid address) | Remove immediately |
-| Soft bounce (mailbox full) | Retry 2-3 times, then remove |
-| Spam complaint | Remove after first complaint |
-
-**Keep complaint rate below 0.1%** — higher rates damage sender reputation.
-
-### Email Validation
-
-- Validate at signup (NeverBounce, ZeroBounce, Clearout)
-- Cost: $0.01-0.03 per address
-- Impact: Reduces bounce rate 40-60%
-- Double opt-in: 99%+ valid addresses (but ~30% don't confirm)
-
-## Metrics Framework
-
-### Primary KPIs
-
-| Metric | Benchmark | What it measures |
-|--------|-----------|-----------------|
-| **Open rate** | 22-42% | Subject line effectiveness + deliverability |
-| **Click rate** | 2-5% | Content relevance + CTA strength |
-| **Click-to-open rate** | 10-15% | Content quality (normalized for opens) |
-| **Conversion rate** | 1-5% | End-to-end effectiveness |
-| **Unsubscribe rate** | <0.5% | Content-audience fit |
-| **Bounce rate** | <2% | List quality |
-| **Complaint rate** | <0.1% | Content relevance + permission |
-| **List growth rate** | 2-5%/month | Acquisition health |
-
-### Revenue Attribution
-
-| Model | Method |
-|-------|--------|
-| **First touch** | Credit to first email that initiated the journey |
-| **Last touch** | Credit to last email before conversion |
-| **Linear** | Equal credit across all touchpoints |
-| **Time decay** | More credit to recent touches |
-
-Track: Revenue per email, Revenue per subscriber, Customer acquisition cost via email, Email-attributed LTV.
+Attribution models: first touch · last touch · linear · time decay. Track revenue per email, revenue per subscriber, email CAC, email-attributed LTV.

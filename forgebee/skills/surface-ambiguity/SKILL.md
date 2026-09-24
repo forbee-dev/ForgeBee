@@ -8,19 +8,15 @@ version: 1.0.0
 
 ## Objective
 
-Prevent silent picks. Before any non-trivial implementation choice with 2+ valid interpretations, list the options and pick one with a one-line reason. Do NOT silently choose.
+Prevent silent picks. Before a non-trivial choice with 2+ valid interpretations, list the options and pick one with a one-line reason.
 
-From Karpathy's diagnosis of LLM coding failure modes (`/tmp/karpathy-analysis/README.md:15`):
-> "They make wrong assumptions on your behalf and just run along with them without checking. They don't manage their confusion, don't seek clarifications, don't surface inconsistencies, don't present tradeoffs."
-
-This sits between `brainstorming` (upfront, formal) and the debate triads (post-plan, formal). It catches mid-stream silent picks — agent reads "export users" and silently chooses JSON, all-users, file-on-disk.
+This targets a Karpathy-diagnosed LLM failure: making assumptions on the user's behalf and running with them. It sits between `brainstorming` (upfront, formal) and the debate triads (post-plan, formal), and catches mid-stream picks, for example reading "export users" and silently choosing JSON, all users, file on disk.
 
 ## When this fires
 
-- A user request has more than one reasonable read (format, scope, fallback, library, location)
-- A sub-task starts a thread that ends in implementation details not in the original ask
-- Naming, defaults, error semantics, or boundary conditions are about to be picked silently
-- About to choose between two libraries, two patterns, two locations, or two interpretations of the spec
+- A request has more than one reasonable read (format, scope, fallback, library, location).
+- A sub-task leads to implementation details not in the original ask.
+- Naming, defaults, error semantics, or boundary conditions are about to be picked silently.
 
 ## Output shape (mandatory)
 
@@ -37,20 +33,20 @@ This sits between `brainstorming` (upfront, formal) and the debate triads (post-
 If No: surface to user and get approval BEFORE proceeding.
 ```
 
-## Examples of triggering moments
+## Examples
 
 | Situation | Silent pick (bad) | Surface (good) |
 |---|---|---|
-| "Add user export" | Silently choose JSON | List JSON / CSV / both, pick one with reason |
-| "Handle the error" | Silently swallow | List swallow / log / throw / retry, pick one |
-| "Use a queue" | Silently choose Redis | List Redis / Postgres / SQS, pick one |
-| "Make it configurable" | Silently add 5 knobs | List which configs and why each is needed |
-| "Match the existing pattern" | Silently pick one of many existing patterns | List 2-3 patterns observed, pick the closest fit |
+| "Add user export" | JSON | JSON / CSV / both, pick one |
+| "Handle the error" | Swallow | swallow / log / throw / retry, pick one |
+| "Use a queue" | Redis | Redis / Postgres / SQS, pick one |
+| "Make it configurable" | 5 knobs | Which configs and why each is needed |
+| "Match the existing pattern" | Any one pattern | 2-3 observed patterns, pick the closest |
 
 ## Never
 
-- Never silently pick when 2+ valid reads exist
-- Never list interpretations *after* picking — list before
-- Never list 4+ options (decompose the question if you need that many)
-- Never use this for trivial choices (variable names, brace style — not ambiguity, that's style)
-- Never use the output shape as a delay tactic — pick quickly and continue
+- Never pick silently when 2+ valid reads exist.
+- Never list interpretations after picking.
+- Never list 4+ options. Split the question instead.
+- Never use this for trivial choices (variable names, brace style).
+- Never use the output shape as a delay. Pick fast and continue.
