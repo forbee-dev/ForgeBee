@@ -8,71 +8,50 @@ version: 1.1.0
 
 ## Objective
 
-Detect the project type, stack, and conventions so all subsequent agents use the right guardrails. Fast and accurate — should complete in under 10 seconds.
+Detect project type, stack, and conventions so every later agent uses the right guardrails. Run first in a development session. Target: under 10 seconds.
 
 ## Never
 
-- Never guess the stack — verify by reading config files (package.json, composer.json, etc.)
-- Never cache stale triage results — re-detect if the project structure has changed
-- Never skip WordPress detection when wp-config.php or style.css with "Theme Name" exists
-
-Classify the current project and load the right conventions, guardrails, and domain knowledge
-before any work begins. This is the **first skill that should run** in any development session.
+- Never guess the stack. Verify from config files (package.json, composer.json, etc.).
+- Never reuse stale triage. Re-detect if the project structure changed.
+- Never skip WordPress detection when wp-config.php, or style.css with "Theme Name", exists.
 
 ## When to Use
 
-- Start of a new session in an unfamiliar codebase
+- New session in an unfamiliar codebase, or when switching projects.
 - User asks "what kind of project is this?"
-- Before `/plan`, `/workflow`, `/team`, or any implementation command
-- When switching between projects (multi-repo workflows)
-- When the skill-activator detects an unclassified project
-
-## Inputs Required
-
-- Repository root (working directory)
-- User intent (optional — helps pick the right domain skill)
+- Before `/plan`, `/workflow`, `/team`, or any implementation command.
+- The skill-activator reports an unclassified project.
 
 ## Procedure
 
 ### Step 0: Run Detection
 
-Execute the triage script to produce a machine-readable project profile:
-
 ```bash
 node ${CLAUDE_PLUGIN_ROOT}/skills/project-router/scripts/detect_project.js "$PROJECT_DIR"
 ```
 
-Store the JSON output. This is the **single source of truth** for all routing decisions.
+The JSON output is the single source of truth for routing.
 
-### Step 1: Classify and Route
+### Step 1: Classify
 
-Use the decision tree in `references/decision-tree.md` to map the triage output to:
-
-1. **Primary domain** — WordPress, Next.js, PHP, Node.js, etc.
-2. **Sub-domain** — Plugin, block theme, classic theme, App Router, Pages Router, etc.
-3. **Convention set** — Which reference file(s) to load
+Map the triage output with `references/decision-tree.md` to: primary domain (WordPress, Next.js, PHP, Node.js), sub-domain (plugin, block theme, classic theme, App Router, Pages Router), and convention set.
 
 ### Step 2: Load Conventions
 
-Based on the classification, read the appropriate convention reference(s):
-
 | Project Type | Reference File |
 |-------------|---------------|
-| WordPress plugin | `references/conventions-wordpress.md` |
-| WordPress theme (classic) | `references/conventions-wordpress.md` |
-| WordPress block theme | `references/conventions-wordpress.md` |
-| Next.js (App Router) | `references/conventions-nextjs.md` |
-| Next.js (Pages Router) | `references/conventions-nextjs.md` |
+| WordPress plugin / classic theme / block theme | `references/conventions-wordpress.md` |
+| Next.js (App Router / Pages Router) | `references/conventions-nextjs.md` |
 | SCSS/Tailwind styling | `references/conventions-styling.md` |
 | Generic PHP | `references/conventions-wordpress.md` (PHP section) |
 | Generic Node.js | `references/conventions-nextjs.md` (Node section) |
 
-**Always load `references/conventions-styling.md`** if the triage detects any styling system
-(SCSS, Tailwind, CSS Modules, etc.) — styling conventions apply across all project types.
+Always load `references/conventions-styling.md` when triage detects any styling system (SCSS, Tailwind, CSS Modules).
 
 ### Step 3: Present Triage Summary
 
-**Output mode branch (per `terse-report`):** if the invoking command set `responseStyle: "orchestrator"` in the handoff contract (`/workflow`, `/team`, `/plan` consuming the triage), emit the terse JSON shape below and skip the human prose summary. If `responseStyle` is absent or any other value, emit the human-readable Markdown summary. Orchestrators parse signal, not prose.
+**Output mode (per `terse-report`):** if the caller set `responseStyle: "orchestrator"` (`/workflow`, `/team`, `/plan`), emit the terse JSON and no prose. Otherwise emit the Markdown summary.
 
 **Terse JSON (orchestrator mode):**
 
@@ -91,11 +70,9 @@ Based on the classification, read the appropriate convention reference(s):
 }
 ```
 
-Field values come straight from the detection JSON (Step 0) — never invent. Use `"project_type": "unknown"` and a `recommendations` note when detection is inconclusive. The `status` line is required in both modes.
+Take values from the detection JSON only. When detection is inconclusive, use `"project_type": "unknown"` and add a `recommendations` note. The `status` field is required in both modes.
 
-**Human-readable summary (direct mode):**
-
-Show the user a compact summary of what was detected:
+**Markdown summary (direct mode):**
 
 ```markdown
 ## Project Triage
@@ -109,43 +86,37 @@ Show the user a compact summary of what was detected:
 **Conventions loaded:** ✅ WordPress · ✅ Next.js · ✅ Styling
 
 ### Guardrails Active
-- [List of key rules from conventions, e.g. "Use WordPress Coding Standards", "App Router patterns only"]
+- [key rules from conventions]
 
 ### Recommendations
-- [Any suggestions, e.g. "No CLAUDE.md found — consider running /forgebee-setup"]
+- [e.g. "No CLAUDE.md found — consider running /forgebee-setup"]
 ```
 
 ### Step 4: Inject Context
 
-If the triage is being consumed by another command (e.g., `/workflow`, `/team`, `/plan`),
-provide the terse triage JSON (Step 3) and loaded conventions as context for downstream agents.
-
-Every agent dispatched should receive:
-- The triage JSON (so they know what tools/frameworks are available)
-- The relevant convention snippets (so they follow the right patterns)
+When another command consumes the triage, pass every dispatched agent the triage JSON and the relevant convention snippets.
 
 ## Verification
 
-1. ✅ Detection script runs without errors
-2. ✅ JSON output is valid and contains `project_type` field
-3. ✅ At least one convention reference was loaded
-4. ✅ Summary shown to user matches actual project structure
-5. ✅ If CLAUDE.md exists, triage doesn't contradict its Stack section
+1. Detection script runs without errors.
+2. JSON is valid and has `project_type`.
+3. At least one convention reference loaded.
+4. Summary matches the actual project structure.
+5. Triage does not contradict the Stack section of an existing CLAUDE.md.
 
 ## Failure Modes
 
 | Symptom | Likely Cause | Fix |
 |---------|-------------|-----|
-| `project_type: "unknown"` | No recognizable framework files at root | Ask user to confirm project type manually; check if they're in a subdirectory |
-| WordPress detected but no `theme.json` or plugin header | Might be a mu-plugin or custom structure | Check for `mu-plugins/` or ask user |
-| Both WordPress and Next.js detected | Monorepo or headless WP + Next.js frontend | Load BOTH convention sets; ask user which is primary |
-| SCSS detected but no Tailwind config | Project uses SCSS only | Load styling conventions, skip Tailwind sections |
-| Empty `node.tools` despite package.json | Dependencies not installed yet | Note this in summary; suggest `npm install` first |
+| `project_type: "unknown"` | No framework files at root | Ask the user; check for a subdirectory |
+| WordPress but no `theme.json` or plugin header | mu-plugin or custom structure | Check `mu-plugins/` or ask |
+| Both WordPress and Next.js | Monorepo or headless WP + Next.js | Load both convention sets; ask which is primary |
+| SCSS but no Tailwind config | SCSS only | Load styling conventions, skip Tailwind sections |
+| Empty `node.tools` despite package.json | Dependencies not installed | Note it; suggest `npm install` |
 
 ## Escalation
 
-- If detection fails entirely → ask user to describe their stack manually
-- If project is a monorepo → run detection on each workspace/package separately
-- If project type is truly novel → fall back to generic conventions from CLAUDE.md
-- For WordPress-specific deep questions → consult [WordPress Developer Resources](https://developer.wordpress.org/)
-- For Next.js-specific deep questions → consult [Next.js Docs](https://nextjs.org/docs)
+- Detection fails → ask the user to describe the stack.
+- Monorepo → run detection per workspace/package.
+- Novel project type → use generic conventions from CLAUDE.md.
+- Deep WordPress questions → [WordPress Developer Resources](https://developer.wordpress.org/). Deep Next.js questions → [Next.js Docs](https://nextjs.org/docs).

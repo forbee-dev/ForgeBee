@@ -9,9 +9,9 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/agents-45-orange?style=for-the-badge" alt="Agents" />
-  <img src="https://img.shields.io/badge/commands-38-red?style=for-the-badge" alt="Commands" />
+  <img src="https://img.shields.io/badge/commands-39-red?style=for-the-badge" alt="Commands" />
   <img src="https://img.shields.io/badge/hooks-25-blueviolet?style=for-the-badge" alt="Hooks" />
-  <img src="https://img.shields.io/badge/skills-34-teal?style=for-the-badge" alt="Skills" />
+  <img src="https://img.shields.io/badge/skills-35-teal?style=for-the-badge" alt="Skills" />
 </p>
 
 <p align="center">
@@ -22,7 +22,7 @@
 
 <p align="center">
   <strong>A colony of AI agents forging your product</strong><br/>
-  45 specialist agents. 34 skills. 38 slash commands. 25 lifecycle hooks.<br/>
+  45 specialist agents. 35 skills. 39 slash commands. 25 lifecycle hooks.<br/>
   Three execution modes: inline skills, context:fork, subagents.<br/>
   Adaptive pipeline. Karpathy principles. Adversarial debate. Continuous learning.<br/>
   <em>Works with Claude Code, Codex, Cursor, Gemini, and OpenClaw.</em>
@@ -49,7 +49,7 @@ Claude Code and OpenClaw are powerful out of the box. ForgeBee makes them **opin
 |:--|:--|
 | Agent jumps straight into coding | Agent plans, debates requirements, then codes |
 | "It should work" | Evidence-based verification with actual test output |
-| Single-agent, single-pass | 45 agents + 34 skills working in parallel with blind review |
+| Single-agent, single-pass | 45 agents + 35 skills working in parallel with blind review |
 | Manual project tracking | Automated state.yaml + markdown dashboards |
 | No marketing workflow | Full 9-phase Growth OS with 11 marketing agents + 3 strategy debate agents |
 | Every session starts from scratch | Continuous learning — heuristic pattern detection + pending instinct approval |
@@ -71,6 +71,7 @@ Claude Code and OpenClaw are powerful out of the box. ForgeBee makes them **opin
 | Sub-agent reports waste orchestrator context | `terse-report` skill cuts ~65% of report tokens while preserving code/citations exact |
 | Decisions get lost between sessions | `/workflow` and `/plan` emit `.decision-log.md` + `addendum.md` — re-read on next run |
 | Recursive debate fan-out runs away | Budget circuit breaker (`maxHops`, `maxTokens`, `maxUsd`) on every dispatch with constant-string errors |
+| Plans start with unasked questions | `grill` skill interviews you on the decision tree in rounds, looks up facts itself, and hands a resolved decision log to Plan |
 | Silent picks mid-task | `surface-ambiguity` micro-skill forces listing of interpretations + rationale before non-trivial choices |
 | Debugging without evidence | Failure-Capture template (7 fields) required before any recovery action in `debugger-detective` |
 | Diagnosis vs fix blur together | `/investigate` produces a forensic case file (Confirmed / Deduced / Hypothesized) — `debugger-detective` then fixes |
@@ -171,8 +172,9 @@ Invoke with a slash: `/review`, `/debug`, `/workflow`, etc.
 
 | Command | Description |
 |:--------|:------------|
-| `/workflow` | **Full pipeline**: Plan &rarr; Debate &rarr; Architect &rarr; **Implementation Plan** (lightweight default, `--scrum` for full sprint stories) &rarr; Execute &rarr; **Spec Compliance** &rarr; **Checkpoint Preview** (default, `--skip-checkpoint` to opt out) &rarr; Code Debate &rarr; Deliver. Pass `--strict` to require a design spec via `brainstorming` before any code. Auto-offers `/elicit` methods at phase boundaries |
+| `/workflow` | **Full pipeline**: Grill (when the spec is ambiguous or touches auth/payments/data; `--grill` / `--no-grill`) &rarr; Plan &rarr; Debate &rarr; Architect &rarr; **Implementation Plan** (lightweight default, `--scrum` for full sprint stories) &rarr; Execute &rarr; **Spec Compliance** &rarr; **Checkpoint Preview** (default, `--skip-checkpoint` to opt out) &rarr; Code Debate &rarr; Deliver. Pass `--strict` to require a design spec via `brainstorming` before any code. Auto-offers `/elicit` methods at phase boundaries |
 | `/investigate` | Forensic diagnosis — produces a case file with Confirmed / Deduced / Hypothesized grading. Hand off to `debugger-detective` for the fix. Different from `/debug` (which fixes directly) |
+| `/grill` | Interview the user on a plan in rounds, one recommended answer per question, until every decision is settled or accepted as a risk. Output feeds `/plan`. Before the plan, not after |
 | `/elicit` | Stress-test the most recent plan or design with one of 18 named reasoning methods (`pre-mortem`, `red-team`, `inversion`, `stakeholder-round-table`, `tree-of-thoughts`, …). Applied to OUTPUT, not requirements |
 | `/audit-self` | Re-run the ForgeBee quality scorecard across all skills, agents, and commands. Detects regressions since last audit. Timestamped findings |
 | `/team` | Multi-agent orchestration with dependency graphs + checkpoints at 3+ agents |
@@ -184,7 +186,7 @@ Invoke with a slash: `/review`, `/debug`, `/workflow`, etc.
 
 ## Agents
 
-45 specialist agents + 34 skills for Claude Code's Agent Teams. Use them directly or let `/team` and `/workflow` orchestrate automatically.
+45 specialist agents + 35 skills for Claude Code's Agent Teams. Use them directly or let `/team` and `/workflow` orchestrate automatically.
 
 > **v5.4 highlights — routing actually fires.** Five defects were keeping the 117 surfaces unreachable: the SessionStart index was dropped for exceeding the `additionalContext` size limit (everything past ~2KB, including the whole WordPress roster, never arrived), `skill-activator.js` emitted a top-level `additionalContext` that the harness discards, and it scanned neither agents nor commands — so no agent or slash command could ever be recommended. Now all three surface types are scored together, stack-boosted from `project-triage.json`, capped at 5 candidates, and acronym-aware (ACF, SCF, SEO, API, RLS were silently below the word-length floor). New **Routing Discipline R1–R4** in `CLAUDE.md`: name the route before the first edit, prefer the stack-specific agent. New design-system trio: **`figma-code-sync`** skill (code-first Figma reconciliation, 12 defect priors, ~18 Plugin API traps), **`wp-design-system`** agent (`theme.json`-versus-SCSS layer ownership, token pipeline, patterns/variations), **`/design-system`** command. `wordpress-backend` gains full ACF/SCF field architecture — field-group registration, JSON sync, immutable field keys, repeater meta storage and why it cannot be `meta_query`'d, and ACF-PRO-to-SCF migration risk.
 >
@@ -575,7 +577,7 @@ The `self-improve` hook appends patterns to the **Learned Patterns** section aut
 
 ## OpenClaw
 
-ForgeBee is fully compatible with [OpenClaw](https://github.com/openclaw/openclaw). All 45 agents and 38 commands convert to OpenClaw skills.
+ForgeBee is fully compatible with [OpenClaw](https://github.com/openclaw/openclaw). All 45 agents and 39 commands convert to OpenClaw skills.
 
 ```bash
 # Clone ForgeBee

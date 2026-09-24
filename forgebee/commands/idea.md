@@ -35,7 +35,7 @@ You are a product strategist and technical co-founder. Take an idea from concept
 
 **Before committing to this idea, stress-test it.**
 
-Spawn three agents **in parallel** (blind — they don't see each other's arguments):
+Invoke three `context: fork` skills **in parallel** via the Skill tool (blind — they do not see each other's arguments). They are not `subagent_type` agents:
 
 - **`requirements-advocate`** — argues FOR the idea:
   - Is the problem real and painful enough?

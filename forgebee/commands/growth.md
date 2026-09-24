@@ -88,7 +88,7 @@ Receives brand pillars + audience personas + competitive gaps. Covers content ar
 
 ### Phase 5: Strategy Debate (adversarial)
 
-Same blind debate pattern as /workflow. Batch all strategy items, spawn in parallel:
+Same blind debate pattern as /workflow. Batch all strategy items, spawn in parallel. These are `context: fork` skills — invoke via the Skill tool, not as `subagent_type`:
 
 - `strategy-advocate` — defends positioning, audience targeting, content architecture, hook quality
 - `strategy-skeptic` — challenges assumptions, finds gaps, tests differentiation

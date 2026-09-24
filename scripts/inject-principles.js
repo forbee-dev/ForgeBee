@@ -2,10 +2,10 @@
 /**
  * inject-principles.js
  * Bulk-inject Karpathy principles P1 (Trace Test), P3 (trust-boundary carve-out),
- * and P4 (Orphan Rule) into the Principles section of every code-producing agent.
+ * P4 (Orphan Rule), and P7 (Lean Output) into every code-producing agent.
  *
  * Implements part of W9 from docs/planning/5.1.0-comprehensive-plan.md.
- * Idempotent: re-running does nothing if the marker is already present.
+ * Idempotent: agents with the marker only get P7 appended if it is missing.
  */
 
 const fs = require('fs');
@@ -36,10 +36,18 @@ const CODE_PRODUCING_AGENTS = [
   'wordpress-frontend.md',
   'wordpress-security.md',
   'wordpress-seo.md',
-  'content-writer.md',
 ];
 
 const MARKER = '<!-- karpathy-principles -->';
+const P7_HEADING = '**P7 — Lean Output:**';
+
+const P7_BLOCK = `${P7_HEADING} Write the fewest words that keep the meaning exact.
+- Comments say WHY, never WHAT. No comment when a good name already says it.
+- Docblocks only where the project standard requires them (WPCS, PHPDoc/JSDoc on public API). Then write the minimum the linter accepts: one summary line, \`@param\` and \`@return\` with types. No "This function…", no restating the name, no prose paragraphs.
+- No changelog, ticket, author, or "added/updated by" notes in code. Git keeps history.
+- Reports and docs: no preamble, no recap, no filler. Fragments are OK. Keep code, paths, and error text exact.
+- Security warnings and irreversible-action confirmations stay in full sentences.
+`;
 
 const P1_P3_P4_BLOCK = `
 ${MARKER}
@@ -50,7 +58,17 @@ ${MARKER}
 **P4 — Orphan Rule:** Clean up only your own mess. Remove imports/variables/functions that YOUR changes made unused. Don't remove pre-existing dead code unless asked. Don't 'improve' adjacent code, comments, or formatting. Match existing style, even if you'd do it differently.
 
 **P3 trust-boundary carve-out:** at trust boundaries (network, webhooks, payments, auth, user input, third-party APIs, file uploads), assume hostile/malformed/duplicate input. Error handling at these surfaces is NEVER YAGNI. Skipping it is a P3 violation, not a P3 application.
-`;
+
+${P7_BLOCK}`;
+
+// Append P7 at the end of an existing karpathy block (before the next "## " heading after it).
+function appendP7(content) {
+  const blockHeader = content.indexOf('\n## ', content.indexOf(MARKER));
+  const nextHeader = blockHeader >= 0 ? content.indexOf('\n## ', blockHeader + 1) : -1;
+  const end = nextHeader >= 0 ? nextHeader : content.length;
+  const before = content.slice(0, end).replace(/\n+$/, '\n');
+  return before + '\n' + P7_BLOCK + content.slice(end);
+}
 
 function injectIntoAgent(file) {
   const fullpath = path.join(AGENTS_DIR, file);
@@ -59,7 +77,11 @@ function injectIntoAgent(file) {
   }
   const content = fs.readFileSync(fullpath, 'utf8');
   if (content.includes(MARKER)) {
-    return { file, status: 'skipped (already has marker)' };
+    if (content.includes(P7_HEADING)) {
+      return { file, status: 'skipped (already has marker)' };
+    }
+    fs.writeFileSync(fullpath, appendP7(content));
+    return { file, status: 'injected' };
   }
 
   // Insert immediately AFTER an existing "## Principles" section if present,

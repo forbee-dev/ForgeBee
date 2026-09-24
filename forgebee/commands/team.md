@@ -62,7 +62,17 @@ Every agent is a fresh session that re-reads the whole preamble on each of its t
 
 Never dispatch a research agent whose findings the implementer will re-derive. Either research yourself and hand the result to the implementer, or let the implementer research.
 
-## Step 2: Plan & Show
+## Step 2: Grill (conditional)
+
+Run a short `grill` (`forgebee/skills/grill/SKILL.md`) before planning when:
+
+- the tier is Medium or Large, or
+- the task is ambiguous: 2+ valid readings of scope or behaviour, or
+- the user passed `--grill`.
+
+Direct and Small tiers skip it unless `--grill` is set. Cap it at 2 rounds. Record the answers in the decision log the skill names; unvisited branches become Tentative risks in the plan. If the grill shows the task needs a full design, recommend `/workflow`.
+
+## Step 3: Plan & Show
 
 Break work into independent workstreams. For each, define: agent, files it owns, deliverable, acceptance criteria.
 
@@ -113,7 +123,7 @@ A plan without per-step verify lines is rejected at dispatch — return it to th
 
 **Wait for user approval.**
 
-## Step 3: Execute
+## Step 4: Execute
 
 Dispatch agents with clear context — they don't share your conversation. Each agent gets: task description, files to modify, acceptance criteria, relevant codebase patterns, and `responseStyle: "orchestrator"` (triggers the specialist's `terse-report` skill — ~65% report-token reduction without losing actionable signal). See `forgebee/skills/terse-report/SKILL.md`.
 
@@ -146,7 +156,7 @@ Reject any response without a status. If `BLOCKED` twice on same issue → escal
 
 **Quality mandate:** Every specialist must self-review their output against review-all criteria (code quality, security, performance, accessibility) before reporting `DONE`. Reject output without evidence (test output, lint output, build output).
 
-## Step 4: Quality Gate & Deliver
+## Step 5: Quality Gate & Deliver
 
 1. Collect results from all agents
 2. Verify integration — do the workstreams fit together?

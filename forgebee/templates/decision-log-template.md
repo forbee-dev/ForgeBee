@@ -1,17 +1,14 @@
 # Decisions: <feature-name>
 
-> Decision log for this feature. Append decisions across `/workflow` and `/plan`
-> runs. Update mode reads this file and appends new entries.
+> Append-only across `/workflow`, `/plan`, and `/grill` runs. One sentence per field.
 
 ## D-001 (YYYY-MM-DD, <phase>)
 
-**Decision:** <one-sentence statement of what was chosen>
-**Why:** <one-sentence rationale, including the trade-off accepted>
-**Considered:** <alternatives, comma-separated, with one-line trade-off each>
+**Decision:** <what was chosen>
+**Why:** <rationale and the trade-off accepted>
+**Considered:** <alternatives, one-line trade-off each>
 **Status:** Confirmed | Tentative | Reversed-by-Dxxx
 
 ---
 
-<!-- Append additional decisions here using the same shape. Never edit closed
-     decisions in place — open a new D-NNN entry that supersedes the old one
-     and set the old one's status to "Reversed-by-Dxxx". -->
+<!-- Never edit a closed decision. Add a new D-NNN that supersedes it and set the old status to "Reversed-by-Dxxx". -->

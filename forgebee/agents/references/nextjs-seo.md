@@ -1,251 +1,157 @@
 # nextjs-seo — Reference Material
 
-Frameworks and templates referenced by `forgebee/agents/nextjs-seo.md`. Moved here to keep the persona file under the 200-line budget (W16). The agent file holds discipline, Never rules, and self-review — this file holds the working library.
+Working library for `forgebee/agents/nextjs-seo.md`. The persona holds rules; this file holds patterns.
 
 ---
 
-## App Router SEO Patterns
+## App Router
 
-### Static Metadata
+### Root Layout Metadata
 
 ```tsx
-// app/about/page.tsx
-import type { Metadata } from 'next';
-
+// app/layout.tsx
 export const metadata: Metadata = {
-  title: 'About Us | Company Name',
-  description: 'Learn about our mission and team.',
-  openGraph: {
-    title: 'About Us | Company Name',
-    description: 'Learn about our mission and team.',
-    type: 'website',
-    url: 'https://example.com/about',
-    images: [{ url: '/og/about.png', width: 1200, height: 630 }],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'About Us | Company Name',
-  },
-  alternates: {
-    canonical: 'https://example.com/about',
+  metadataBase: new URL('https://example.com'),
+  title: { default: 'Company Name', template: '%s | Company Name' },
+  description: 'Default site description.',
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { 'max-image-preview': 'large', 'max-snippet': -1, 'max-video-preview': -1 },
   },
 };
 ```
+
+With `metadataBase` and `title.template` set, child pages use relative URLs and a bare title.
 
 ### Dynamic Metadata
 
 ```tsx
 // app/blog/[slug]/page.tsx
-import type { Metadata } from 'next';
-
 type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const post = await getPost(slug);
+  if (!post) return {};
 
   return {
-    title: `${post.title} | Blog`,
+    title: post.title,
     description: post.excerpt,
+    alternates: { canonical: `/blog/${slug}` },
     openGraph: {
-      title: post.title,
-      description: post.excerpt,
       type: 'article',
       publishedTime: post.publishedAt,
       authors: [post.author.name],
       images: [{ url: post.coverImage, width: 1200, height: 630 }],
     },
-    alternates: {
-      canonical: `https://example.com/blog/${slug}`,
-    },
+    twitter: { card: 'summary_large_image' },
   };
 }
 ```
 
-### Layout Metadata (inherited)
+`getPost` is called by both `generateMetadata` and the page. Wrap it in React `cache()` (or rely on `fetch` memoization) so it runs once.
+
+Static pages use `export const metadata: Metadata = { ... }` with the same shape.
+
+### i18n Alternates
 
 ```tsx
-// app/layout.tsx
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-  metadataBase: new URL('https://example.com'),
-  title: {
-    default: 'Company Name',
-    template: '%s | Company Name',  // Child pages inherit template
-  },
-  description: 'Default site description.',
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
-    },
-  },
-};
+alternates: {
+  canonical: '/about',
+  languages: { 'en-US': '/en-us/about', 'pt-BR': '/pt-br/about' },
+},
 ```
 
-### Dynamic Sitemap
+### Sitemap
 
-```tsx
+```ts
 // app/sitemap.ts
 import type { MetadataRoute } from 'next';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const posts = await getAllPosts();
-  const products = await getAllProducts();
-
-  const blogEntries = posts.map((post) => ({
-    url: `https://example.com/blog/${post.slug}`,
-    lastModified: new Date(post.updatedAt),
-    changeFrequency: 'weekly' as const,
-    priority: 0.7,
-  }));
-
-  const productEntries = products.map((product) => ({
-    url: `https://example.com/products/${product.slug}`,
-    lastModified: new Date(product.updatedAt),
-    changeFrequency: 'daily' as const,
-    priority: 0.8,
-  }));
-
   return [
-    { url: 'https://example.com', lastModified: new Date(), priority: 1.0 },
-    { url: 'https://example.com/about', lastModified: new Date(), priority: 0.5 },
-    ...blogEntries,
-    ...productEntries,
+    { url: 'https://example.com', lastModified: new Date() },
+    ...posts.map((p) => ({
+      url: `https://example.com/blog/${p.slug}`,
+      lastModified: new Date(p.updatedAt),
+    })),
   ];
 }
 ```
 
-### Dynamic Robots
+Google ignores `priority` and `changeFrequency`; an accurate `lastModified` is what matters. Above 50,000 URLs, use `generateSitemaps()`.
 
-```tsx
+### Robots
+
+```ts
 // app/robots.ts
 import type { MetadataRoute } from 'next';
 
 export default function robots(): MetadataRoute.Robots {
   return {
-    rules: [
-      {
-        userAgent: '*',
-        allow: '/',
-        disallow: ['/api/', '/admin/', '/private/'],
-      },
-    ],
+    rules: [{ userAgent: '*', allow: '/', disallow: ['/api/', '/admin/', '/private/'] }],
     sitemap: 'https://example.com/sitemap.xml',
   };
 }
 ```
 
-### OG Image Generation
+### OG Image
 
 ```tsx
 // app/blog/[slug]/opengraph-image.tsx
 import { ImageResponse } from 'next/og';
 
-export const runtime = 'edge';
 export const alt = 'Blog post cover';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
-export default async function Image({ params }: { params: { slug: string } }) {
-  const post = await getPost(params.slug);
-
+export default async function Image({ params }: { params: Promise<{ slug: string }> }) {
+  const post = await getPost((await params).slug);
   return new ImageResponse(
     (
-      <div
-        style={{
-          fontSize: 48,
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          color: 'white',
-          width: '100%',
-          height: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: 60,
-        }}
-      >
-        <div style={{ fontSize: 24, marginBottom: 20 }}>Blog</div>
-        <div style={{ textAlign: 'center', lineHeight: 1.3 }}>{post.title}</div>
+      <div style={{ display: 'flex', width: '100%', height: '100%', alignItems: 'center',
+        justifyContent: 'center', padding: 60, fontSize: 48, color: 'white', background: '#4f46e5' }}>
+        {post.title}
       </div>
     ),
-    { ...size }
+    size,
   );
 }
 ```
 
-### JSON-LD Structured Data
+`ImageResponse` supports flexbox only — every element with children needs `display: 'flex'`.
+
+### JSON-LD
 
 ```tsx
 // components/json-ld.tsx
-export function ArticleJsonLd({
-  title, description, publishedTime, author, url, image,
-}: {
-  title: string; description: string; publishedTime: string;
-  author: string; url: string; image: string;
-}) {
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'Article',
-    headline: title,
-    description,
-    datePublished: publishedTime,
-    author: { '@type': 'Person', name: author },
-    url,
-    image,
-  };
-
+export function JsonLd({ data }: { data: Record<string, unknown> }) {
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      // Escape "<" so CMS content cannot close the script tag (XSS).
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(data).replace(/</g, '\\u003c') }}
     />
   );
 }
-
-// Usage in page.tsx (Server Component)
-export default async function BlogPost({ params }: Props) {
-  const post = await getPost(params.slug);
-
-  return (
-    <>
-      <ArticleJsonLd
-        title={post.title}
-        description={post.excerpt}
-        publishedTime={post.publishedAt}
-        author={post.author.name}
-        url={`https://example.com/blog/${post.slug}`}
-        image={post.coverImage}
-      />
-      <article>{/* ... */}</article>
-    </>
-  );
-}
 ```
-
-### Canonical URLs with Alternates
 
 ```tsx
-// For internationalized routes
-export const metadata: Metadata = {
-  alternates: {
-    canonical: 'https://example.com/about',
-    languages: {
-      'en-US': 'https://example.com/en-us/about',
-      'pt-BR': 'https://example.com/pt-br/about',
-    },
-  },
-};
+<JsonLd data={{
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: post.title,
+  datePublished: post.publishedAt,
+  author: { '@type': 'Person', name: post.author.name },
+  image: post.coverImage,
+}} />
 ```
 
-## Pages Router Patterns
+Render it in a Server Component so it is in the initial HTML.
+
+## Pages Router (next-seo)
 
 ```tsx
 // pages/blog/[slug].tsx
@@ -255,16 +161,10 @@ export default function BlogPost({ post }) {
   return (
     <>
       <NextSeo
-        title={`${post.title} | Blog`}
+        title={post.title}
         description={post.excerpt}
         canonical={`https://example.com/blog/${post.slug}`}
-        openGraph={{
-          title: post.title,
-          description: post.excerpt,
-          type: 'article',
-          article: { publishedTime: post.publishedAt },
-          images: [{ url: post.coverImage, width: 1200, height: 630 }],
-        }}
+        openGraph={{ type: 'article', images: [{ url: post.coverImage, width: 1200, height: 630 }] }}
       />
       <ArticleJsonLd
         title={post.title}
@@ -272,19 +172,10 @@ export default function BlogPost({ post }) {
         authorName={post.author.name}
         description={post.excerpt}
       />
-      <article>{/* ... */}</article>
+      <article>{post.body}</article>
     </>
   );
 }
-
-// pages/sitemap.xml.tsx
-export async function getServerSideProps({ res }) {
-  const posts = await getAllPosts();
-  const sitemap = generateSitemap(posts);
-  res.setHeader('Content-Type', 'text/xml');
-  res.write(sitemap);
-  res.end();
-  return { props: {} };
-}
 ```
 
+Pages Router sitemap: serve XML from `getServerSideProps` in `pages/sitemap.xml.tsx` (set `Content-Type: text/xml`, `res.write`, `res.end`), or use `next-sitemap` at build time.

@@ -1,208 +1,100 @@
 # engagement-strategist — Reference Material
 
-Sections extracted from `forgebee/agents/engagement-strategist.md` to keep the persona file under the 250-line budget. The agent file holds discipline and Never rules — this file holds the working library.
+Worked templates for `forgebee/agents/engagement-strategist.md`. The persona holds the five-pass method, gates, and Never rules.
 
 ---
 
-## Engagement Audit
+## 1. Engagement Audit
 
+```markdown
 ### Platform Health
-| Platform | Followers | Avg. Engagement Rate | Engagement Trend | Health |
-|----------|----------|---------------------|-------------------|--------|
+| Platform | Followers | Avg. Engagement Rate | Trend | Health |
+|----------|----------|---------------------|-------|--------|
 | LinkedIn | [count] | [%] | Up/Down/Flat | Good/Warning/Poor |
 
 ### Engagement Quality
-- Comment depth: [Surface-level / Meaningful / Deep discussions]
-- DM volume: [Low / Moderate / High]
-- Share rate: [% of posts shared]
-- Save rate: [% of posts saved]
-- Community activity: [Active / Moderate / Low]
+- Comment depth: surface / meaningful / deep
+- DM volume · share rate · save rate · community activity
 
-### Top Performing Content (by engagement)
-[List top 5 posts and what made them engage]
-
-### Engagement Gaps
-[Where engagement is lowest and why]
+### Top 5 Posts (and why they engaged)
+### Engagement Gaps (where lowest, and why)
 ```
 
-### 2. Reciprocity Loop Design
-
-Build systems where giving value creates receiving value:
+## 2. Reciprocity System
 
 ```markdown
-
-## Reciprocity System
-
 ### The Loop
-1. **Give first:** [What value we provide — free frameworks, answers, introductions]
-2. **Receive naturally:** [What comes back — comments, shares, DMs, referrals]
-3. **Compound:** [How each cycle strengthens the next — deeper trust, more visibility]
+1. Give first: [frameworks, answers, introductions]
+2. Receive naturally: [comments, shares, DMs, referrals]
+3. Compound: [deeper trust, more visibility]
 
-### Implementation
-- **Daily give:** [Specific actions — comment on 10 posts, answer 5 questions, share 3 resources]
-- **Weekly give:** [Bigger actions — feature someone, create free resource, host space/AMA]
-- **Monthly give:** [Significant actions — publish case study, create tool, host event]
+### Cadence
+- Daily: comment on 10 posts, answer 5 questions, share 3 resources
+- Weekly: feature someone, create a free resource, host a space/AMA
+- Monthly: publish a case study, build a tool, host an event
 
 ### Tracking
 | Action | Frequency | Expected Return | Measurement |
 |--------|-----------|----------------|-------------|
-| Comment on industry posts | 10/day | Profile visits, follows | Track weekly growth |
+| Comment on industry posts | 10/day | Profile visits, follows | Weekly growth |
 ```
 
-### 3. Comment Strategy
+## 3. Comment Strategy
 
-Build comment velocity — the speed and volume of comments that signal engagement to algorithms:
+**Proactive (others' content):** 10-20 target accounts. Comment within the first 30 minutes of their post. Every comment adds value — no "Great post!".
 
-```markdown
+| Formula | Pattern |
+|---------|---------|
+| Add insight | "This reminds me of [concept]. The connection is..." |
+| Share experience | "I've seen this firsthand. When we [story], [result]..." |
+| Smart question | "Curious — have you found that [deeper question]?" |
+| Respectful disagreement | "Interesting take. I'd push back slightly on [point] because..." |
+| Extend the idea | "Building on this — the next step is usually [insight]..." |
 
-## Comment Strategy
+**Reactive (own content):** reply to every comment within 2 hours; ask follow-ups to create threads; pin the most engaging comment; make the first author comment add context.
 
-### Proactive Commenting (on others' content)
-- **Target list:** [10-20 accounts to engage with daily]
-- **Timing:** Comment within first 30 min of their post (first-mover advantage)
-- **Quality bar:** Every comment must add value — no "Great post!"
-- **Comment formulas:**
-  - **Add insight:** "This reminds me of [related concept]. The connection is..."
-  - **Share experience:** "I've seen this firsthand. When we [story], [result]..."
-  - **Ask smart question:** "Curious — have you found that [deeper question]?"
-  - **Respectful disagreement:** "Interesting take. I'd push back slightly on [point] because..."
-  - **Extend the idea:** "Building on this — the next step is usually [insight]..."
+**Velocity tactics:** end posts with a specific question (not "thoughts?"); use polls and opinions; tag people only when relevant; reply to replies; engage on your commenters' posts.
 
-### Reactive Engagement (on own content)
-- **Response time:** Reply to every comment within 2 hours
-- **Reply strategy:** Ask follow-up questions to create threads
-- **Pin strategy:** Pin the most engaging comment to boost conversation
-- **Author reply:** First comment should add additional value or context
+## 4. DM Sequences
 
-### Comment Velocity Tactics
-1. End posts with a specific question (not generic "thoughts?")
-2. Use polls and opinions to invite disagreement
-3. Tag relevant people when genuinely appropriate
-4. Respond to responses (create reply chains)
-5. Engage in comments of your commenters' posts (reciprocity)
-```
+| Sequence | Trigger | Timing | Message | Goal |
+|----------|---------|--------|---------|------|
+| New follower | New follow | Within 24h | "[Name], thanks for connecting! What are you working on right now? Always curious what [audience type] are building." | Start a conversation |
+| Engaged commenter | 3+ comments in a week | After 3rd meaningful comment | "Hey [Name], I keep seeing your thoughtful comments on [topic]. What's your background in [domain]?" | Deepen relationship |
+| Collaboration | Potential collaborator | — | "I've been following your work on [topic]. I'm putting together [piece] and your view on [angle] would add a lot. Interested in contributing a quote?" | Co-create, cross-pollinate audiences |
+| Lead nurture | Downloaded resource / engaged with product content | 24h after | "[Name], saw you grabbed [resource]. What about [topic] caught your eye? Happy to point you to more." | Qualify interest naturally |
 
-### 4. DM Sequence Architecture
+## 5. Community Plan
 
-Design personal outreach flows:
+- Type: Discord / Slack / Circle / email community
+- Pillars: value exchange (members help each other), recognition, exclusive access, member-to-member connection
+- Mechanics: weekly ritual (e.g., "Win Wednesday"), monthly AMA/workshop/challenge, member spotlight, member-created content
+- Moderation: welcome new members within 24h, remove spam immediately, highlight quality contributions
 
-```markdown
+## 6. Daily Routine
 
-## DM Sequences
-
-### New Follower Welcome
-- **Trigger:** New follow
-- **Timing:** Within 24 hours
-- **Message:** "[Name], thanks for connecting! Quick question — what are you working on right now? Always curious about what [audience type] are building."
-- **Goal:** Start conversation, learn about them, build relationship
-
-### Engaged Commenter
-- **Trigger:** Someone comments on 3+ posts in a week
-- **Timing:** After 3rd meaningful comment
-- **Message:** "Hey [Name], I keep seeing your thoughtful comments. Really appreciate your perspective on [specific topic they commented on]. What's your background in [domain]?"
-- **Goal:** Deepen relationship, potential collaboration
-
-### Content Collaboration
-- **Trigger:** Identified potential collaborator
-- **Message:** "Hey [Name], I've been following your work on [topic]. I'm putting together [content piece] and think your perspective on [angle] would be valuable. Interested in contributing a quote or insight?"
-- **Goal:** Create content together, cross-pollinate audiences
-
-### Lead Nurture
-- **Trigger:** Downloaded resource or engaged with product content
-- **Timing:** 24 hours after trigger
-- **Message:** "[Name], saw you grabbed [resource]. Curious — what specifically about [topic] caught your eye? Happy to point you to more resources."
-- **Goal:** Qualify interest, start sales conversation naturally
-```
-
-### 5. Community Building
-
-Design a micro-community strategy:
-
-```markdown
-
-## Community Strategy
-
-### Community Type: [Discord / Slack / Circle / Email community]
-
-### Community Pillars
-1. **Value exchange:** Members help each other (not just consume from brand)
-2. **Recognition:** Active members get visibility and status
-3. **Access:** Exclusive content, early access, behind-the-scenes
-4. **Connection:** Members connect with each other (not just with brand)
-
-### Engagement Mechanics
-- **Weekly rituals:** [E.g., "Win Wednesday" where members share wins]
-- **Monthly events:** [E.g., AMAs, workshops, challenges]
-- **Recognition system:** [E.g., "Member of the week" spotlight]
-- **Content from community:** [E.g., Member case studies, guest posts]
-
-### Moderation
-- Welcome new members within 24 hours
-- Remove spam immediately
-- Encourage helpful responses
-- Highlight quality contributions
-```
-
-### 6. Daily Engagement Routine
-
-```markdown
-
-## Daily Engagement Routine
-
-### Morning (30 min)
-- [ ] Check and respond to all DMs
-- [ ] Reply to comments on yesterday's posts
-- [ ] Comment on 5 posts from target engagement list
-- [ ] Share 1 piece of valuable content from others
-
-### Midday (15 min)
-- [ ] Comment on 5 more posts from engagement list
-- [ ] Respond to any new comments
-- [ ] Check community channels, respond to questions
-
-### Evening (15 min)
-- [ ] Final comment round (5 posts)
-- [ ] DM 2-3 people who engaged meaningfully today
-- [ ] Schedule tomorrow's content if not already done
-- [ ] Log engagement metrics
-
-### Weekly (Friday, 30 min)
-- [ ] Review engagement metrics vs. previous week
-- [ ] Update target engagement list
-- [ ] Plan next week's community content
-- [ ] Identify top engagers for DM outreach
-```
-
+| Block | Actions |
+|-------|---------|
+| Morning (30 min) | Answer DMs; reply to comments on yesterday's posts; comment on 5 target posts; share 1 piece from others |
+| Midday (15 min) | 5 more target comments; reply to new comments; answer community questions |
+| Evening (15 min) | Final 5 comments; DM 2-3 meaningful engagers; schedule tomorrow; log metrics |
+| Weekly (Fri, 30 min) | Compare metrics week-over-week; update target list; plan community content; pick top engagers for DMs |
 
 ## Output Format
 
 ```markdown
-
 ## Engagement Strategy: [Brand/Product]
-
 ### Engagement Audit
-[Current state assessment]
-
 ### Reciprocity System
-[Loop design with daily/weekly/monthly actions]
-
 ### Comment Strategy
-[Proactive + reactive + velocity tactics]
-
-### DM Sequences
-[4-5 sequences with triggers, timing, messages, goals]
-
+### DM Sequences (4-5 with trigger, timing, message, goal)
 ### Community Plan
-[Community type, pillars, mechanics, moderation]
-
 ### Daily Routine
-[Time-blocked engagement schedule]
-
 ### Metrics to Track
 | Metric | Current | Target (30 days) | Target (90 days) |
 |--------|---------|------------------|-------------------|
-| Engagement rate | [%] | [%] | [%] |
-| Comment depth | [level] | [level] | [level] |
-| DM conversations | [count] | [count] | [count] |
-| Community size | [count] | [count] | [count] |
+| Engagement rate | | | |
+| Comment depth | | | |
+| DM conversations | | | |
+| Community size | | | |
 ```

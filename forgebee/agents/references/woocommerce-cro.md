@@ -1,193 +1,166 @@
 # woocommerce-cro — Reference Material
 
-Sections extracted from `forgebee/agents/woocommerce-cro.md` to keep the persona under the 250-line budget. Persona file holds discipline + Never rules.
+Working library for `forgebee/agents/woocommerce-cro.md`. The persona holds the rules. Block checkout comes first; classic hooks are the fallback for stores that still run the shortcode checkout.
 
 ---
 
-## WooCommerce CRO Patterns
+## Block checkout (default)
 
-### Checkout Optimization
+### Field friction
 
-```php
-// Remove unnecessary checkout fields
-add_filter( 'woocommerce_checkout_fields', function( $fields ) {
-    // Remove company field (reduces friction)
-    unset( $fields['billing']['billing_company'] );
-    // Remove order notes (rarely useful)
-    unset( $fields['order']['order_comments'] );
-    // Make phone optional
-    $fields['billing']['billing_phone']['required'] = false;
-    return $fields;
-});
+In the Site Editor, select the Checkout block. Its sidebar sets Company, Address line 2, and Phone to hidden / optional / required. Change that before you write code.
 
-// Add trust signals above payment
-add_action( 'woocommerce_review_order_before_payment', function() {
-    echo '<div class="checkout-trust-signals">';
-    echo '<p>🔒 Secure 256-bit SSL encryption</p>';
-    echo '<p>💳 30-day money-back guarantee</p>';
-    echo '<p>📦 Free shipping on orders over $50</p>';
-    echo '</div>';
-});
-
-// Express checkout (skip cart page)
-add_filter( 'woocommerce_add_to_cart_redirect', function( $url ) {
-    return wc_get_checkout_url();
-});
-
-// Guest checkout (don't require account)
-// In wp-admin: WooCommerce > Settings > Accounts
-// Or programmatically:
-add_filter( 'pre_option_woocommerce_enable_guest_checkout', function() {
-    return 'yes';
-});
-```
-
-### Product Page Conversion
+### Extra checkout field (order bump, WC 8.9+)
 
 ```php
-// Add urgency/scarcity below price
-add_action( 'woocommerce_single_product_summary', function() {
-    global $product;
-    $stock = $product->get_stock_quantity();
-    if ( $stock && $stock <= 10 && $stock > 0 ) {
-        echo '<p class="low-stock-urgency">Only ' . esc_html( $stock ) . ' left in stock!</p>';
-    }
-}, 15 ); // After price (priority 10)
+add_action(
+	'woocommerce_init',
+	function () {
+		woocommerce_register_additional_checkout_field(
+			array(
+				'id'       => 'myplugin/order-bump',
+				'label'    => __( 'Add gift wrap for $4', 'myplugin' ),
+				'location' => 'order',
+				'type'     => 'checkbox',
+			)
+		);
+	}
+);
 
-// Add social proof below add-to-cart
-add_action( 'woocommerce_after_add_to_cart_form', function() {
-    global $product;
-    $sold = get_post_meta( $product->get_id(), 'total_sales', true );
-    if ( $sold > 100 ) {
-        echo '<p class="social-proof">' . number_format( $sold ) . '+ customers bought this</p>';
-    }
-});
-
-// Trust badges below add-to-cart button
-add_action( 'woocommerce_after_add_to_cart_button', function() {
-    echo '<div class="trust-badges">';
-    echo '<span>✓ Free Returns</span>';
-    echo '<span>✓ Secure Payment</span>';
-    echo '<span>✓ Fast Shipping</span>';
-    echo '</div>';
-});
-
-// Sticky add-to-cart on mobile
-add_action( 'woocommerce_after_single_product', function() {
-    global $product;
-    if ( ! $product->is_in_stock() ) return;
-    ?>
-    <div class="sticky-add-to-cart" style="display:none;">
-        <span class="product-title"><?php echo esc_html( $product->get_name() ); ?></span>
-        <span class="product-price"><?php echo $product->get_price_html(); ?></span>
-        <a href="#product-<?php echo esc_attr( $product->get_id() ); ?>" class="button">Add to Cart</a>
-    </div>
-    <?php
-});
+add_action(
+	'woocommerce_store_api_checkout_order_processed',
+	function ( WC_Order $order ) {
+		// Meta key prefix differs by location; confirm it on the target WC version.
+		if ( ! $order->get_meta( '_wc_other/myplugin/order-bump' ) ) {
+			return;
+		}
+		$order->add_product( wc_get_product( (int) get_option( 'myplugin_bump_product_id' ) ) );
+		$order->calculate_totals();
+	}
+);
 ```
 
-### Cart Recovery
+### Trust signals
+
+Insert a core Group/Paragraph block inside the Checkout block's inner-block area in the Site Editor. Use `registerCheckoutBlock` (from `@woocommerce/blocks-checkout`) only when the signal needs data or logic.
+
+### Data for custom blocks
+
+Expose server data to the cart/checkout with `woocommerce_store_api_register_endpoint_data` on `woocommerce_blocks_loaded`. Read it client-side from the Store API cart `extensions` key.
+
+## Product page (classic templates)
+
+On block themes the single-product template uses product blocks, so `woocommerce_single_product_summary` does not fire. Add a block or pattern there instead.
 
 ```php
-// Save cart for logged-in users (persistent cart)
-add_filter( 'woocommerce_persistent_cart_enabled', '__return_true' );
+add_action(
+	'woocommerce_single_product_summary',
+	function () {
+		global $product;
+		$stock = $product->get_stock_quantity();
+		if ( $stock > 0 && $stock <= 10 && ! $product->backorders_allowed() ) {
+			/* translators: %d: units left in stock. */
+			echo '<p class="low-stock">' . esc_html( sprintf( __( 'Only %d left in stock', 'myplugin' ), $stock ) ) . '</p>';
+		}
+	},
+	15 // After the price (priority 10).
+);
 
-// Add "Save for Later" to cart items
-add_action( 'woocommerce_after_cart_item_name', function( $cart_item, $cart_item_key ) {
-    echo '<a href="#" class="save-for-later" data-key="' . esc_attr( $cart_item_key ) . '">Save for later</a>';
-}, 10, 2 );
-
-// Cart abandonment — show mini-cart on exit intent (JS-based)
-add_action( 'wp_footer', function() {
-    if ( ! WC()->cart || WC()->cart->is_empty() ) return;
-    ?>
-    <script>
-    document.addEventListener('mouseout', function(e) {
-        if (e.clientY < 10 && !sessionStorage.getItem('exitShown')) {
-            // Show exit-intent modal with cart contents
-            document.querySelector('.exit-intent-modal')?.classList.add('active');
-            sessionStorage.setItem('exitShown', '1');
-        }
-    });
-    </script>
-    <?php
-});
-
-// Free shipping threshold notice
-add_action( 'woocommerce_before_cart', function() {
-    $threshold = 50;
-    $current   = WC()->cart->get_subtotal();
-    $remaining = $threshold - $current;
-    if ( $remaining > 0 ) {
-        echo '<div class="free-shipping-notice">';
-        echo 'Add ' . wc_price( $remaining ) . ' more for <strong>FREE shipping</strong>!';
-        echo '</div>';
-    }
-});
+add_action(
+	'woocommerce_after_add_to_cart_form',
+	function () {
+		global $product;
+		$sold = $product->get_total_sales();
+		if ( $sold > 100 ) {
+			/* translators: %s: number of customers. */
+			echo '<p class="social-proof">' . esc_html( sprintf( __( '%s+ customers bought this', 'myplugin' ), number_format_i18n( $sold ) ) ) . '</p>';
+		}
+	}
+);
 ```
 
-### Cross-sell and Upsell Optimization
+Social proof must use real numbers. Never fake counts or stock.
+
+## Cart
 
 ```php
-// Move cross-sells to checkout (not just cart)
-add_action( 'woocommerce_after_checkout_form', function() {
-    $cross_sells = WC()->cart->get_cross_sells();
-    if ( empty( $cross_sells ) ) return;
-
-    $products = wc_get_products([
-        'include' => $cross_sells,
-        'limit'   => 3,
-    ]);
-
-    echo '<div class="checkout-cross-sells">';
-    echo '<h3>Customers also bought</h3>';
-    foreach ( $products as $product ) {
-        echo '<div class="cross-sell-item">';
-        echo '<img src="' . esc_url( wp_get_attachment_url( $product->get_image_id() ) ) . '" />';
-        echo '<p>' . esc_html( $product->get_name() ) . ' — ' . $product->get_price_html() . '</p>';
-        echo '<a href="' . esc_url( $product->add_to_cart_url() ) . '" class="button">Add</a>';
-        echo '</div>';
-    }
-    echo '</div>';
-});
-
-// Order bump on checkout
-add_action( 'woocommerce_review_order_before_submit', function() {
-    $bump_product_id = get_option( 'order_bump_product_id' );
-    if ( ! $bump_product_id ) return;
-    $product = wc_get_product( $bump_product_id );
-    if ( ! $product ) return;
-
-    echo '<div class="order-bump">';
-    echo '<label>';
-    echo '<input type="checkbox" name="add_order_bump" value="' . esc_attr( $bump_product_id ) . '" />';
-    echo ' Add <strong>' . esc_html( $product->get_name() ) . '</strong> for just ' . $product->get_price_html();
-    echo '</label>';
-    echo '</div>';
-});
+add_action(
+	'woocommerce_before_cart',
+	function () {
+		$threshold = (float) get_option( 'myplugin_free_shipping_min', 50 );
+		$remaining = $threshold - (float) WC()->cart->get_subtotal();
+		if ( $remaining > 0 ) {
+			/* translators: %s: amount left for free shipping. */
+			echo '<div class="free-shipping-notice">' . wp_kses_post( sprintf( __( 'Add %s more for free shipping', 'myplugin' ), wc_price( $remaining ) ) ) . '</div>';
+		}
+	}
+);
 ```
 
-### Payment UX
+Read the threshold from the Free Shipping method settings when it exists, so the notice and the rule cannot drift.
+
+Exit intent: attach `mouseout` to `document` and fire when `e.clientY < 10` and no `relatedTarget`. Desktop only — mobile has no cursor. Show once per session.
+
+## Classic checkout (shortcode only)
 
 ```php
-// Reorder payment gateways (most popular first)
-add_filter( 'woocommerce_payment_gateways', function( $gateways ) {
-    // Stripe first, then PayPal, then others
-    usort( $gateways, function( $a, $b ) {
-        $order = [ 'stripe' => 1, 'ppcp-gateway' => 2 ];
-        $a_id  = is_string( $a ) ? $a : $a->id ?? '';
-        $b_id  = is_string( $b ) ? $b : $b->id ?? '';
-        return ( $order[ $a_id ] ?? 99 ) <=> ( $order[ $b_id ] ?? 99 );
-    });
-    return $gateways;
-});
+add_filter(
+	'woocommerce_checkout_fields',
+	function ( $fields ) {
+		unset( $fields['billing']['billing_company'], $fields['order']['order_comments'] );
+		$fields['billing']['billing_phone']['required'] = false;
+		return $fields;
+	},
+	20
+);
 
-// Show accepted payment icons
-add_action( 'woocommerce_review_order_after_submit', function() {
-    echo '<div class="accepted-payments">';
-    echo '<p>We accept:</p>';
-    echo '<img src="' . esc_url( get_template_directory_uri() . '/assets/payment-icons.svg' ) . '" alt="Visa, Mastercard, PayPal, Apple Pay" />';
-    echo '</div>';
-});
+add_action(
+	'woocommerce_review_order_before_payment',
+	function () {
+		echo '<div class="checkout-trust">' . esc_html__( 'Secure checkout · 30-day money-back guarantee', 'myplugin' ) . '</div>';
+	}
+);
 ```
 
+Classic order bump: render the checkbox on `woocommerce_review_order_before_submit`; add the product server-side in `woocommerce_checkout_create_order`.
+
+## Payment order
+
+Set gateway order in WooCommerce → Settings → Payments first. To force it in code:
+
+```php
+add_filter(
+	'woocommerce_available_payment_gateways',
+	function ( $gateways ) {
+		$rank = array(
+			'stripe'       => 1,
+			'ppcp-gateway' => 2,
+		);
+		uksort( $gateways, fn( $a, $b ) => ( $rank[ $a ] ?? 99 ) <=> ( $rank[ $b ] ?? 99 ) );
+		return $gateways;
+	}
+);
+```
+
+## Cross-sells at checkout (classic)
+
+```php
+add_action(
+	'woocommerce_after_checkout_form',
+	function () {
+		$ids = WC()->cart->get_cross_sells();
+		if ( ! $ids ) {
+			return;
+		}
+		foreach ( wc_get_products( array( 'include' => $ids, 'limit' => 3 ) ) as $product ) {
+			printf(
+				'<div class="cross-sell">%s <span>%s</span> <a class="button" href="%s">%s</a></div>',
+				wp_kses_post( $product->get_image( 'thumbnail' ) ),
+				wp_kses_post( $product->get_name() . ' — ' . $product->get_price_html() ),
+				esc_url( $product->add_to_cart_url() ),
+				esc_html__( 'Add', 'myplugin' )
+			);
+		}
+	}
+);
+```

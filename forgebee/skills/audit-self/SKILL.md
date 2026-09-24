@@ -8,50 +8,46 @@ version: 1.1.0
 
 ## Objective
 
-Re-run the same scorecard that produced the 4 manual audit files (`docs/planning/audit-*.md`) on demand. Catch regressions: new agents missing status protocol, new skills with WHAT-first descriptions, bloat creeping back, severity vocabulary drift, etc.
+Re-run the scorecard behind the manual audit files (`docs/planning/audit-*.md`) on demand. Catch regressions: agents missing the status protocol, skills with WHAT-first descriptions, bloat, severity-vocabulary drift.
 
-Writes findings to `docs/planning/audit-YYYY-MM-DD.md` (timestamped, never overwriting). Surfaces only NEW issues since the most recent prior audit — regression detection, not full-state report.
+Write findings to `docs/planning/audit-YYYY-MM-DD.md` (timestamped, never overwriting). Report only NEW issues since the last audit: regression detection, not a full-state report.
 
 ## When this fires
 
-- User invokes `/audit-self` explicitly
-- Before a version bump (e.g., 5.1 → 5.2) — recommended manual step
-- `learn-nudge.js` may surface a hint if last audit was > 60 days ago and the project has changed substantially
+- User invokes `/audit-self`.
+- Before a version bump (recommended manual step).
+- `learn-nudge.js` may hint when the last audit is > 60 days old and the project changed a lot.
 
 ## Scorecards
 
-The three scorecards live in `forgebee/skills/audit-self/scorecards/`:
+Read these before auditing. They are the canonical rubric:
 - `forgebee/skills/audit-self/scorecards/skills-scorecard.md` — 9 questions per skill
 - `forgebee/skills/audit-self/scorecards/agents-scorecard.md` — 10 questions per agent
 - `forgebee/skills/audit-self/scorecards/commands-scorecard.md` — 9 questions per command + cross-cutting
 
-Read these BEFORE auditing. They are the canonical rubric.
-
 ## Process
 
 ### Step 1: Inventory
-- List all skills in `forgebee/skills/` (count)
-- List all agents in `forgebee/agents/` (count)
-- List all commands in `forgebee/commands/` (count)
-- Read live counts from `forgebee/INDEX.md` going forward — treat it as the authoritative surface inventory
-- Compare to prior audit counts — flag added/removed
+- Count skills in `forgebee/skills/`, agents in `forgebee/agents/`, commands in `forgebee/commands/`.
+- Treat `forgebee/INDEX.md` as the authoritative surface inventory.
+- Compare with prior audit counts; flag added/removed.
 
 ### Step 2: Score against rubrics
-For each item, apply the appropriate scorecard. Focus detail on problematic items (most should be FINE). Use the same Y/N + concrete-finding format as the manual audits.
+Apply the matching scorecard to each item. Most items are FINE; put detail on problem items. Use the Y/N + concrete-finding format of the manual audits.
 
 ### Step 3: Cross-cutting checks
-- Status protocol present in all agents? (regression on Bucket X1)
-- Karpathy principles present in code-producing agents? (regression on W9)
-- Severity vocabulary standardized in review skills? (regression on W9 P6)
-- Prompt defense baseline present in all agents? (regression on W13)
-- Description format "Use when..." across all skills? (regression on 5.0 audit)
-- Persona ↔ references/ symmetry intact? (run `node scripts/check-references.js`)
-- `--skip-checkpoint` rate from `.claude/audit/skip-checkpoint.jsonl` — flag if >50% across last 10 `/workflow` runs (sticky-alias drift)
+- Status protocol in all agents (Bucket X1)
+- Karpathy principles in code-producing agents (W9)
+- Severity vocabulary standardized in review skills (W9 P6)
+- Prompt defense baseline in all agents (W13)
+- "Use when..." descriptions across skills (5.0 audit)
+- Persona ↔ references/ symmetry (`node scripts/check-references.js`)
+- `--skip-checkpoint` rate from `.claude/audit/skip-checkpoint.jsonl`: flag if >50% across the last 10 `/workflow` runs (sticky-alias drift)
 
 ### Step 4: Regression detection
-- Read most recent prior `docs/planning/audit-*.md` (or audit-skills.md / audit-agents-*.md / audit-commands.md if no timestamped one exists)
-- For each prior issue: is it still present? Flag fixed and unfixed
-- For each current issue: did it exist in the prior audit? Flag NEW issues prominently
+- Read the most recent `docs/planning/audit-*.md` (or audit-skills.md / audit-agents-*.md / audit-commands.md if no timestamped one exists).
+- Classify each prior issue as fixed or still present.
+- Flag each current issue absent from the prior audit as NEW.
 
 ### Step 5: Write findings
 Output to `docs/planning/audit-YYYY-MM-DD.md`:
@@ -91,25 +87,22 @@ Output to `docs/planning/audit-YYYY-MM-DD.md`:
 - Audit timestamp: YYYY-MM-DD
 ```
 
-## Completion Rule (when the audit is done)
+## Completion Rule
 
-This is a single-pass regression audit, not an iterative fix loop. The audit is complete — write the file and stop — when ALL of these hold:
+Single pass, not a fix loop. Write the file and stop when all hold:
 
-1. **Full coverage once:** every skill, agent, and command in `forgebee/INDEX.md` has been scored against its scorecard exactly once. No re-scoring of items already marked FINE.
-2. **Regression step run:** the most recent prior audit was read and every prior issue is classified Fixed / Persistent (Step 4). Skipping this is the one failure that invalidates the whole run.
-3. **Findings written:** the timestamped `docs/planning/audit-YYYY-MM-DD.md` exists with the Inventory Delta and the Snapshot section populated.
+1. **Full coverage once:** every skill, agent, and command in `forgebee/INDEX.md` scored exactly once.
+2. **Regression step run:** every prior issue classified Fixed / Persistent (Step 4). Skipping this invalidates the run.
+3. **Findings written:** the timestamped file exists with Inventory Delta and Snapshot populated.
 
-Do NOT loop:
-- **Don't re-audit to "double-check" FINE items** — one pass is the contract. Detail is capped at the top ~20 problematic items.
-- **Don't fix what you find** — recommend in the Top 10, never implement (that's a separate `/workflow` or `/review` run on the recommendations).
-- **Don't re-run because new issues appeared mid-audit** — capture them in the current file; the *next* scheduled audit catches anything that lands after you start.
+Do not re-score FINE items, fix what you find (recommend in the Top 10; fixing is a separate `/workflow` or `/review` run), or restart when new issues appear mid-audit (capture them; the next audit covers later changes). Cap detail at the top ~20 problem items.
 
-If coverage can't be completed (e.g., INDEX.md is stale or a scorecard is missing), stop and report the blocker rather than auditing a partial surface as if it were whole.
+If coverage cannot complete (stale INDEX.md, missing scorecard), stop and report the blocker. Do not present a partial audit as whole.
 
 ## Never
 
-- Never overwrite a prior audit file — always timestamped
-- Never report on every fine item — focus on problematic ones (cap detail at top-20)
-- Never propose fixes outside the audit's scope — recommend, don't implement
-- Never skip the regression step — that's the main value
-- Never score the audit's own files (self-reference loop)
+- Never overwrite a prior audit file. Always timestamp.
+- Never report on every FINE item. Cap detail at top-20.
+- Never implement fixes. Recommend only.
+- Never skip the regression step. It is the main value.
+- Never score the audit's own files (self-reference loop).

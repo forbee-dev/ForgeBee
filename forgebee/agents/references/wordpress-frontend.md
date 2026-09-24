@@ -1,6 +1,6 @@
 # wordpress-frontend — Reference Material
 
-Sections extracted from `forgebee/agents/wordpress-frontend.md` to keep the persona under the 250-line budget. Persona file holds discipline + Never rules.
+Working library for `forgebee/agents/wordpress-frontend.md`. The persona holds the rules.
 
 ---
 
@@ -88,8 +88,9 @@ theme-name/
 
 ## Block Template Patterns
 
+`templates/single.html`:
+
 ```html
-<!-- templates/single.html -->
 <!-- wp:template-part {"slug":"header","area":"header"} /-->
 
 <!-- wp:group {"tagName":"main","layout":{"type":"constrained"}} -->
@@ -105,10 +106,9 @@ theme-name/
 ```
 
 
-## Classic Theme Template Hierarchy
+## Classic theme `single.php`
 
 ```php
-<?php // single.php ?>
 <?php get_header(); ?>
 
 <main id="primary" class="site-main">
@@ -132,28 +132,16 @@ theme-name/
 ```
 
 
-## Enqueuing Assets
+## Editor styles
 
 ```php
-add_action( 'wp_enqueue_scripts', function () {
-    wp_enqueue_style(
-        'theme-style',
-        get_stylesheet_uri(),
-        [],
-        MY_THEME_VERSION
-    );
-    wp_enqueue_script(
-        'theme-script',
-        get_theme_file_uri( 'assets/js/main.js' ),
-        [],
-        MY_THEME_VERSION,
-        true // in footer
-    );
-} );
-
-// Editor styles
-add_action( 'after_setup_theme', function () {
-    add_editor_style( 'assets/css/editor.css' );
-} );
+/**
+ * Registers theme supports and editor styles.
+ */
+function mytheme_setup() {
+	add_editor_style( 'assets/css/editor.css' );
+}
+add_action( 'after_setup_theme', 'mytheme_setup' );
 ```
 
+The enqueue example lives in the persona file.

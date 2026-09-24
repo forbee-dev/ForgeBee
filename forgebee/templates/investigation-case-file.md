@@ -6,46 +6,36 @@
 
 ## Stronghold Evidence
 
-<one piece of confirmed evidence with citation — error text, log line, stack
-frame, commit. If you don't have a stronghold, do not proceed. Ask the user.>
+<one confirmed fact with citation: error text, log line, stack frame, or commit. No stronghold: stop and ask the user.>
 
 ## Confirmed
 
-- F-001: <directly observed fact>
-  - **Cite:** <path:line | log timestamp | commit hash>
-- F-002: <fact>
-  - **Cite:** <citation>
+- F-001: <observed fact> — cite: <path:line | log timestamp | commit hash>
 
 ## Deduced
 
-- D-001: <conclusion that follows from confirmed evidence>
-  - **Rests on:** F-001, F-002
-  - **Reasoning:** <step-by-step chain — if any step is wrong, the deduction is wrong>
+- D-001: <conclusion> — rests on: F-001, F-002
+  - **Reasoning:** <step chain; one wrong step breaks the deduction>
 
 ## Hypothesized
 
-- H-001: <plausible explanation>
-  - **Would confirm:** <observable, measurable check>
-  - **Would refute:** <observable, measurable check>
-- H-002 [REFUTED YYYY-MM-DD by F-003]: <plausible-but-refuted explanation>
-  - **Refuted because:** <citation explaining why>
+- H-001: <explanation>
+  - **Would confirm:** <measurable check>
+  - **Would refute:** <measurable check>
+- H-002 [REFUTED YYYY-MM-DD by F-003]: <explanation> — refuted because: <citation>
 
 ## Next Steps (diagnostic, not fixes)
 
-- [ ] <observation to gather>
-- [ ] <experiment to run>
-- [ ] <log to inspect / dump to capture>
+- [ ] <observation, experiment, or log to capture>
 
 ## Promotion Log
 
-<!-- When a hypothesis gets confirmed, promote it: H-NNN → F-NNN. Record here. -->
 - H-001 promoted to F-NNN on YYYY-MM-DD (cite: <citation>)
 
 ## Handoff
 
-When a hypothesis is confirmed and the fix is clear, hand this case file to
-`debugger-detective`. The fix is a separate task — investigation closed.
+The fix is a separate task for `debugger-detective`.
 
 - **Handed off:** YYYY-MM-DD to debugger-detective
 - **With finding:** F-NNN
-- **Expected fix:** <one-sentence description, not the fix itself>
+- **Expected fix:** <one sentence, not the fix itself>

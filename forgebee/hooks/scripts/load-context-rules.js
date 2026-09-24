@@ -1,9 +1,11 @@
 #!/usr/bin/env node
 /**
  * load-context-rules.js
- * Load contexts and language-specific rules on SessionStart
- * Reads the triage JSON to determine which language rules to load,
- * then outputs them to stderr so they appear in the session context
+ * Inject the active context and language rules as SessionStart additionalContext.
+ *
+ * The harness drops an oversized payload to disk and injects only a short preview,
+ * so the payload stays under MAX_BYTES: whole files go in most-specific first, code
+ * examples are stripped, and a file that does not fit is listed as a path to Read.
  */
 
 const path = require('path');
@@ -12,126 +14,99 @@ const {
   getProjectDir,
   findForgebeeRoot,
   readFile,
-  log,
+  output,
 } = require('./_common.js');
+
+// Body budget; header and the deferred-path line add ~300 bytes on top.
+const MAX_BYTES = 3200;
 
 function main() {
   try {
     const projectDir = getProjectDir();
     const forgebeeRoot = findForgebeeRoot();
 
-    // Always load common rules
-    const commonRulesDir = path.join(forgebeeRoot, 'rules', 'common');
-    if (fs.existsSync(commonRulesDir)) {
-      try {
-        const files = fs.readdirSync(commonRulesDir);
-        files.forEach(file => {
-          if (file.endsWith('.md')) {
-            log(`[Rules] Loaded: common/${file}`);
-          }
-        });
-      } catch (e) {
-        // Ignore directory read errors
+    const files = [];
+    detectLanguages(projectDir).forEach(lang => {
+      files.push(...mdFiles(path.join(forgebeeRoot, 'rules', lang)));
+    });
+    files.push(...mdFiles(path.join(forgebeeRoot, 'rules', 'common')));
+
+    const contextPath = path.join(forgebeeRoot, 'contexts', `${activeContext(projectDir)}.md`);
+    if (fs.existsSync(contextPath)) files.push(contextPath);
+
+    const included = [];
+    const deferred = [];
+    let size = 0;
+    for (const file of files) {
+      const body = stripCodeBlocks(readFile(file) || '');
+      if (!body) continue;
+      const bytes = Buffer.byteLength(body, 'utf8');
+      if (size + bytes <= MAX_BYTES) {
+        included.push(body);
+        size += bytes;
+      } else {
+        const rel = path.relative(projectDir, file);
+        deferred.push(rel.startsWith('..') ? file : rel);
       }
     }
 
-    // Detect default context (dev mode unless overridden)
-    const contextFile = path.join(projectDir, '.claude', 'session-cache', 'active-context');
-    let activeContext = 'dev'; // Default context
+    if (!included.length && !deferred.length) process.exit(0);
 
-    if (fs.existsSync(contextFile)) {
-      const storedContext = readFile(contextFile);
-      if (storedContext) {
-        const trimmedContext = storedContext.trim();
-        if (trimmedContext === 'dev' || trimmedContext === 'research' || trimmedContext === 'review') {
-          activeContext = trimmedContext;
-        }
-      }
+    const parts = ['## ForgeBee Rules (always apply)', '', ...included];
+    if (deferred.length) {
+      parts.push('', `More rules — Read when relevant: ${deferred.join(', ')}`);
     }
 
-    // Load active context
-    const contextPath = path.join(forgebeeRoot, 'contexts', `${activeContext}.md`);
-    if (fs.existsSync(contextPath)) {
-      log(`[Context] Active: ${activeContext}`);
-    }
-
-    // Load language-specific rules based on triage JSON
-    const triageFile = path.join(projectDir, '.claude', 'session-cache', 'project-triage.json');
-
-    if (fs.existsSync(triageFile)) {
-      try {
-        const triageContent = readFile(triageFile);
-        if (!triageContent) {
-          throw new Error('Failed to read triage file');
-        }
-
-        const triage = JSON.parse(triageContent);
-
-        // Check for Node/TypeScript projects
-        const nodeFramework = triage.node?.framework || 'none';
-        if (nodeFramework !== 'none') {
-          const tsRulesDir = path.join(forgebeeRoot, 'rules', 'typescript');
-          if (fs.existsSync(tsRulesDir)) {
-            log(`[Rules] Loaded: typescript/ (detected ${nodeFramework})`);
-          }
-        }
-
-        // Check for WordPress/PHP projects
-        const wpType = triage.wordpress?.type || 'none';
-        const phpFramework = triage.php?.framework || 'none';
-        if (wpType !== 'none' || phpFramework !== 'none') {
-          const phpRulesDir = path.join(forgebeeRoot, 'rules', 'php');
-          if (fs.existsSync(phpRulesDir)) {
-            const detected = wpType !== 'none' ? wpType : phpFramework;
-            log(`[Rules] Loaded: php/ (detected ${detected})`);
-          }
-        }
-
-        // Check for Python projects
-        const pythonFramework = triage.python?.framework || 'none';
-        if (pythonFramework !== 'none') {
-          const pythonRulesDir = path.join(forgebeeRoot, 'rules', 'python');
-          if (fs.existsSync(pythonRulesDir)) {
-            log(`[Rules] Loaded: python/ (detected ${pythonFramework})`);
-          }
-        }
-      } catch (e) {
-        // Ignore triage parse errors, fall back to file detection
-        performFileDetection(projectDir, forgebeeRoot);
-      }
-    } else {
-      // No triage JSON — detect from files in project directory
-      performFileDetection(projectDir, forgebeeRoot);
-    }
-
-    process.exit(0);
+    output({
+      hookSpecificOutput: {
+        hookEventName: 'SessionStart',
+        additionalContext: parts.join('\n'),
+      },
+    });
   } catch (error) {
-    log(`Unexpected error: ${error.message}`);
-    process.exit(0); // best-effort context hook — never surface a hook error to the user
+    // Best-effort context hook — never block session start.
+    process.exit(0);
   }
 }
 
-/**
- * Fallback: detect language from config files
- */
-function performFileDetection(projectDir, forgebeeRoot) {
-  // Check for TypeScript/Node.js
-  if (fs.existsSync(path.join(projectDir, 'tsconfig.json'))
-      || fs.existsSync(path.join(projectDir, 'package.json'))) {
-    log('[Rules] Loaded: typescript/ (detected from config files)');
-  }
+function activeContext(projectDir) {
+  const stored = readFile(path.join(projectDir, '.claude', 'session-cache', 'active-context'));
+  const name = stored ? stored.trim() : '';
+  return ['dev', 'research', 'review'].includes(name) ? name : 'dev';
+}
 
-  // Check for PHP
-  if (fs.existsSync(path.join(projectDir, 'composer.json'))
-      || fs.existsSync(path.join(projectDir, 'wp-config.php'))) {
-    log('[Rules] Loaded: php/ (detected from config files)');
+function mdFiles(dir) {
+  try {
+    return fs.readdirSync(dir).filter(f => f.endsWith('.md')).sort().map(f => path.join(dir, f));
+  } catch (e) {
+    return [];
   }
+}
 
-  // Check for Python
-  if (fs.existsSync(path.join(projectDir, 'pyproject.toml'))
-      || fs.existsSync(path.join(projectDir, 'requirements.txt'))
-      || fs.existsSync(path.join(projectDir, 'setup.py'))) {
-    log('[Rules] Loaded: python/ (detected from config files)');
+// Examples are the largest part of each file; the rules survive without them.
+function stripCodeBlocks(text) {
+  return text
+    .replace(/```[\s\S]*?```/g, '')
+    .replace(/^(Bad|Good):\s*$/gm, '')
+    .replace(/\n{2,}/g, '\n')
+    .trim();
+}
+
+// Prefer the triage JSON; fall back to config files when it is missing or unreadable.
+function detectLanguages(projectDir) {
+  const langs = new Set();
+  try {
+    const triage = JSON.parse(readFile(path.join(projectDir, '.claude', 'session-cache', 'project-triage.json')));
+    if ((triage.node?.framework || 'none') !== 'none') langs.add('typescript');
+    if ((triage.wordpress?.type || 'none') !== 'none' || (triage.php?.framework || 'none') !== 'none') langs.add('php');
+    if ((triage.python?.framework || 'none') !== 'none') langs.add('python');
+    return langs;
+  } catch (e) {
+    const has = f => fs.existsSync(path.join(projectDir, f));
+    if (has('tsconfig.json') || has('package.json')) langs.add('typescript');
+    if (has('composer.json') || has('wp-config.php')) langs.add('php');
+    if (has('pyproject.toml') || has('requirements.txt') || has('setup.py')) langs.add('python');
+    return langs;
   }
 }
 

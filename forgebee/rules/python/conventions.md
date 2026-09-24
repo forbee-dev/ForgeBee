@@ -31,6 +31,30 @@
 - Avoid wildcard imports (`from module import *`)
 - Use `TYPE_CHECKING` guard for type-only imports to avoid circular deps
 
+## Comments and Docblocks
+
+- One-line docstrings. Use a multi-line docstring only on public API that needs `Args`/`Raises` detail the type hints do not give.
+- No docstring that restates the function name. No docstring on private helpers with clear names.
+
+Bad:
+```python
+def parse_date(value: str) -> date:
+    """
+    Parse date.
+
+    This function parses a date string and returns a date.
+
+    Args:
+        value (str): The value.
+    """
+```
+
+Good:
+```python
+def parse_date(value: str) -> date:
+    """Accepts ISO 8601 or DD/MM/YYYY; raises ValueError otherwise."""
+```
+
 ## Testing
 
 - Use `pytest` with fixtures, not `unittest.TestCase`

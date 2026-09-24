@@ -1,201 +1,110 @@
 # marketing-analyst — Reference Material
 
-Sections extracted from `forgebee/agents/marketing-analyst.md` to keep the persona file under the 250-line budget. The agent file holds discipline and Never rules — this file holds the working library.
+Working library for `forgebee/agents/marketing-analyst.md`. The persona holds workflow, gates, and Never rules.
 
 ---
 
-## Metrics Framework
+## 1. Metric Tree
 
-### North Star Metric
-- **Metric:** [The ONE metric that best captures value delivery]
-- **Why:** [Why this metric matters most]
-- **Current:** [Current value]
-- **Target (30d):** [Target]
-- **Target (90d):** [Target]
+**North Star:** the one metric that best captures value delivery — why it matters, current, 30-day target, 90-day target.
 
-### Input Metrics (Leading Indicators)
-| Metric | Description | Current | Target | Owner |
-|--------|------------|---------|--------|-------|
-| Content velocity | Pieces published/week | [X] | [Y] | Content team |
-| Engagement rate | Avg. engagement across platforms | [X%] | [Y%] | Engagement |
-| Audience growth | Net new followers/subscribers per week | [X] | [Y] | Growth |
-| Conversion rate | Visitor → lead/customer | [X%] | [Y%] | Funnel |
-| Email list growth | Net new subscribers/week | [X] | [Y] | Content |
+### Input Metrics (leading)
+| Metric | Definition | Current | Target | Owner | Action rule |
+|--------|-----------|---------|--------|-------|-------------|
+| Content velocity | Pieces published/week | | | Content | if < plan 2 weeks running → cut cadence or add batching day |
+| Engagement rate | Avg. across platforms | | | Engagement | |
+| Audience growth | Net new followers/week | | | Growth | |
+| Conversion rate | Visitor → lead/customer | | | Funnel | |
+| Email list growth | Net new subscribers/week | | | Content | |
 
-### Health Metrics (Guardrails)
-| Metric | Description | Healthy Range | Alert Threshold |
-|--------|------------|--------------|-----------------|
-| Unsubscribe rate | Email list churn | <0.5%/send | >1%/send |
-| Follower quality | Engagement per follower | [range] | [threshold] |
-| Content consistency | Published vs. planned | >90% | <80% |
-| Response time | Engagement reply speed | <2 hours | >6 hours |
-| Brand sentiment | Positive vs. negative mentions | >80% positive | <70% positive |
+### Health Metrics (guardrails)
+| Metric | Healthy | Alert |
+|--------|---------|-------|
+| Unsubscribe rate | <0.5%/send | >1%/send |
+| Content consistency (published vs. planned) | >90% | <80% |
+| Engagement reply time | <2 hours | >6 hours |
+| Brand sentiment | >80% positive | <70% positive |
+| Follower quality (engagement per follower) | [range] | [threshold] |
 
-### 2. Platform-Specific Dashboards
+## 2. Content Performance Dashboard
 
 ```markdown
-
-## Dashboard: Content Performance
-
 ### By Platform
 | Platform | Followers | Growth Rate | Engagement Rate | Top Content | Trend |
-|----------|----------|------------|----------------|-------------|-------|
-| LinkedIn | [count] | [%/week] | [%] | [title] | Up/Down/Flat |
-| X/Twitter | [count] | [%/week] | [%] | [title] | Up/Down/Flat |
-| Instagram | [count] | [%/week] | [%] | [title] | Up/Down/Flat |
-| Email | [count] | [%/week] | Open: [%] / Click: [%] | [subject] | Up/Down/Flat |
-| Blog | [visits/mo] | [%/mo] | [avg time] | [title] | Up/Down/Flat |
+| LinkedIn / X / Instagram | | %/week | % | | Up/Down/Flat |
+| Email | | %/week | Click % (opens unreliable under Apple MPP) | [subject] | |
+| Blog | visits/mo | %/mo | avg time | | |
 
-### By Content Pillar
-| Pillar | Pieces Published | Avg. Engagement | Avg. Reach | Conversion | ROI Score |
-|--------|-----------------|----------------|-----------|-----------|-----------|
+### By Pillar
+| Pillar | Published | Avg. Engagement | Avg. Reach | Conversion | ROI Score |
 
-### By Content Format
-| Format | Count | Avg. Engagement | Best Performer | Worst Performer |
-|--------|-------|----------------|----------------|-----------------|
+### By Format
+| Format | Count | Avg. Engagement | Best | Worst |
 
 ### By Hook Type
-| Hook Category | Times Used | Avg. Engagement | Best Performer | Win Rate |
-|--------------|-----------|----------------|----------------|----------|
+| Hook Category | Times Used | Avg. Engagement | Best | Win Rate |
 ```
 
-### 3. Campaign Analysis
+## 3. Campaign Analysis
 
 ```markdown
-
-## Campaign Analysis: [Campaign Name]
-
-### Campaign Overview
-- **Duration:** [Start — End]
-- **Goal:** [What was the campaign trying to achieve]
-- **Channels:** [Platforms used]
-- **Content pieces:** [Count]
-- **Budget:** [If paid]
+## Campaign Analysis: [Name]
+- Duration · Goal · Channels · Pieces · Budget (if paid)
 
 ### Results vs. Goals
-| Metric | Goal | Actual | Delta | Rating |
-|--------|------|--------|-------|--------|
-| Reach | [X] | [X] | [+/-X%] | Exceeded/Met/Missed |
-| Engagement | [X] | [X] | [+/-X%] | Exceeded/Met/Missed |
-| Conversions | [X] | [X] | [+/-X%] | Exceeded/Met/Missed |
-| Revenue | [X] | [X] | [+/-X%] | Exceeded/Met/Missed |
+| Metric | Goal | Actual | Delta | Exceeded/Met/Missed |
+| Reach · Engagement · Conversions · Revenue |
 
-### What Worked
-1. [Specific tactic/content that overperformed — why]
-2. [Another success — what made it work]
-
-### What Didn't Work
-1. [Specific tactic/content that underperformed — why]
-2. [Another miss — root cause analysis]
-
-### Key Learnings
-1. [Actionable insight for next campaign]
-2. [Pattern identified for replication]
-
-### Recommendations
-1. [Do more of X]
-2. [Stop doing Y]
-3. [Test Z next time]
+### What Worked (tactic — why)
+### What Didn't (tactic — root cause)
+### Key Learnings (actionable, replicable)
+### Recommendations: do more of X · stop Y · test Z
 ```
 
-### 4. Attribution Framework
+## 4. Attribution
 
-```markdown
-
-## Attribution Model
-
-### Touch Point Mapping
 | Stage | Touch Points | Weight | Measurement |
 |-------|-------------|--------|-------------|
-| First touch | [How they found us] | [%] | [UTM, referral] |
-| Nurture | [Content consumed] | [%] | [Page views, email clicks] |
-| Conversion | [What triggered action] | [%] | [CTA clicked, demo booked] |
-| Retention | [What keeps them] | [%] | [Product usage, email opens] |
+| First touch | How they found us | % | UTM, referral |
+| Nurture | Content consumed | % | Page views, email clicks |
+| Conversion | What triggered action | % | CTA click, demo booked |
+| Retention | What keeps them | % | Product usage, email engagement |
 
-### Attribution Rules
-- **First-touch:** Credit the channel that brought them in
-- **Last-touch:** Credit the channel that closed them
-- **Linear:** Equal credit across all touches
-- **Recommended:** [Which model fits best and why]
-```
+Models: first-touch (credit the entry channel) · last-touch (credit the closer) · linear (equal) · time decay (recent touches weigh more). State which model fits and why.
 
-### 5. A/B Test Design
+## 5. A/B Test Plan
 
 ```markdown
+### Test: [what]
+- Hypothesis: If we [change], then [metric] will [move] because [reason]
+- Variable · Control (A) · Variant (B)
+- Primary metric
+- Sample size (compute before launch; do not stop early)
+- Duration
+- Success criteria (e.g., >10% lift at 95% confidence)
 
-## A/B Test Plan
-
-### Test: [What you're testing]
-- **Hypothesis:** If we [change], then [metric] will [improve/decrease] because [reason]
-- **Variable:** [What's different between A and B]
-- **Control (A):** [Current version]
-- **Variant (B):** [New version]
-- **Primary metric:** [What you're measuring]
-- **Sample size:** [How many impressions/sends needed]
-- **Duration:** [How long to run]
-- **Success criteria:** [What constitutes a win — e.g., >10% improvement with 95% confidence]
-
-### Test Queue (Prioritized)
+### Test Queue
 | Priority | Test | Hypothesis | Effort | Expected Impact |
-|----------|------|-----------|--------|-----------------|
-| 1 | [Test] | [Hypothesis] | Low/Med/High | High/Med/Low |
 ```
 
-### 6. Weekly Review Cadence
+## 6. Review Cadence
 
-```markdown
+**Weekly (30 min):** metrics check (5) → content top/bottom and patterns (10) → engagement health (5) → growth and funnel (5) → next week's priorities and tests (5).
 
-## Weekly Marketing Review
-
-### Review Agenda (30 minutes)
-1. **Metrics check (5 min):** North Star, Input metrics, Health metrics
-2. **Content performance (10 min):** Top/bottom performers, patterns
-3. **Engagement health (5 min):** Engagement rate trends, community activity
-4. **Growth progress (5 min):** Audience growth, funnel metrics
-5. **Next week focus (5 min):** Key priorities, tests to run, content to push
-
-### Monthly Deep Dive (60 minutes)
-1. Full campaign analysis for completed campaigns
-2. Content pillar performance review
-3. Audience growth trajectory vs. targets
-4. Attribution analysis and channel ROI
-5. Budget allocation review (if paid)
-6. Next month strategy adjustments
-```
-
+**Monthly (60 min):** completed campaign analysis, pillar performance, audience trajectory vs. target, attribution and channel ROI, budget allocation, next month's adjustments.
 
 ## Output Format
 
 ```markdown
-
 ## Marketing Performance Report: [Brand/Period]
-
-### Executive Summary
-[3-5 sentences: overall health, key wins, key concerns, priority actions]
-
-### Metrics Dashboard
-[North Star + Input + Health metrics with trends]
-
+### Executive Summary (health, wins, concerns, priority actions — 3-5 sentences)
+### Metrics Dashboard (North Star + input + health, with trends and action rules)
 ### Platform Performance
-[Per-platform metrics and trends]
-
-### Content Analysis
-[By pillar, format, and hook type]
-
+### Content Analysis (pillar, format, hook type)
 ### Campaign Results
-[Per-campaign analysis]
-
 ### Attribution Insights
-[What channels drive the most value]
-
 ### A/B Test Results & Queue
-[Completed tests + next tests]
-
 ### Optimization Recommendations
 | Priority | Recommendation | Expected Impact | Effort |
-|----------|---------------|-----------------|--------|
-| 1 | [Action] | [Impact] | [Effort] |
-
-### Weekly Review Schedule
-[Cadence and agenda]
+### Review Schedule
 ```

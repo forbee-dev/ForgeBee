@@ -1,109 +1,79 @@
 # Supabase Specialist — Reference Material
 
-Code samples and patterns referenced by `forgebee/agents/supabase-specialist.md`.
-Moved here to keep the persona file under the 200-line budget (W16). The agent
-file holds discipline, Never rules, and self-review — this file holds the
-working library.
+Working library for `forgebee/agents/supabase-specialist.md`. The persona holds rules; this file holds patterns.
 
 ---
 
-## CLI Reference
+## CLI
 
 ```bash
-# Project lifecycle
-supabase init                                    # Initialize new project
-supabase start                                   # Start local containers
-supabase stop                                    # Stop local containers
-supabase status                                  # Show local service URLs/keys
+supabase init | start | stop | status
+supabase link --project-ref <ref>
 
-# Migrations
-supabase migration new <name>                    # Create empty migration file
-supabase db reset                                # Drop + recreate from migrations + seed
-supabase db push                                 # Push migrations to remote
-supabase db pull                                 # Pull remote schema as migration
-supabase db diff --use-migra                     # Diff local vs migration state
+supabase migration new <name>
+supabase db reset                      # drop + recreate from migrations + seed
+supabase db push                       # apply migrations to remote
+supabase db pull                       # remote schema → migration
+supabase db diff -f <name>             # local changes → new migration file
 
-# Types
 supabase gen types typescript --local > src/types/database.ts
 
-# Edge Functions
-supabase functions new <name>                    # Scaffold new function
-supabase functions serve                         # Serve locally (hot reload)
-supabase functions deploy <name>                 # Deploy to remote
-supabase functions deploy --no-verify-jwt <name> # Public function (no auth)
+supabase functions new <name>
+supabase functions serve
+supabase functions deploy <name>
+supabase functions deploy --no-verify-jwt <name>   # public: no JWT check
 
-# Secrets
-supabase secrets set MY_KEY=value                # Set remote env var
-supabase secrets list                            # List remote secrets
-
-# Linking
-supabase link --project-ref <ref>                # Link to remote project
+supabase secrets set MY_KEY=value
+supabase secrets list
 ```
-
 
 ## RLS Patterns
 
 ```sql
--- Basic: users own their data
 CREATE POLICY "users_read_own" ON public.profiles
   FOR SELECT TO authenticated
-  USING (auth.uid() = user_id);
-
-CREATE POLICY "users_insert_own" ON public.profiles
-  FOR INSERT TO authenticated
-  WITH CHECK (auth.uid() = user_id);
+  USING ((select auth.uid()) = user_id);
 
 CREATE POLICY "users_update_own" ON public.profiles
   FOR UPDATE TO authenticated
-  USING (auth.uid() = user_id)
-  WITH CHECK (auth.uid() = user_id);
+  USING ((select auth.uid()) = user_id)
+  WITH CHECK ((select auth.uid()) = user_id);
 
-CREATE POLICY "users_delete_own" ON public.profiles
-  FOR DELETE TO authenticated
-  USING (auth.uid() = user_id);
-
--- Organization/team-based access
 CREATE POLICY "team_members_read" ON public.projects
   FOR SELECT TO authenticated
   USING (
-    EXISTS (
-      SELECT 1 FROM public.team_members
-      WHERE team_members.team_id = projects.team_id
-        AND team_members.user_id = auth.uid()
-    )
+    team_id IN (SELECT team_id FROM public.team_members WHERE user_id = (select auth.uid()))
   );
 
--- Role-based via JWT custom claims
+-- Read roles from app_metadata only: users can edit user_metadata themselves.
 CREATE POLICY "admin_full_access" ON public.settings
   FOR ALL TO authenticated
-  USING (auth.jwt() ->> 'role' = 'admin');
+  USING ((auth.jwt() -> 'app_metadata' ->> 'role') = 'admin');
 
--- Public read, authenticated write
 CREATE POLICY "public_read_posts" ON public.posts
   FOR SELECT TO anon, authenticated
   USING (published = true);
-
-CREATE POLICY "authors_write_posts" ON public.posts
-  FOR INSERT TO authenticated
-  WITH CHECK (auth.uid() = author_id);
 ```
 
-**Performance tip for RLS:** Avoid correlated subqueries in policies for large tables. Use JOINs or materialized views for complex access patterns. Index the columns used in policy WHERE clauses.
+INSERT uses `WITH CHECK` only; DELETE uses `USING` only. Write one policy per operation.
+
+**Performance:**
+- Wrap `auth.uid()` and `auth.jwt()` in `(select …)` so Postgres evaluates them once per query, not per row.
+- Index every column a policy filters on (`user_id`, `team_id`).
+- Prefer `col IN (SELECT …)` over a correlated `EXISTS` on large tables.
+- Always add `TO authenticated` (or `anon`) so policies skip for other roles.
 
 ## Auth Integration
 
 ```sql
--- Always reference auth.users for user data
 CREATE TABLE public.profiles (
   id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   display_name TEXT,
   avatar_url TEXT,
-  role TEXT DEFAULT 'user' CHECK (role IN ('user', 'editor', 'admin')),
   created_at TIMESTAMPTZ DEFAULT now(),
   updated_at TIMESTAMPTZ DEFAULT now()
 );
 
--- Auto-create profile on signup
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER
 LANGUAGE plpgsql
@@ -125,11 +95,8 @@ CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
--- Auto-update updated_at
-CREATE OR REPLACE FUNCTION public.update_updated_at()
-RETURNS TRIGGER
-LANGUAGE plpgsql
-AS $$
+CREATE OR REPLACE FUNCTION public.set_updated_at()
+RETURNS TRIGGER LANGUAGE plpgsql SET search_path = '' AS $$
 BEGIN
   NEW.updated_at = now();
   RETURN NEW;
@@ -138,215 +105,109 @@ $$;
 
 CREATE TRIGGER set_updated_at
   BEFORE UPDATE ON public.profiles
-  FOR EACH ROW EXECUTE FUNCTION public.update_updated_at();
+  FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
 ```
 
-- Always use `SECURITY DEFINER` + `SET search_path = ''` on triggers that bypass RLS
-- Reference `auth.users(id)` with `ON DELETE CASCADE` so user deletion cleans up
-- Extract metadata from `raw_user_meta_data` (populated by OAuth providers)
+- `SECURITY DEFINER` functions bypass RLS: always add `SET search_path = ''` and schema-qualify every name.
+- `ON DELETE CASCADE` on `auth.users(id)` cleans up when a user is deleted.
+- `raw_user_meta_data` is user-controlled (OAuth profile, signUp options). Use it for display data, never for roles or permissions.
+- A failing `handle_new_user` blocks signup. Keep it simple.
 
-## Client-Side Patterns
+## Client Queries (`@supabase/supabase-js`)
 
-### Browser client (`@supabase/supabase-js`)
+```ts
+const supabase = createClient<Database>(url, anonKey);
 
-```typescript
-import { createClient } from '@supabase/supabase-js';
-import type { Database } from '@/types/database';
-
-const supabase = createClient<Database>(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
-
-// Typed select with relations
 const { data, error } = await supabase
   .from('posts')
   .select('id, title, profiles(display_name)')
   .eq('published', true)
   .order('created_at', { ascending: false })
   .range(0, 9);
+if (error) throw error;
 
-// Single row (throws if 0 or 2+)
-const { data: profile } = await supabase
-  .from('profiles')
-  .select('*')
-  .eq('id', userId)
-  .single();
-
-// Maybe single (returns null if not found)
-const { data: settings } = await supabase
-  .from('settings')
-  .select('*')
-  .eq('user_id', userId)
-  .maybeSingle();
-
-// Upsert
-const { error } = await supabase
-  .from('profiles')
-  .upsert({ id: userId, display_name: name }, { onConflict: 'id' });
-
-// RPC (call database function)
-const { data } = await supabase.rpc('get_user_stats', { user_id: userId });
+await supabase.from('profiles').select('*').eq('id', userId).single();        // error unless exactly 1 row
+await supabase.from('settings').select('*').eq('user_id', userId).maybeSingle(); // null when 0 rows
+await supabase.from('profiles').upsert({ id: userId, display_name: name }, { onConflict: 'id' });
+await supabase.rpc('get_user_stats', { user_id: userId });
 ```
 
-**Always:**
-- Generate and use `Database` types — never `any`
-- Check `error` before using `data`
-- Use `.single()` vs `.maybeSingle()` intentionally
-- Unsubscribe realtime channels on cleanup
+- Use generated `Database` types, never `any`.
+- Check `error` before you use `data`.
+- Choose `.single()` or `.maybeSingle()` on purpose.
 
-### Next.js with `@supabase/ssr`
+## Next.js (`@supabase/ssr`)
 
-```typescript
-// lib/supabase/server.ts — Server Components, Route Handlers, Server Actions
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
-import type { Database } from '@/types/database';
+Server client, browser client, and middleware session refresh: see `forgebee/agents/references/nextjs-frontend.md` (Supabase SSR section).
 
-export async function createSupabaseServer() {
-  const cookieStore = await cookies();
-  return createServerClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() { return cookieStore.getAll(); },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) =>
-            cookieStore.set(name, value, options));
-        },
-      },
-    }
-  );
-}
+- Server Components, Route Handlers, Server Actions → server client (`createServerClient` + `cookies()`)
+- Client Components → browser client (`createBrowserClient`)
+- Middleware → `createServerClient` with request/response cookies; call `auth.getUser()` to refresh the session
+- Never import the browser client in server code, or the reverse.
+- On the server, trust `auth.getUser()` (revalidates the JWT), not `auth.getSession()`.
 
-// lib/supabase/client.ts — Client Components
-import { createBrowserClient } from '@supabase/ssr';
-import type { Database } from '@/types/database';
+## Realtime
 
-export function createSupabaseBrowser() {
-  return createBrowserClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
-}
-
-// lib/supabase/middleware.ts — Next.js Middleware (for auth session refresh)
-import { createServerClient } from '@supabase/ssr';
-import { NextResponse, type NextRequest } from 'next/server';
-
-export async function updateSession(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({ request });
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() { return request.cookies.getAll(); },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
-          supabaseResponse = NextResponse.next({ request });
-          cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options));
-        },
-      },
-    }
-  );
-  await supabase.auth.getUser(); // Refresh session
-  return supabaseResponse;
-}
-```
-
-**Routing rules:**
-- Server Components → `createSupabaseServer()`
-- Client Components → `createSupabaseBrowser()`
-- Middleware → `createServerClient` with request/response cookies
-- Route Handlers → `createSupabaseServer()`
-- Server Actions → `createSupabaseServer()`
-- Never import browser client in server code or vice versa
-
-### Realtime
-
-```typescript
-// Subscribe to changes
+```ts
 const channel = supabase
   .channel('room-changes')
-  .on('postgres_changes',
+  .on(
+    'postgres_changes',
     { event: '*', schema: 'public', table: 'messages', filter: `room_id=eq.${roomId}` },
     (payload) => {
       if (payload.eventType === 'INSERT') addMessage(payload.new);
       if (payload.eventType === 'UPDATE') updateMessage(payload.new);
       if (payload.eventType === 'DELETE') removeMessage(payload.old);
-    }
+    },
   )
   .subscribe();
 
-// Presence (who's online)
-const presenceChannel = supabase.channel('room-presence');
-presenceChannel
-  .on('presence', { event: 'sync' }, () => {
-    const state = presenceChannel.presenceState();
-    setOnlineUsers(Object.values(state).flat());
-  })
+const presence = supabase.channel('room-presence');
+presence
+  .on('presence', { event: 'sync' }, () => setOnlineUsers(Object.values(presence.presenceState()).flat()))
   .subscribe(async (status) => {
-    if (status === 'SUBSCRIBED') {
-      await presenceChannel.track({ user_id: userId, online_at: new Date().toISOString() });
-    }
+    if (status === 'SUBSCRIBED') await presence.track({ user_id: userId, online_at: new Date().toISOString() });
   });
 
-// Cleanup
-return () => { supabase.removeChannel(channel); };
+return () => { supabase.removeChannel(channel); supabase.removeChannel(presence); };
 ```
 
-**Requirements for Realtime:**
-- Table needs `REPLICA IDENTITY FULL` for UPDATE/DELETE payloads with full row data
-- Realtime must be enabled in dashboard or `config.toml` for the table
-- RLS applies to Realtime — user only receives changes they can SELECT
+- Add the table to the `supabase_realtime` publication (dashboard or migration).
+- `REPLICA IDENTITY FULL` is needed for full old-row data on UPDATE/DELETE.
+- RLS applies: a user receives only rows they can SELECT.
+- Remove channels on cleanup.
 
 ## Edge Functions (Deno)
 
-```typescript
+```ts
 // supabase/functions/process-webhook/index.ts
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { createClient } from 'npm:@supabase/supabase-js@2';
 import { corsHeaders } from '../_shared/cors.ts';
 
 Deno.serve(async (req) => {
-  // Handle CORS preflight
-  if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders });
-  }
+  if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
+
+  const json = (body: unknown, status = 200) =>
+    new Response(JSON.stringify(body), { status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+
+  const authHeader = req.headers.get('Authorization');
+  if (!authHeader) return json({ error: 'Missing Authorization header' }, 401);
+
+  const supabase = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_ANON_KEY')!, {
+    global: { headers: { Authorization: authHeader } },
+  });
 
   try {
-    // Service role client for admin operations
-    const supabaseAdmin = createClient(
-      Deno.env.get('SUPABASE_URL')!,
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-    );
-
-    // Or: authenticated client from request
-    const authHeader = req.headers.get('Authorization')!;
-    const supabaseUser = createClient(
-      Deno.env.get('SUPABASE_URL')!,
-      Deno.env.get('SUPABASE_ANON_KEY')!,
-      { global: { headers: { Authorization: authHeader } } }
-    );
-
     const body = await req.json();
-    // ... process
-
-    return new Response(JSON.stringify({ success: true }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
-  } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 400,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    // …process with the user-scoped client (RLS applies)
+    return json({ success: true });
+  } catch (err) {
+    return json({ error: err instanceof Error ? err.message : 'Bad request' }, 400);
   }
 });
 ```
 
-```typescript
+```ts
 // supabase/functions/_shared/cors.ts
 export const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -354,110 +215,69 @@ export const corsHeaders = {
 };
 ```
 
-- Runtime is Deno — use `https://esm.sh/` or `https://cdn.jsdelivr.net` imports
-- Share code via `_shared/` directory
-- Use `SUPABASE_SERVICE_ROLE_KEY` for admin ops, `SUPABASE_ANON_KEY` for user-context ops
-- Always return proper error responses with status codes
-- Set secrets with `supabase secrets set`
+- Import with `npm:` or `jsr:` specifiers. Share code through `_shared/`.
+- Service role client (`SUPABASE_SERVICE_ROLE_KEY`) bypasses RLS: use it only for admin work after you verify the caller.
+- Webhooks from third parties: verify the provider signature before any processing; deploy with `--no-verify-jwt`.
+- Return an explicit status code on every error path.
 
 ## Storage
 
 ```sql
--- Create buckets in migration
 INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
-VALUES
-  ('avatars', 'avatars', false, 5242880, ARRAY['image/jpeg', 'image/png', 'image/webp']),
-  ('documents', 'documents', false, 10485760, ARRAY['application/pdf']);
+VALUES ('avatars', 'avatars', false, 5242880, ARRAY['image/jpeg', 'image/png', 'image/webp']);
 
--- Storage RLS: users manage own folder
-CREATE POLICY "users_upload" ON storage.objects
-  FOR INSERT TO authenticated
-  WITH CHECK (
-    bucket_id = 'avatars'
-    AND auth.uid()::text = (storage.foldername(name))[1]
-  );
-
-CREATE POLICY "users_read_own" ON storage.objects
-  FOR SELECT TO authenticated
-  USING (
-    bucket_id = 'avatars'
-    AND auth.uid()::text = (storage.foldername(name))[1]
-  );
-
-CREATE POLICY "users_delete_own" ON storage.objects
-  FOR DELETE TO authenticated
-  USING (
-    bucket_id = 'avatars'
-    AND auth.uid()::text = (storage.foldername(name))[1]
-  );
+CREATE POLICY "users_manage_own_avatar" ON storage.objects
+  FOR ALL TO authenticated
+  USING (bucket_id = 'avatars' AND (select auth.uid())::text = (storage.foldername(name))[1])
+  WITH CHECK (bucket_id = 'avatars' AND (select auth.uid())::text = (storage.foldername(name))[1]);
 ```
 
-```typescript
-// Upload with content type
-const { error } = await supabase.storage
-  .from('avatars')
-  .upload(`${userId}/avatar.png`, file, {
-    contentType: file.type,
-    upsert: true,
-  });
-
-// Signed URL for private files
-const { data } = await supabase.storage
-  .from('documents')
-  .createSignedUrl('path/to/file.pdf', 3600);
-
-// Image transformations (on-the-fly)
-const { data } = supabase.storage
-  .from('avatars')
-  .getPublicUrl('path/to/image.jpg', {
-    transform: { width: 200, height: 200, resize: 'cover' },
-  });
-
-// List files in folder
-const { data: files } = await supabase.storage
-  .from('documents')
-  .list(`${userId}/`, { limit: 100, sortBy: { column: 'created_at', order: 'desc' } });
+```ts
+await supabase.storage.from('avatars').upload(`${userId}/avatar.png`, file, { contentType: file.type, upsert: true });
+await supabase.storage.from('documents').createSignedUrl('path/to/file.pdf', 3600);
+supabase.storage.from('avatars').getPublicUrl('path/img.jpg', { transform: { width: 200, height: 200, resize: 'cover' } });
+await supabase.storage.from('documents').list(`${userId}/`, { limit: 100, sortBy: { column: 'created_at', order: 'desc' } });
 ```
 
-## Database Functions & Extensions
+The first path segment is the user ID, so `storage.foldername(name)[1]` scopes access per user.
+
+## Full-Text Search and pgvector
 
 ```sql
--- Full-text search
 ALTER TABLE posts ADD COLUMN fts tsvector
   GENERATED ALWAYS AS (to_tsvector('english', coalesce(title, '') || ' ' || coalesce(content, ''))) STORED;
 CREATE INDEX posts_fts_idx ON posts USING GIN (fts);
+```
 
--- Query via PostgREST
-const { data } = await supabase
-  .from('posts')
-  .select('*')
-  .textSearch('fts', 'supabase & auth');
+```ts
+await supabase.from('posts').select('*').textSearch('fts', 'supabase & auth');
+```
 
--- pgvector for embeddings
-CREATE EXTENSION IF NOT EXISTS vector;
+```sql
+CREATE EXTENSION IF NOT EXISTS vector WITH SCHEMA extensions;
+
 CREATE TABLE documents (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   content TEXT,
-  embedding vector(1536)
+  embedding extensions.vector(1536)
 );
-CREATE INDEX ON documents USING ivfflat (embedding vector_cosine_ops) WITH (lists = 100);
+CREATE INDEX ON documents USING hnsw (embedding extensions.vector_cosine_ops);
 
--- Similarity search
 CREATE OR REPLACE FUNCTION match_documents(
-  query_embedding vector(1536),
+  query_embedding extensions.vector(1536),
   match_threshold float DEFAULT 0.78,
   match_count int DEFAULT 10
 )
 RETURNS TABLE (id UUID, content TEXT, similarity float)
-LANGUAGE plpgsql
+LANGUAGE sql STABLE
+SET search_path = public, extensions
 AS $$
-BEGIN
-  RETURN QUERY
   SELECT d.id, d.content, 1 - (d.embedding <=> query_embedding) AS similarity
   FROM documents d
   WHERE 1 - (d.embedding <=> query_embedding) > match_threshold
   ORDER BY d.embedding <=> query_embedding
   LIMIT match_count;
-END;
 $$;
 ```
+
+Use HNSW for new indexes: it needs no training data and recalls better than IVFFlat. `ORDER BY <=>` is what uses the index.
