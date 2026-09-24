@@ -25,14 +25,15 @@ function main() {
     const projectDir = getProjectDir();
     const forgebeeRoot = findForgebeeRoot();
 
+    // Active context first: it is small and sets the session mode, so rules must not crowd it out.
     const files = [];
+    const contextPath = path.join(forgebeeRoot, 'contexts', `${activeContext(projectDir)}.md`);
+    if (fs.existsSync(contextPath)) files.push(contextPath);
+
     detectLanguages(projectDir).forEach(lang => {
       files.push(...mdFiles(path.join(forgebeeRoot, 'rules', lang)));
     });
     files.push(...mdFiles(path.join(forgebeeRoot, 'rules', 'common')));
-
-    const contextPath = path.join(forgebeeRoot, 'contexts', `${activeContext(projectDir)}.md`);
-    if (fs.existsSync(contextPath)) files.push(contextPath);
 
     const included = [];
     const deferred = [];

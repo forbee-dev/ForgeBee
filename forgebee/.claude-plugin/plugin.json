@@ -1,6 +1,6 @@
 {
   "name": "forgebee",
-  "version": "5.5.0",
+  "version": "5.6.0",
   "description": "Full-stack agent framework — 37 slash commands, 44 specialist agents, 33 skills (inline + context:fork), 25 Node hooks. Karpathy principles (trace test, YAGNI, orphan rule, anti-stop) on every code-producing agent. Adversarial debate triads with judges, two-stage review (spec compliance + code quality), forensic /investigate (Confirmed/Deduced/Hypothesized), /elicit (18 reasoning methods), checkpoint-preview (diff-by-concern), budget circuit breaker on Task() dispatches, adversarial input hardening on all agents, terse-report mode (~65% token reduction for sub-agent reports), continuous learning with auto-nudge, Growth OS 9-phase marketing pipeline, automated PM, /audit-self regression detection. Works with Claude Code, Codex, Cursor, Gemini, OpenClaw.",
   "author": {
     "name": "Forbee Dev"

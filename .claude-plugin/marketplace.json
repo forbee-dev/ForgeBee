@@ -9,7 +9,7 @@
       "name": "forgebee",
       "source": "./forgebee",
       "description": "Full-stack agent framework for Claude Code, Codex, Cursor, Gemini — 37 slash commands, 44 specialist agents, 33 skills, 25 hooks. Karpathy principles (trace test, YAGNI, orphan rule, anti-stop) on every code agent. Adversarial debate triads, two-stage review (spec compliance + code quality), forensic /investigate, /elicit (18 reasoning methods), checkpoint-preview, budget circuit breaker, adversarial input hardening, continuous learning with auto-nudge, Growth OS marketing pipeline, automated PM, /audit-self regression detection.",
-      "version": "5.5.0"
+      "version": "5.6.0"
     }
   ]
 }

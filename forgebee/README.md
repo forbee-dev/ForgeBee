@@ -37,7 +37,7 @@ forgebee/
 └── eval/                        # Eval scenarios
 ```
 
-## Key Features (v5.5.0)
+## Key Features (v5.6.0)
 
 ### Behavioral discipline (Karpathy principles)
 - **P1 Trace test** — every changed line traces to the user's request; no drive-by edits
