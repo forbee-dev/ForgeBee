@@ -31,6 +31,7 @@ const STACK_SECTIONS = {
   wordpress: 'WordPress Stack',
   nextjs: 'Next.js Stack',
   supabase: 'Database/Backend Stack',
+  llm: 'LLM Stack',
 };
 
 /**

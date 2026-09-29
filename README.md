@@ -3,26 +3,26 @@
   <img src="https://img.shields.io/badge/Codex-Compatible-10B981?style=for-the-badge&logoColor=white" alt="Codex" />
   <img src="https://img.shields.io/badge/Cursor-Compatible-1F2937?style=for-the-badge&logoColor=white" alt="Cursor" />
   <img src="https://img.shields.io/badge/Gemini-Compatible-4285F4?style=for-the-badge&logoColor=white" alt="Gemini" />
-  <img src="https://img.shields.io/badge/version-5.6.0-blue?style=for-the-badge" alt="Version" />
+  <img src="https://img.shields.io/badge/version-6.0.0-blue?style=for-the-badge" alt="Version" />
   <img src="https://img.shields.io/badge/license-MIT-green?style=for-the-badge" alt="License" />
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/agents-45-orange?style=for-the-badge" alt="Agents" />
+  <img src="https://img.shields.io/badge/agents-46-orange?style=for-the-badge" alt="Agents" />
   <img src="https://img.shields.io/badge/commands-39-red?style=for-the-badge" alt="Commands" />
   <img src="https://img.shields.io/badge/hooks-25-blueviolet?style=for-the-badge" alt="Hooks" />
   <img src="https://img.shields.io/badge/skills-35-teal?style=for-the-badge" alt="Skills" />
 </p>
 
 <p align="center">
-  <sub>45 agents = <strong>26 framework-agnostic</strong> (code, growth, debate, planning) + <strong>19 stack specialists</strong> (WordPress, Next.js, Supabase, mobile, n8n, WooCommerce)</sub>
+  <sub>46 agents = <strong>26 framework-agnostic</strong> (code, growth, debate, planning) + <strong>20 stack specialists</strong> (WordPress, Next.js, Supabase, mobile, n8n, LLM apps, WooCommerce)</sub>
 </p>
 
 <h1 align="center">ForgeBee</h1>
 
 <p align="center">
   <strong>A colony of AI agents forging your product</strong><br/>
-  45 specialist agents. 35 skills. 39 slash commands. 25 lifecycle hooks.<br/>
+  46 specialist agents. 35 skills. 39 slash commands. 25 lifecycle hooks.<br/>
   Three execution modes: inline skills, context:fork, subagents.<br/>
   Adaptive pipeline. Karpathy principles. Adversarial debate. Continuous learning.<br/>
   <em>Works with Claude Code, Codex, Cursor, Gemini, and OpenClaw.</em>
@@ -49,7 +49,7 @@ Claude Code and OpenClaw are powerful out of the box. ForgeBee makes them **opin
 |:--|:--|
 | Agent jumps straight into coding | Agent plans, debates requirements, then codes |
 | "It should work" | Evidence-based verification with actual test output |
-| Single-agent, single-pass | 45 agents + 35 skills working in parallel with blind review |
+| Single-agent, single-pass | 46 agents + 35 skills working in parallel with blind review |
 | Manual project tracking | Automated state.yaml + markdown dashboards |
 | No marketing workflow | Full 9-phase Growth OS with 11 marketing agents + 3 strategy debate agents |
 | Every session starts from scratch | Continuous learning — heuristic pattern detection + pending instinct approval |
@@ -67,7 +67,7 @@ Claude Code and OpenClaw are powerful out of the box. ForgeBee makes them **opin
 | Orchestrators idle after dispatch | P5 Anti-Stop Rule in `/workflow` + `/team`: continue with next-step work immediately, the harness wakes you when sub-agents return |
 | Review reviewer drift | P6 Severity Standard (`Critical/High/Medium/Low`) across all review skills — enables cross-skill aggregation |
 | Discovery searches hang on vendored subtrees | T1–T5 Tool Discipline in `CLAUDE.md`: prefer `rg` over `grep -r`, bound every search (scope/type/timeout), `Glob` before `grep`, exclude `vendor`/`node_modules` — kills 10-minute stalls on `wp-content/` and monorepo roots |
-| Untrusted code can hijack agents | 6-line Adversarial Input Hardening preamble in all 45 agents — homoglyphs, urgency, role-play overrides flagged not executed |
+| Untrusted code can hijack agents | 6-line Adversarial Input Hardening preamble in all 46 agents — homoglyphs, urgency, role-play overrides flagged not executed |
 | Sub-agent reports waste orchestrator context | `terse-report` skill cuts ~65% of report tokens while preserving code/citations exact |
 | Decisions get lost between sessions | `/workflow` and `/plan` emit `.decision-log.md` + `addendum.md` — re-read on next run |
 | Recursive debate fan-out runs away | Budget circuit breaker (`maxHops`, `maxTokens`, `maxUsd`) on every dispatch with constant-string errors |
@@ -186,7 +186,7 @@ Invoke with a slash: `/review`, `/debug`, `/workflow`, etc.
 
 ## Agents
 
-45 specialist agents + 35 skills for Claude Code's Agent Teams. Use them directly or let `/team` and `/workflow` orchestrate automatically.
+46 specialist agents + 35 skills for Claude Code's Agent Teams. Use them directly or let `/team` and `/workflow` orchestrate automatically.
 
 > **v5.4 highlights — routing actually fires.** Five defects were keeping the 117 surfaces unreachable: the SessionStart index was dropped for exceeding the `additionalContext` size limit (everything past ~2KB, including the whole WordPress roster, never arrived), `skill-activator.js` emitted a top-level `additionalContext` that the harness discards, and it scanned neither agents nor commands — so no agent or slash command could ever be recommended. Now all three surface types are scored together, stack-boosted from `project-triage.json`, capped at 5 candidates, and acronym-aware (ACF, SCF, SEO, API, RLS were silently below the word-length floor). New **Routing Discipline R1–R4** in `CLAUDE.md`: name the route before the first edit, prefer the stack-specific agent. New design-system trio: **`figma-code-sync`** skill (code-first Figma reconciliation, 12 defect priors, ~18 Plugin API traps), **`wp-design-system`** agent (`theme.json`-versus-SCSS layer ownership, token pipeline, patterns/variations), **`/design-system`** command. `wordpress-backend` gains full ACF/SCF field architecture — field-group registration, JSON sync, immutable field keys, repeater meta storage and why it cannot be `meta_query`'d, and ACF-PRO-to-SCF migration risk.
 >
@@ -270,7 +270,7 @@ Invoke with a slash: `/review`, `/debug`, `/workflow`, etc.
 </details>
 
 <details>
-<summary><strong>Design, Research & Platform</strong> (8 agents)</summary>
+<summary><strong>Design, Research & Platform</strong> (9 agents)</summary>
 
 | Agent | Use when... |
 |:------|:------------|
@@ -282,6 +282,7 @@ Invoke with a slash: `/review`, `/debug`, `/workflow`, etc.
 | `ios-expert` | Swift, SwiftUI, Xcode, App Store |
 | `flutter-expert` | Dart, Flutter, cross-platform |
 | `n8n-builder` | n8n workflows, API integrations |
+| `llm-app-engineer` | LangChain/LangGraph, LlamaIndex, provider SDKs, RAG, prompt evals |
 
 </details>
 
@@ -369,7 +370,7 @@ Invoke with a slash: `/review`, `/debug`, `/workflow`, etc.
 | `post-edit-typecheck` | `PostToolUse` (Edit) | Runs `tsc --noEmit` after editing .ts/.tsx files |
 | `post-edit-console-warn` | `PostToolUse` (Edit) | Warns about `console.log` in edited files |
 | `console-log-audit` | `Stop` | Audits all modified files for console.log at session end |
-| `permission-guard` | `PreToolUse` (Bash) | Mode-aware command safety: yields to classifier in auto-mode; blocklist + ask-cascade in default; blocklist-only in bypass |
+| `permission-guard` | `PreToolUse` (Bash) | Mode-aware command safety: Tier-0 blocklist in every mode; asks on risk signals in default mode; never approves — Claude Code's permission rules decide the rest |
 | `dev-server-blocker` | `PreToolUse` (Bash) | Blocks `npm run dev` outside tmux |
 | `git-push-reminder` | `PreToolUse` (Bash) | Warns before pushing to main/master |
 | `secret-scan` | `PreToolUse` (Bash) | Blocks commits/pushes that introduce hardcoded secrets (override: `FORGEBEE_ALLOW_SECRET=1`) |
@@ -549,7 +550,7 @@ your-project/
 └── .claude/
     ├── settings.json
     ├── sessions/                      # Session snapshots
-    ├── session-cache/                 # Permissions + skill manifest
+    ├── session-cache/                 # Skill manifest + session state
     ├── audit/                         # Governance audit trail (JSONL)
     └── learnings/
         ├── learnings.md              # Auto-captured patterns
@@ -577,7 +578,7 @@ The `self-improve` hook appends patterns to the **Learned Patterns** section aut
 
 ## OpenClaw
 
-ForgeBee is fully compatible with [OpenClaw](https://github.com/openclaw/openclaw). All 45 agents and 39 commands convert to OpenClaw skills.
+ForgeBee is fully compatible with [OpenClaw](https://github.com/openclaw/openclaw). All 46 agents and 39 commands convert to OpenClaw skills.
 
 ```bash
 # Clone ForgeBee

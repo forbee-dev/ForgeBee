@@ -26,6 +26,7 @@ const STACK_PREFIXES = {
   wordpress: ['wordpress-', 'wp-', 'woocommerce-', 'phpunit-'],
   nextjs: ['nextjs-', 'saas-'],
   supabase: ['supabase-'],
+  llm: ['llm-'],
 };
 
 // ── Helper: Get file modification time ─────────────────────────────────
@@ -431,6 +432,11 @@ async function main() {
       TRIAGE_CONTEXT += ` | Styling: ${STYLING}`;
     }
 
+    if (triage.python?.detected === true) {
+      const PY_FW = triage.python.framework || 'none';
+      TRIAGE_CONTEXT += ` | Python${PY_FW !== 'none' ? ` (${PY_FW})` : ''}`;
+    }
+
     if (DB_ORM !== 'none') {
       TRIAGE_CONTEXT += ` | DB: ${DB_ORM}`;
     }
@@ -442,6 +448,11 @@ async function main() {
       if (SB_FEATURES) {
         TRIAGE_CONTEXT += ` [${SB_FEATURES}]`;
       }
+    }
+
+    const LLM_FW = (triage.llm?.frameworks || []).join(', ');
+    if (LLM_FW) {
+      TRIAGE_CONTEXT += ` | LLM: ${LLM_FW}`;
     }
 
     TRIAGE_CONTEXT += ` — Follow conventions from \`project-router\` skill references.\n`;

@@ -21,7 +21,7 @@ see [`CONTRIBUTING.md`](./CONTRIBUTING.md).
 
 | Surface | Location | Loaded |
 |---------|----------|--------|
-| Agents (45) | `forgebee/agents/*.md` | dispatched via `Task` by orchestrators |
+| Agents (46) | `forgebee/agents/*.md` | dispatched via `Task` by orchestrators |
 | Skills (34) | `forgebee/skills/*/SKILL.md` | activated by name / `skill-activator` |
 | Commands (38) | `forgebee/commands/*.md` | `/name` slash invocation |
 | Shared contracts | `forgebee/skills/_review-finding-contract.md`, `_debate-protocol.md` | imported by review/debate skills |

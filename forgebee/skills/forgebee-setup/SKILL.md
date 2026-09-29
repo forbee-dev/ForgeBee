@@ -47,7 +47,7 @@ Claude's safety classifier approves safe operations. ForgeBee's permission-guard
 
 **Requirements:** Team/Enterprise plan, Anthropic API, Sonnet 4.6 or Opus 4.6.
 
-Without auto mode, the default mode works; ForgeBee's allowlist covers common safe commands.
+Without auto mode, the default mode works. ForgeBee never auto-approves commands; add `permissions.allow` rules in `settings.json` for the commands you trust.
 
 ## Additional Resources
 

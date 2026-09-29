@@ -23,7 +23,7 @@ Every governance decision is recorded with timestamp, session ID, and context:
 
 | Event Type | Source | What's Logged |
 |:-----------|:-------|:-------------|
-| `permission` | permission-guard | Every Bash command allow/deny/ask with tier |
+| `permission_denied` | permission-denied-logger | Every auto-mode classifier denial with tool, command, and reason |
 | `debate` | judge agents | Every ruling (approve/block/flag) with severity |
 | `verification` | verification-enforcer | Every verdict with evidence summary |
 | `escalation` | judge agents | High/Critical items escalated to user |

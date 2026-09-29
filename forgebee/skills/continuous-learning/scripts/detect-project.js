@@ -15,7 +15,7 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const os = require('os');
-const { execSync } = require('child_process');
+const { execFileSync } = require('child_process');
 
 const LEARNING_DIR = path.join(os.homedir(), '.claude', 'forgebee-learning');
 const PROJECTS_DIR = path.join(LEARNING_DIR, 'projects');
@@ -28,8 +28,8 @@ const GLOBAL_INHERITED_DIR = path.join(GLOBAL_INSTINCTS_DIR, 'inherited');
 const GLOBAL_EVOLVED_DIR = path.join(LEARNING_DIR, 'evolved');
 const GLOBAL_OBSERVATIONS_FILE = path.join(LEARNING_DIR, 'observations.jsonl');
 
-function ensureDir(dirPath) {
-  try { fs.mkdirSync(dirPath, { recursive: true }); } catch (e) { /* ignore */ }
+function ensureDir(dirPath, mode) {
+  try { fs.mkdirSync(dirPath, { recursive: true, mode }); } catch (e) { /* ignore */ }
 }
 
 function ensureGlobalDirs() {
@@ -43,10 +43,11 @@ function ensureGlobalDirs() {
   ].forEach(d => ensureDir(d));
 }
 
+// No shell: cwd comes from hook stdin and a dir name like `x$(cmd)` would run.
 function runGit(args, cwd) {
   try {
-    const cmd = cwd ? `git -C "${cwd}" ${args}` : `git ${args}`;
-    return execSync(cmd, { encoding: 'utf8', stdio: ['pipe', 'pipe', 'ignore'], timeout: 5000 }).trim();
+    const argv = [...(cwd ? ['-C', cwd] : []), ...args];
+    return execFileSync('git', argv, { encoding: 'utf8', stdio: ['pipe', 'pipe', 'ignore'], timeout: 5000 }).trim();
   } catch (e) {
     return '';
   }
@@ -94,7 +95,7 @@ function detectProject(overrideCwd) {
 
   // 2. git repo root
   if (!projectRoot) {
-    const gitRoot = runGit('rev-parse --show-toplevel');
+    const gitRoot = runGit(['rev-parse', '--show-toplevel']);
     if (gitRoot) {
       projectRoot = gitRoot;
     }
@@ -132,7 +133,7 @@ function detectProject(overrideCwd) {
     needsRegistryUpdate = Number.isNaN(lastSeen) || (Date.now() - lastSeen) > 3600000;
   } else {
     // First sight this machine — derive project ID from git remote URL or path.
-    remoteUrl = runGit('remote get-url origin', projectRoot);
+    remoteUrl = runGit(['remote', 'get-url', 'origin'], projectRoot);
     const hashSource = remoteUrl || projectRoot;
     projectId = crypto.createHash('sha256').update(hashSource).digest('hex').slice(0, 12);
     needsRegistryUpdate = true;
@@ -146,11 +147,11 @@ function detectProject(overrideCwd) {
     [
       path.join(projectDir, 'instincts', 'personal'),
       path.join(projectDir, 'instincts', 'inherited'),
-      path.join(projectDir, 'observations.archive'),
       path.join(projectDir, 'evolved', 'skills'),
       path.join(projectDir, 'evolved', 'commands'),
       path.join(projectDir, 'evolved', 'agents'),
     ].forEach(d => ensureDir(d));
+    ensureDir(path.join(projectDir, 'observations.archive'), 0o700);
     updateRegistry(projectId, projectName, projectRoot, remoteUrl);
   }
 

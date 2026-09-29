@@ -177,7 +177,7 @@ Reject any response without a status. If `BLOCKED` twice on same issue → escal
 | Agent | Best For | Routes To |
 |-------|----------|-----------|
 | `frontend-specialist` | UI, components, styling, mobile | → `nextjs-frontend`, `wordpress-frontend`, `flutter-expert`, `ios-expert` |
-| `backend-engineer` | APIs, server logic, auth, automation | → `wordpress-backend`, `n8n-builder` |
+| `backend-engineer` | APIs, server logic, auth, automation | → `wordpress-backend`, `n8n-builder`, `llm-app-engineer` |
 | `database-specialist` | Schema, migrations, queries | → `supabase-specialist` |
 | `security-auditor` | Vulnerabilities, OWASP | → `wordpress-security` |
 | `test-engineer` | Test generation, coverage | → `phpunit-engineer` |

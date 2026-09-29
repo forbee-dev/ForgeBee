@@ -195,7 +195,7 @@ npm run deploy:production # Deploy to production
 
 **Specialist Agents** (for Agent Teams):
 
-*Development:* frontend, backend, database, security, testing, devops, perf, debug, research, content, seo, supabase, ios, flutter, n8n, session-librarian, ux-designer, scrum-master, delivery-agent, dashboard-generator, verification-enforcer, tdd-enforcer, contract-validator
+*Development:* frontend, backend, database, security, testing, devops, perf, debug, research, content, seo, supabase, ios, flutter, n8n, llm-app-engineer, session-librarian, ux-designer, scrum-master, delivery-agent, dashboard-generator, verification-enforcer, tdd-enforcer, contract-validator
 
 *Dev Debate (context:fork skills):* requirements-advocate, requirements-skeptic, requirements-judge, code-advocate, code-skeptic, code-judge
 

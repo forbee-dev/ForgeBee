@@ -8,12 +8,12 @@
 
 const path = require('path');
 const fs = require('fs');
+const { execFileSync } = require('child_process');
 const {
   getProjectDir,
   findForgebeeRoot,
   readFile,
   writeFile,
-  runCommand,
   output,
   log,
 } = require('./_common.js');
@@ -58,11 +58,19 @@ function main() {
       process.exit(0);
     }
 
-    // Run detection script
-    const detectionResult = runCommand(`node "${detectScript}" "${projectDir}"`, {
-      cwd: projectDir,
-      stdio: ['pipe', 'pipe', 'pipe'],
-    });
+    // No shell: projectDir is a path, and a dir name like `x$(cmd)` would run.
+    let detectionResult;
+    try {
+      const stdout = execFileSync(process.execPath, [detectScript, projectDir], {
+        cwd: projectDir,
+        encoding: 'utf8',
+        timeout: 8000,
+        stdio: ['pipe', 'pipe', 'pipe'],
+      });
+      detectionResult = { success: true, output: stdout.trim() };
+    } catch (e) {
+      detectionResult = { success: false, output: e.stdout ? e.stdout.toString().trim() : '' };
+    }
 
     let triageOutput;
     if (!detectionResult.success || !detectionResult.output.trim()) {

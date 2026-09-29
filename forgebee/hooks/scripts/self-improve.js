@@ -169,28 +169,30 @@ if (fs.existsSync(INDEX_FILE)) {
 }
 
 // ── S-008: Lightweight pattern heuristics (no API calls) ──────────────
-// Analyze session observations and flag candidate patterns
+// Analyze this session's observations and flag candidate patterns. Only the
+// current project's store: other projects' commands must not leak into this
+// project's pending-instincts.jsonl.
 try {
-  const observationsDir = path.join(require('os').homedir(), '.claude/forgebee-learning/projects');
-  if (fs.existsSync(observationsDir)) {
+  const { detectProject } = require('../../skills/continuous-learning/scripts/detect-project.js');
+  // Same resolution as observe.js, so both land on the same project id.
+  const cwd = inputData.cwd && fs.existsSync(inputData.cwd) ? inputData.cwd : undefined;
+  const obsFile = detectProject(cwd).observations_file;
+  if (fs.existsSync(obsFile)) {
     const PENDING_FILE = path.join(PROJECT_DIR, '.claude/learnings/pending-instincts.jsonl');
-    const projects = fs.readdirSync(observationsDir).filter(d =>
-      fs.existsSync(path.join(observationsDir, d, 'observations.jsonl'))
-    );
+    const content = fs.readFileSync(obsFile, 'utf8');
+    const lines = content.split('\n').filter(l => l.trim().length > 0);
 
-    for (const proj of projects) {
-      const obsFile = path.join(observationsDir, proj, 'observations.jsonl');
-      const content = fs.readFileSync(obsFile, 'utf8');
-      const lines = content.split('\n').filter(l => l.trim().length > 0);
+    // Only analyze last 1000 lines for performance
+    const recentLines = lines.slice(-1000);
+    const observations = [];
+    for (const line of recentLines) {
+      try {
+        const obs = JSON.parse(line);
+        if (obs.session === sessionId) observations.push(obs);
+      } catch { /* skip */ }
+    }
 
-      // Only analyze last 1000 lines for performance
-      const recentLines = lines.slice(-1000);
-      const observations = [];
-      for (const line of recentLines) {
-        try { observations.push(JSON.parse(line)); } catch { /* skip */ }
-      }
-
-      if (observations.length < 5) continue;
+    if (observations.length >= 5) {
 
       // Heuristic 1: Bash commands repeated 3+ times
       const bashCmds = {};
@@ -229,6 +231,9 @@ try {
         if (count >= 3) {
           const signal = `bash-repeat:${cmd}`;
           if (pending[signal]) {
+            const seen = pending[signal].sessions || [];
+            if (seen.includes(sessionId)) continue; // Stop fires every turn; count a session once
+            pending[signal].sessions = [...seen, sessionId].slice(-50);
             pending[signal].sessions_seen = (pending[signal].sessions_seen || 1) + 1;
             pending[signal].confidence = Math.min(0.9, 0.3 + pending[signal].sessions_seen * 0.1);
           } else {
@@ -238,6 +243,7 @@ try {
               signal,
               confidence: 0.3,
               sessions_seen: 1,
+              sessions: [sessionId],
               status: 'pending',
               created_at: new Date().toISOString()
             };
@@ -252,6 +258,9 @@ try {
           const relPath = fp.startsWith('/') ? path.relative(PROJECT_DIR, fp) : fp;
           const signal = `file-repeat:${relPath}`;
           if (pending[signal]) {
+            const seen = pending[signal].sessions || [];
+            if (seen.includes(sessionId)) continue; // Stop fires every turn; count a session once
+            pending[signal].sessions = [...seen, sessionId].slice(-50);
             pending[signal].sessions_seen = (pending[signal].sessions_seen || 1) + 1;
             pending[signal].confidence = Math.min(0.9, 0.3 + pending[signal].sessions_seen * 0.1);
           } else {
@@ -261,6 +270,7 @@ try {
               signal,
               confidence: 0.3,
               sessions_seen: 1,
+              sessions: [sessionId],
               status: 'pending',
               created_at: new Date().toISOString()
             };

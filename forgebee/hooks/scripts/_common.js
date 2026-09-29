@@ -146,7 +146,7 @@ function findAgentsDirs() {
  * Reads the SessionStart triage cache and returns the stacks this project uses.
  * Shared by load-index.js (which stack section to pin) and skill-activator.js
  * (which surfaces to boost). Returns [] when no triage has run yet.
- * @returns {string[]} Subset of ['wordpress', 'nextjs', 'supabase']
+ * @returns {string[]} Subset of ['wordpress', 'nextjs', 'supabase', 'llm']
  */
 function detectProjectStacks() {
   const cacheFile = path.join(
@@ -168,6 +168,9 @@ function detectProjectStacks() {
     }
     if (triage.supabase?.detected === true || triage.supabase?.detected === 'true') {
       stacks.push('supabase');
+    }
+    if (triage.llm?.detected === true) {
+      stacks.push('llm');
     }
 
     return stacks;
@@ -381,33 +384,103 @@ function appendFile(filePath, content) {
   }
 }
 
+// `pass`/`pw` only as a whole word part (MY_PASS, DB_PW), not inside passthrough or bypass.
+const SECRET_NAME = /(?:key|token|secret|password|passwd|pwd|auth|credential|(?<![A-Za-z0-9])(?:pass|pw)(?![A-Za-z0-9]))/i;
+
+// Single source for secret-scan (detects) and redactForPrompt (redacts).
+// `redactOnly` shapes are too loose to block a commit on, but must still not
+// reach disk or a prompt. Quantifiers stay bounded because observe.js redacts
+// up to 1 MB per tool call inside a 3 s hook timeout.
+const SECRET_PATTERNS = [
+  { kind: 'Private key block', label: 'private-key', re: /-----BEGIN (?:[A-Z]+ )?PRIVATE KEY(?: BLOCK)?-----(?:[\s\S]*?-----END (?:[A-Z]+ )?PRIVATE KEY(?: BLOCK)?-----|[\s\S]*)/ },
+  { kind: 'AWS access key id', label: 'aws-access-key', re: /\bAKIA[0-9A-Z]{16}\b/ },
+  { kind: 'Anthropic API key', label: 'api-key', re: /\bsk-ant-[A-Za-z0-9_-]{20,}/ },
+  { kind: 'OpenAI project key', label: 'api-key', re: /\bsk-proj-[A-Za-z0-9_-]{20,}/ },
+  { kind: 'OpenAI-style API key', label: 'api-key', re: /\bsk-[A-Za-z0-9]{20,}\b/ },
+  { kind: 'sk-live/sk-test key', label: 'api-key', re: /\bsk-(?:live|test)-[A-Za-z0-9_-]+/, redactOnly: true },
+  { kind: 'GitHub token', label: 'github-token', re: /\bgh[pousr]_[A-Za-z0-9]{20,}\b/ },
+  { kind: 'GitHub fine-grained token', label: 'github-token', re: /\bgithub_pat_[A-Za-z0-9_]{20,}/ },
+  { kind: 'Google API key', label: 'google-api-key', re: /\bAIza[0-9A-Za-z_-]{20,}\b/ },
+  { kind: 'Slack token', label: 'slack-token', re: /\bxox[abposr]-[A-Za-z0-9-]{10,}/ },
+  { kind: 'Stripe live key', label: 'stripe-key', re: /\b[rs]k_live_[A-Za-z0-9]{16,}\b/ },
+  { kind: 'Stripe test key', label: 'stripe-key', re: /\b[rs]k_test_[A-Za-z0-9]{16,}\b/ },
+  { kind: 'GitLab token', label: 'gitlab-token', re: /(?<![A-Za-z0-9_-])glpat-[A-Za-z0-9_-]{20,}/ },
+  { kind: 'SendGrid API key', label: 'api-key', re: /\bSG\.[A-Za-z0-9_-]{22}\.[A-Za-z0-9_-]{43}(?![A-Za-z0-9_-])/ },
+  { kind: 'Hugging Face token', label: 'api-key', re: /\bhf_[A-Za-z0-9]{30,}\b/ },
+  { kind: 'npm token', label: 'npm-token', re: /\bnpm_[A-Za-z0-9]{36}\b/ },
+  { kind: 'Slack webhook', label: 'slack-webhook', re: /\bhooks\.slack\.com\/(?:services|workflows|triggers)\/[A-Za-z0-9_/-]{20,}/ },
+  { kind: 'Hardcoded secret assignment', label: 'secret', re: /(?:api[_-]?key|secret|token|passwd|password|access[_-]?token|client[_-]?secret)\s*[:=]\s*['"][A-Za-z0-9_\-./+=]{16,}['"]/i },
+  { kind: 'Bearer token', label: 'token', re: /\bBearer\s+[A-Za-z0-9._~+/=-]{8,}/i, replace: 'Bearer [REDACTED:token]', redactOnly: true },
+  // Runs before Secret-named assignment, which would redact only the scheme
+  // word ("Token", "AWS4-HMAC-SHA256"). Digest runs to end of line because its
+  // value contains quotes.
+  {
+    kind: 'Authorization header credential',
+    label: 'credential',
+    re: /\b((?:Proxy-)?Authorization["']?\s*[:=]\s*["']?)(?:Digest\s[^\n]{0,5000}|(?!Bearer \[REDACTED)[^\s"'][^\n"']{0,5000})/i,
+    replace: '$1[REDACTED:credential]',
+    redactOnly: true,
+  },
+  { kind: 'Cookie header', label: 'cookie', re: /\b((?:Set-)?Cookie["']?\s*[:=]\s*["']?)[^\s"'][^\n"']{0,5000}/i, replace: '$1[REDACTED:cookie]', redactOnly: true },
+  // Space-separated values; `--password=x` is also caught by Secret-named assignment.
+  {
+    kind: 'CLI secret flag',
+    label: 'credential',
+    re: /((?<![A-Za-z0-9_-])--(?:[a-z0-9]{1,30}-){0,3}(?:password|passwd|pass|pw|token|secret|api-?key|apikey)(?:\s{1,20}|=))(?!-)(?:'[^'\n]{0,256}'|"[^"\n]{0,256}"|[^\s'"]{1,256})/i,
+    replace: '$1[REDACTED:credential]',
+    redactOnly: true,
+  },
+  {
+    kind: 'CLI short password flag',
+    label: 'credential',
+    re: /\b((?:(?:docker|podman)\s+login|sshpass)\s(?:[^\n|;&]{0,100}?\s)?-p\s{0,20}|redis-cli\s(?:[^\n|;&]{0,100}?\s)?-a\s{0,20})(?=[^\s-])(?:'[^'\n]{0,256}'|"[^"\n]{0,256}"|[^\s'"]{1,256})/,
+    replace: '$1[REDACTED:credential]',
+    redactOnly: true,
+  },
+  // Lookbehind instead of \b: with \b every "eyJ" inside one long run is a new
+  // start that rescans the run, which is quadratic ("eyJ-" x 100000 took 10 s).
+  { kind: 'JWT', label: 'jwt', re: /(?<![A-Za-z0-9_-])eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+/, redactOnly: true },
+  // Before Email: that pattern needs a TLD, so user:pass@localhost slipped through.
+  { kind: 'URL credentials', label: 'password', re: /(?<![a-z0-9+.-])([a-z][a-z0-9+.-]{1,20}:\/\/[^\s:@/?#]{0,256}:)[^\s/?#]{1,256}@/i, replace: '$1[REDACTED:password]@', redactOnly: true },
+  { kind: 'mysql -p password', label: 'password', re: /\b(mysql\w{0,10}\s(?:[^\n|;&]{0,100}?\s)?-p)(?=[^\s-])(?:'[^'\n]{0,256}'|"[^"\n]{0,256}"|[^\s'"]{1,256})/, replace: '$1[REDACTED:password]', redactOnly: true },
+  { kind: 'curl -u credentials', label: 'credential', re: /\b(curl\s(?:[^\n|;&]{0,100}?\s)?(?:-u|--user(?=[\s=]))[\s=]?)(?:'[^'\n]{0,256}'|"[^"\n]{0,256}"|[^\s'"]{1,256})/, replace: '$1[REDACTED:credential]', redactOnly: true },
+  { kind: 'Azure SAS signature', label: 'secret', re: /([?&]sig=)[A-Za-z0-9%+/=]{16,}/, replace: '$1[REDACTED:secret]', redactOnly: true },
+  // `token: >-` / `password: |` — the value is on the indented lines below.
+  {
+    kind: 'YAML block secret',
+    label: 'secret',
+    re: new RegExp(`^([ \\t]{0,40})(["']?[A-Za-z0-9_.-]{0,40}${SECRET_NAME.source}[A-Za-z0-9_.-]{0,40}["']?[ \\t]{0,40}:[ \\t]{0,40}[|>][1-9+-]{0,2}[ \\t]{0,40}(?:#[^\\n]{0,200})?\\n)(?:\\1[ \\t]{1,40}[^\\n]*(?:\\n|$)|[ \\t]{0,40}\\n){1,500}`, 'im'),
+    replace: '$1$2$1  [REDACTED:secret]\n',
+    redactOnly: true,
+  },
+  {
+    kind: 'Secret-named assignment',
+    label: 'secret',
+    // NAME=value, NAME: value, "name": "value" — keeps the name, drops the value.
+    re: new RegExp(`(["']?)(?<![A-Za-z0-9_.-])([A-Za-z0-9_.-]{0,40}${SECRET_NAME.source}[A-Za-z0-9_.-]{0,40})\\1(\\s*[:=]\\s*)(?:"[^"\\n]{0,5000}"|'[^'\\n]{0,5000}'|(?!\\[REDACTED)[^\\s"'&;|,}]{1,5000})`, 'i'),
+    replace: '$1$2$1$3[REDACTED:secret]',
+    redactOnly: true,
+  },
+  { kind: 'Email', label: 'email', re: /(?<![a-zA-Z0-9._%+-])[a-zA-Z0-9._%+-]{1,64}@[a-zA-Z0-9.-]{1,255}\.[a-zA-Z]{2,}/, redactOnly: true },
+  { kind: 'UUID', label: 'uuid', re: /\b[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b/i, redactOnly: true },
+  // Currency amounts over $1,000 (heuristic for sensitive finance numbers)
+  { kind: 'Currency amount', label: 'amount', re: /\$\s?\d{1,3}(?:[,.]\d{3})+(?:\.\d{2})?/, redactOnly: true },
+];
+
+const REDACTORS = SECRET_PATTERNS.map(p => ({
+  re: new RegExp(p.re.source, p.re.flags + 'g'),
+  replace: p.replace || `[REDACTED:${p.label}]`,
+}));
+
 /**
- * Redact sensitive tokens before output is included in an AI prompt.
- *
- * Strips: API keys (long alphanumeric), emails, JWTs, UUIDs, currency amounts
- * over $1k, AWS-style access keys, bearer tokens, private key blocks.
- *
- * Implements H-2 — defense for `type: prompt` hooks that send session data
- * back into an LLM context. Call this BEFORE outputting hook content that
- * will become part of a prompt.
- *
+ * Redact secrets and PII (SECRET_PATTERNS) before text reaches a prompt or disk.
  * @param {string} text - input to scan
  * @returns {string} text with sensitive tokens replaced by typed placeholders
  */
 function redactForPrompt(text) {
   if (typeof text !== 'string' || !text) return text;
   let out = text;
-  out = out.replace(/-----BEGIN [A-Z ]+ PRIVATE KEY-----[\s\S]*?-----END [A-Z ]+ PRIVATE KEY-----/g, '[REDACTED:private-key]');
-  out = out.replace(/\b(sk-[A-Za-z0-9]{20,}|sk-proj-[A-Za-z0-9_-]{20,})\b/g, '[REDACTED:api-key]');
-  out = out.replace(/\bghp_[A-Za-z0-9]{20,}\b/g, '[REDACTED:github-token]');
-  out = out.replace(/\bAKIA[0-9A-Z]{16}\b/g, '[REDACTED:aws-access-key]');
-  out = out.replace(/\bxox[bpoa]-[A-Za-z0-9-]{10,}\b/g, '[REDACTED:slack-token]');
-  out = out.replace(/\beyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\b/g, '[REDACTED:jwt]');
-  out = out.replace(/\bBearer\s+[A-Za-z0-9._-]{20,}/gi, 'Bearer [REDACTED:token]');
-  out = out.replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g, '[REDACTED:email]');
-  out = out.replace(/\b[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b/gi, '[REDACTED:uuid]');
-  // Currency amounts over $1,000 (heuristic for sensitive finance numbers)
-  out = out.replace(/\$\s?\d{1,3}(?:[,.]\d{3})+(?:\.\d{2})?/g, '[REDACTED:amount]');
+  for (const r of REDACTORS) out = out.replace(r.re, r.replace);
   return out;
 }
 
@@ -817,6 +890,8 @@ module.exports = {
   safeWriteFlag,
   validateHookFields,
   redactForPrompt,
+  SECRET_PATTERNS,
+  SECRET_NAME,
 
   // Command execution
   runCommand,

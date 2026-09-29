@@ -1,7 +1,7 @@
 {
   "name": "forgebee",
-  "version": "5.6.0",
-  "description": "Full-stack agent framework — 37 slash commands, 44 specialist agents, 33 skills, 25 hooks. Karpathy principles on every code agent, adversarial debate triads, two-stage review, /investigate, /elicit (18 methods), checkpoint-preview, budget circuit breaker, continuous learning, Growth OS, /audit-self.",
+  "version": "6.0.0",
+  "description": "Full-stack agent framework — 39 slash commands, 46 specialist agents, 35 skills, 25 hooks. Karpathy principles on every code agent, adversarial debate triads, two-stage review, /investigate, /elicit (18 methods), checkpoint-preview, budget circuit breaker, continuous learning, Growth OS, /audit-self.",
   "author": {
     "name": "Forbee Dev",
     "url": "https://github.com/forbee-dev"
@@ -32,7 +32,7 @@
   "interface": {
     "displayName": "ForgeBee",
     "shortDescription": "Full-stack agent framework — dev, growth, debate, and PM in one plugin",
-    "longDescription": "ForgeBee is a batteries-included development and growth framework for coding agents. It ships 37 slash commands, 44 specialist agents, 33 skills (inline + context:fork), 25 lifecycle hooks, adversarial debate pipelines, continuous learning, a 9-phase Growth OS marketing pipeline, and automated project management dashboards. Use /workflow for full pipeline orchestration, /team for ad-hoc multi-agent delegation, and /review-all as a pre-push quality gate.",
+    "longDescription": "ForgeBee is a batteries-included development and growth framework for coding agents. It ships 39 slash commands, 46 specialist agents, 35 skills (inline + context:fork), 25 lifecycle hooks, adversarial debate pipelines, continuous learning, a 9-phase Growth OS marketing pipeline, and automated project management dashboards. Use /workflow for full pipeline orchestration, /team for ad-hoc multi-agent delegation, and /review-all as a pre-push quality gate.",
     "developerName": "Forbee Dev",
     "category": "Coding",
     "capabilities": [

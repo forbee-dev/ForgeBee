@@ -10,6 +10,29 @@ The format roughly follows [Keep a Changelog](https://keepachangelog.com/) and t
 
 ---
 
+## [6.0.0] — 2026-09-29
+
+**Major: `permission-guard.js` no longer auto-approves commands.** If you relied on ForgeBee's allowlist or `forgebee.permissionAllowlist`, add `permissions.allow` rules to your Claude Code `settings.json`.
+
+- **`llm-app-engineer` agent** — builds LangChain/LangGraph, LlamaIndex, provider-SDK, and Vercel AI SDK code: tool calling, RAG, structured output, prompt evals. Build rules mirror `review-prompt`. `backend-engineer` delegates to it.
+- **LLM stack detection** — `detect_project.js` emits `llm.detected`, `llm.frameworks`, and `llm.language` from `package.json`, `requirements.txt`, and `pyproject.toml`. The `llm` stack boosts `llm-*` surfaces in `skill-activator.js` and pins the new `LLM Stack` INDEX section.
+- **Python detection** — `detect_project.js` emits `python.detected`, `package_manager` (uv/poetry/pdm/pipenv/pip), `version_constraint`, `framework` (django/fastapi/flask), and `tools` (pytest/ruff/mypy/black). Python projects now classify as `project_type: python` instead of `unknown`. A tooling-only `package.json` does not override Python.
+
+### Security — hook hardening
+
+- **Breaking: `permission-guard.js` never approves.** The built-in allowlist, the `forgebee.permissionAllowlist` setting, auto/plan-mode pre-approval, and the `permissions.json` cache are removed. A prefix regex allowlist let any payload ride on a safe prefix (newline, `&`, `$(…)`, zsh `=(…)`, `rg --pre`, `git rebase --exec`, path spellings). The guard now only denies (Tier 0) or asks; Claude Code's native `permissions.allow` rules decide the rest. Add allow rules in `settings.json` for commands you want pre-approved.
+- **Tier 0 false positives fixed.** Quoted strings and quoted heredoc bodies are stripped before text checks, and inline-exec checks (`sh -c`, `node -e`, …) match only at command position. Tier 0 checks run on a quote-aware view of the command (comments, heredocs, `$((…))`, and `${…}` are parsed), so commit messages, PR bodies, and grep patterns that mention `rm -rf ~`, `curl | sh`, `chmod 777`, `dd`, `mkfs`, or SQL no longer block. SQL is checked only as a database client's argument or input.
+- **Tier 0 policy: routine exec asks instead of denying.** `node -e`, `python -c`, `sh -c`, `perl -e`, `find … -delete` on a non-root target, `git clean -fd`, and `eval "$(tool init)"` now ask. They still deny when the inline payload is itself Tier 0 (`bash -c 'rm -rf ~'`).
+- **Tier 0 coverage widened.** Wrapper options (`nice -n 5`, `sudo -u x`, `timeout`, `stdbuf`, `busybox`, `doas`, `env -S`) no longer hide the command. `rm` is judged from parsed words (`\rm`, `'rm'`), covers the project root, `$PWD`, braces, and GNU long options, and resolves relative targets against the hook's `cwd`. Downloads piped into `python`/`node`/`perl`/`ruby`/`php`/`fish` deny. Persistence writes through `cp`/`mv`/`install`/`ln`/`rsync`/`dd of=`/`sed -i` and to LaunchAgents/Daemons and `/etc/profile` deny; `crontab` asks. Secret and dotfile checks in the ask tier normalize spellings such as `.en''v`, `.env*`, and `~//.ssh`. Download-then-run in one command (`curl -o x e; sh x`, also after `cd`) denies. ANSI-C `$'\x72m'` words are decoded, and escaped `\(` no longer splits `find`. `sudo chown -R $USER ~/…` asks instead of denying.
+- **`secret-scan.js` scans every unpushed commit.** Pushes read per-commit history (`git log -p --diff-merges=first-parent … --not --remotes`) for the refs being pushed, so a secret added then removed, a push of another branch, `--all`, and a merge resolution are all scanned. `git -C dir add -f`, `--forc`-style prefixes, and quoted paths are parsed; added lines that start with `++` are scanned. GitLab, SendGrid, Hugging Face, and Stripe test keys block.
+- **Redaction covers more credential shapes:** any `Authorization` scheme, cookies, `--password`/`--token`/`-p` CLI flags, `*_PASS`/`*_PW` names, and YAML block values. `git push --delete` asks instead of denying. `rm -rf` of deep paths under `/Users` or the project is no longer a hard deny.
+- **Tier 0 fails closed.** A Bash call the guard cannot check (over 64 KB, over 1 MB stdin, invalid JSON, non-string command) is denied. Pipe-to-shell checks run per pipeline stage, so padding cannot defeat them. The live `permission_mode` from hook input is used.
+- **Shell injection fixed.** `detect-project.js` and `project-triage.js` ran `git` and `node` through a shell with the project path interpolated; a directory named `$(…)` executed code. Both now use `execFileSync` with argument arrays.
+- **Learning logs redacted.** `observe.js` passes input and output through `redactForPrompt` (one `SECRET_PATTERNS` list shared with `secret-scan.js`) and writes `observations.jsonl` with mode 0600. It now reads `hook_event_name` and `tool_response`, so `self-improve` heuristics fire, and they read only the current project and count each session once.
+- **`secret-scan.js` no longer fails open.** It scans untracked files on `git add`, force-added ignored paths, staged and worktree diffs together, diffs over 1 MB, and every unpushed commit on a branch with no upstream. When it cannot read a diff, it warns visibly and allows.
+
+---
+
 ## [5.6.0] — 2026-09-24
 
 - **`grill` skill + `/grill` command** — interviews the user on a plan in rounds (decision tree, frontier, one recommended answer per question) and writes a resolved decision log. `/workflow` gains a Grill phase before Plan (on for ambiguous or auth/payments/data specs; `--grill` / `--no-grill`). `/team` gains a conditional Step 2 grill (Medium/Large or ambiguous, max 2 rounds).

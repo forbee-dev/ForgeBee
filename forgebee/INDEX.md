@@ -4,10 +4,10 @@
 > Source of truth: frontmatter in `forgebee/skills/*`, `forgebee/agents/*`, `forgebee/commands/*`.
 > Regenerate with: `node scripts/build-index.js`
 
-> Loaded on SessionStart so Claude routes user intent to the right surface in one read instead of scanning 119 frontmatter blocks.
+> Loaded on SessionStart so Claude routes user intent to the right surface in one read instead of scanning 120 frontmatter blocks.
 
 
-**Stats:** 35 skills · 45 agents · 39 commands
+**Stats:** 35 skills · 46 agents · 39 commands
 
 ---
 
@@ -93,7 +93,7 @@
 
 ---
 
-## Agents (45)
+## Agents (46)
 
 ### Code Core
 
@@ -144,6 +144,10 @@
 
 - `flutter-expert` — Builds Flutter widgets and Dart code with Riverpod, Bloc, or Provider state management. Use for cross-platform UI on mobile, web, or desk...
 - `ios-expert` — Builds native Apple apps with Swift and SwiftUI. Use for SwiftUI/UIKit, Xcode configuration, Core Data or SwiftData, CloudKit, StoreKit, ...
+
+### LLM Stack
+
+- `llm-app-engineer` — Builds LLM application code — LangChain/LangGraph, LlamaIndex, Anthropic/OpenAI SDKs, Vercel AI SDK. Use for agents, tool calling, RAG pi...
 
 ### CRO
 

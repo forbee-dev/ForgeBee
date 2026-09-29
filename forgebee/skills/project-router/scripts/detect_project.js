@@ -603,6 +603,59 @@ if (fileExists(packageJsonPath)) {
 setPath(triage, 'node.detected', nodeDetected);
 setPath(triage, 'node.tools', nodeTools);
 
+// ── 3b. Python Detection ────────────────────────────────────────────
+
+const pyManifests = ['pyproject.toml', 'requirements.txt', 'requirements-dev.txt', 'setup.py', 'setup.cfg', 'Pipfile']
+  .map(f => readFile(path.join(PROJECT_DIR, f)))
+  .filter(Boolean)
+  .join('\n');
+const pythonDetected = pyManifests !== '';
+let pyFramework = 'none';
+const pyTools = [];
+
+if (pythonDetected) {
+  const pyproject = readFile(path.join(PROJECT_DIR, 'pyproject.toml')) || '';
+  const hasPyPackage = name => new RegExp(`(?<![\\w-])${name}\\b(?![-_])`, 'i').test(pyManifests);
+
+  if (fileExists(path.join(PROJECT_DIR, 'uv.lock'))) {
+    setPath(triage, 'python.package_manager', 'uv');
+  } else if (fileExists(path.join(PROJECT_DIR, 'poetry.lock')) || /\[tool\.poetry\]/.test(pyproject)) {
+    setPath(triage, 'python.package_manager', 'poetry');
+  } else if (fileExists(path.join(PROJECT_DIR, 'pdm.lock'))) {
+    setPath(triage, 'python.package_manager', 'pdm');
+  } else if (fileExists(path.join(PROJECT_DIR, 'Pipfile'))) {
+    setPath(triage, 'python.package_manager', 'pipenv');
+  } else {
+    setPath(triage, 'python.package_manager', 'pip');
+  }
+
+  const requiresPython = pyproject.match(/requires-python\s*=\s*["']([^"']+)["']/);
+  if (requiresPython) {
+    setPath(triage, 'python.version_constraint', requiresPython[1]);
+  }
+
+  if (hasPyPackage('django') || fileExists(path.join(PROJECT_DIR, 'manage.py'))) {
+    pyFramework = 'django';
+  } else if (hasPyPackage('fastapi')) {
+    pyFramework = 'fastapi';
+  } else if (hasPyPackage('flask')) {
+    pyFramework = 'flask';
+  }
+
+  for (const tool of ['pytest', 'ruff', 'mypy', 'black']) {
+    if (hasPyPackage(tool) || new RegExp(`\\[tool\\.${tool}`).test(pyproject)) {
+      pyTools.push(tool);
+    }
+  }
+  if (!pyTools.includes('pytest') && fileExists(path.join(PROJECT_DIR, 'pytest.ini'))) {
+    pyTools.push('pytest');
+  }
+}
+
+setPath(triage, 'python.detected', pythonDetected);
+setPath(triage, 'python.framework', pyFramework);
+setPath(triage, 'python.tools', pyTools);
+
 // ── 4. CSS / Styling Detection ──────────────────────────────────────
 
 let styling = [];
@@ -824,6 +877,52 @@ if (fileExists(envPath)) {
 
 setPath(triage, 'database.orm', dbType);
 
+// ── 5b. LLM Framework Detection ─────────────────────────────────────
+
+const llmFrameworks = new Set();
+const llmLanguages = new Set();
+
+if (fileExists(packageJsonPath)) {
+  const allDeps = getAllDependencies(packageJsonPath);
+  const nodeLlm = {
+    langgraph: d => d === '@langchain/langgraph',
+    langchain: d => d === 'langchain' || d.startsWith('@langchain/'),
+    llamaindex: d => d === 'llamaindex' || d.startsWith('@llamaindex/'),
+    'anthropic-sdk': d => d === '@anthropic-ai/sdk',
+    'openai-sdk': d => d === 'openai',
+    'vercel-ai-sdk': d => d === 'ai' || d.startsWith('@ai-sdk/'),
+  };
+  for (const [fw, match] of Object.entries(nodeLlm)) {
+    if (allDeps.some(match)) {
+      llmFrameworks.add(fw);
+      llmLanguages.add('node');
+    }
+  }
+}
+
+// The lookbehind skips integration packages such as langchain-anthropic.
+if (pythonDetected) {
+  const pyLlm = {
+    langgraph: /(?<![\w-])langgraph\b/,
+    langchain: /(?<![\w-])langchain\b/,
+    llamaindex: /(?<![\w-])llama[-_]index\b/,
+    'anthropic-sdk': /(?<![\w-])anthropic\b(?![-_])/,
+    'openai-sdk': /(?<![\w-])openai\b(?![-_])/,
+  };
+  for (const [fw, pattern] of Object.entries(pyLlm)) {
+    if (pattern.test(pyManifests)) {
+      llmFrameworks.add(fw);
+      llmLanguages.add('python');
+    }
+  }
+}
+
+setPath(triage, 'llm.detected', llmFrameworks.size > 0);
+if (llmFrameworks.size > 0) {
+  setPath(triage, 'llm.frameworks', [...llmFrameworks]);
+  setPath(triage, 'llm.language', llmLanguages.size > 1 ? 'mixed' : [...llmLanguages][0]);
+}
+
 // ── 6. DevOps / CI Detection ────────────────────────────────────────
 
 let ciSystems = [];
@@ -876,6 +975,9 @@ if (wpType !== 'none') {
   primaryType = 'javascript';
 } else if (phpDetected) {
   primaryType = 'php';
+} else if (pythonDetected) {
+  // A package.json beside pyproject.toml is usually tooling, so Python wins over bare Node.
+  primaryType = 'python';
 } else if (nodeDetected) {
   primaryType = 'node';
 }

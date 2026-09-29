@@ -11,7 +11,7 @@ forgebee/
 │   ├── hooks.json               # Hook event wiring
 │   └── scripts/                 # 25 wired lifecycle hooks (+ _common.js shared helper)
 ├── agents/
-│   ├── *.md                     # 45 specialist agent personas
+│   ├── *.md                     # 46 specialist agent personas
 │   └── references/              # Reference material extracted from agents (W16 bloat trim)
 ├── commands/                    # 38 slash commands
 ├── contexts/                    # Session modes (dev, research, review)
@@ -37,7 +37,7 @@ forgebee/
 └── eval/                        # Eval scenarios
 ```
 
-## Key Features (v5.6.0)
+## Key Features (v6.0.0)
 
 ### Behavioral discipline (Karpathy principles)
 - **P1 Trace test** — every changed line traces to the user's request; no drive-by edits
@@ -61,14 +61,14 @@ forgebee/
 - **Bloat-trimmed agents** — 6 worst offenders moved to `references/` (1,733 lines extracted)
 
 ### Safety
-- **Adversarial Input Hardening** preamble on all 45 agents (homoglyphs, urgency, role-play overrides flagged)
+- **Adversarial Input Hardening** preamble on all 46 agents (homoglyphs, urgency, role-play overrides flagged)
 - **Budget circuit breaker** on every `Task()` dispatch (maxHops default 8, ceiling 64) with constant-string errors
 - **Defensive hooks** — `safeWriteFlag` (O_NOFOLLOW symlink defense), `validateHookFields` (settings.json guard)
 - **Sensitive-path refusal** in compression (`.env`, credentials, `.ssh/`, `.aws/`, private keys)
 
 ### Counts
 - **38 slash commands** — orchestration, diagnosis, quality, growth, learning, meta
-- **45 specialist agents** — code, growth, debate, WordPress, Next.js, mobile, CRO, tool
+- **46 specialist agents** — code, growth, debate, WordPress, Next.js, mobile, CRO, tool
 - **34 skills** — 13 inline + 21 context:fork
 - **25 lifecycle hooks** across 10 events
 - **6 templates** — decision log, addendum, failure-capture, investigation case file, prompt-defense baseline, brainstorming/spec

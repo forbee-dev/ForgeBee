@@ -22,6 +22,7 @@ const CODE_PRODUCING_AGENTS = [
   'debugger-detective.md',
   'flutter-expert.md',
   'ios-expert.md',
+  'llm-app-engineer.md',
   'n8n-builder.md',
   'nextjs-content.md',
   'nextjs-frontend.md',
