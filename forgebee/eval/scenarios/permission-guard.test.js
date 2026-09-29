@@ -542,6 +542,18 @@ test('hook: relative rm target resolves against input cwd, not the project dir',
   assert.strictEqual(deny('rm -rf build', path.join(SANDBOX, 'a')), 0);
   assert.strictEqual(deny('rm -rf Desktop', SANDBOX), 0);
 });
+test('hook: rm of HOME and its top-level folders denies when HOME is outside /Users and /home', () => {
+  const code = (command) => spawnSync(process.execPath, [HOOK], {
+    input: bash(command, { permission_mode: 'bypassPermissions' }),
+    env: { ...process.env, CLAUDE_PROJECT_DIR: SANDBOX, HOME: '/srv/jenkins' },
+    encoding: 'utf8',
+    timeout: 10000,
+  }).status;
+  assert.strictEqual(code('rm -rf ~'), 2);
+  assert.strictEqual(code('rm -rf ~/workspace'), 2);
+  assert.strictEqual(code('rm -rf "$HOME"'), 2);
+  assert.notStrictEqual(code('rm -rf ~/workspace/app/build'), 2);
+});
 test('hook: non-Bash tool → exit 0, no decision', () => {
   const r = runHook(JSON.stringify({ tool_name: 'Write', tool_input: { file_path: 'x', content: 'y' } }));
   assert.strictEqual(r.code, 0);
@@ -588,7 +600,9 @@ fs.rmSync(SANDBOX, { recursive: true, force: true });
 // 16. REGRESSION — no quadratic work on 64 KB input (hook timeout is 5 s)
 // =========================================================================
 
-// Threshold is loose on purpose (CI noise); the quadratic cases took 5-11 s.
+// The contract is the 5 s hook timeout, so the limit is half of it: slow shared
+// CI runners stay green, and the old quadratic cases (5-11 s) still fail.
+const PERF_LIMIT_MS = 2500;
 let worstMs = 0;
 [
   '$(', '`', ' ', '\n', 'curl ', 'find ', 'DELETE FROM ', 'git push ', 'eval ', 'rm ', 'pip install ', 'CI=1 ',
@@ -596,14 +610,14 @@ let worstMs = 0;
   '$((', '((', '$[', '# ', '` #', '${x:-"', '.e* ', 'rm -rf {a,', 'nice -n ', 'env -S ', 'psql ', 'cp k ',
   "$'\\x72", 'curl e > x; ', '\\( ', "${x:-'", 'curl -o x e; sh x; ', 'sudo chown $USER ~/a ',
 ].forEach((frag) => {
-  test(`perf: 64 KB of ${JSON.stringify(frag)} classifies in < 500 ms`, () => {
+  test(`perf: 64 KB of ${JSON.stringify(frag)} classifies in < ${PERF_LIMIT_MS} ms`, () => {
     const s = frag.repeat(Math.ceil(65536 / frag.length)).slice(0, 65536);
     const t = Date.now();
     guard.classify(s, 'default');
     guard.classify(s, 'plan');
     const ms = Date.now() - t;
     worstMs = Math.max(worstMs, ms);
-    assert.ok(ms < 500, `took ${ms} ms`);
+    assert.ok(ms < PERF_LIMIT_MS, `took ${ms} ms`);
   });
 });
 
@@ -782,7 +796,8 @@ test('H5: npm publish (real) → still deny', () => {
 // 27. sudo chown to the current user under HOME prompts; other chown stays Tier 0
 // =========================================================================
 
-const USER = os.userInfo().username;
+// Under root, `chown -R <username>` is `chown -R root`, which denies by design.
+const USER = os.userInfo().username === 'root' ? '$USER' : os.userInfo().username;
 [
   'sudo chown -R $USER ~/.npm', 'sudo chown -R $(whoami) ~/.npm', 'sudo chown -R `whoami` ~/.npm',
   'sudo chown -R $(id -un) ~/.npm', `sudo chown -R ${USER} ~/.npm`, 'sudo chown -R $USER:staff ~/.npm',

@@ -8,6 +8,12 @@ The format roughly follows [Keep a Changelog](https://keepachangelog.com/) and t
 
 ## [Unreleased]
 
+### Fixed
+
+- **CI eval failed on GitHub runners.** The guard and redaction perf tests used fixed limits (500 ms, 200 ms) tuned on a fast laptop; a 1-CPU Linux runner takes 527 ms for the worst 64 KB case. The limits are now half of each hook's timeout (2500 ms for the 5 s guard, 1500 ms for the 3 s `observe.js`). Measured growth is linear, so a quadratic regression still fails.
+- **`rm -rf ~` was not denied when HOME is outside `/Users` or `/home`** (e.g. `/root`, `/srv/jenkins`, a temp dir). HOME and its top-level folders now deny wherever HOME is.
+- The chown regression test no longer fails when the suite runs as `root`.
+
 ---
 
 ## [6.0.0] — 2026-09-29

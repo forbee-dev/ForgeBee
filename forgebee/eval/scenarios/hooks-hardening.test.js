@@ -429,7 +429,10 @@ try {
     assert.strictEqual(redactForPrompt(kept), kept);
   });
 
-  test('redactForPrompt: 1 MB adversarial input under 200 ms per shape', () => {
+  // observe.js has a 3 s hook timeout; half of it keeps slow CI runners green
+  // while a quadratic pattern (the old JWT regex took 10.9 s on 200 KB) still fails.
+  const REDACT_LIMIT_MS = 1500;
+  test(`redactForPrompt: 1 MB adversarial input under ${REDACT_LIMIT_MS} ms per shape`, () => {
     const { redactForPrompt } = require(path.join(ROOT, 'hooks', 'scripts', '_common.js'));
     const MB = 1024 * 1024;
     const inputs = ['eyJ-'.repeat(100000), ...['eyJ-', 'a:', '-----BEGIN ', '=', 'a', 'a.', 'key.', 'key-', 'mysql ', 'curl ', 'AIza-',
@@ -443,7 +446,7 @@ try {
       redactForPrompt(s);
       const ms = Number(process.hrtime.bigint() - t) / 1e6;
       if (ms > worst.ms) worst = { ms, s: s.slice(0, 12) };
-      assert.ok(ms < 200, `${JSON.stringify(s.slice(0, 12))}... took ${ms.toFixed(0)} ms`);
+      assert.ok(ms < REDACT_LIMIT_MS, `${JSON.stringify(s.slice(0, 12))}... took ${ms.toFixed(0)} ms`);
     }
     if (process.env.FB_PERF) console.log(`worst redaction: ${JSON.stringify(worst.s)} ${worst.ms.toFixed(0)} ms`);
   });

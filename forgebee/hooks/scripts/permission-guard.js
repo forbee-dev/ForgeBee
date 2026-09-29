@@ -650,6 +650,8 @@ function isDangerousRmTarget(t) {
     t = path.posix.resolve(baseDir, t);
   }
   if (t === PROJECT_DIR) return true;
+  // HOME can live anywhere (/root, /var/lib/jenkins, a temp dir), not only /Users or /home.
+  if (HOME_DIR.length > 1 && (t === HOME_DIR || path.posix.dirname(t) === HOME_DIR)) return true;
   if (PROJECT_DIR.length > 1 && t.startsWith(PROJECT_DIR + '/')) return false;
   const seg = t.split('/').filter(Boolean);
   if (seg[0] === 'private') seg.shift();
