@@ -8,11 +8,11 @@ allowed-tools: Read, Write, Bash
 
 ## Objective
 
-Review pending instincts (auto-detected by heuristics) and analyze observations to extract new patterns. Every instinct requires user approval before activation.
+Review pending instincts (auto-detected by heuristics) and analyze observations to extract new patterns. Instincts below 0.7 require user approval before activation.
 
 ## Never
 
-- Never activate instincts without explicit user approval
+- Never activate instincts below 0.7 without explicit user approval
 - Never create instincts from one-time events (API outages, typos)
 - Never overwrite active instincts with lower-confidence versions
 
@@ -32,7 +32,11 @@ If pending instincts exist, present each to the user with its signal, confidence
 - **Activate**: `node "${CLAUDE_PLUGIN_ROOT}/skills/continuous-learning/scripts/instinct-cli.js" review --activate <id>`
 - **Reject**: `node "${CLAUDE_PLUGIN_ROOT}/skills/continuous-learning/scripts/instinct-cli.js" review --reject <id>`
 
+A rejection is permanent. The id goes to `.claude/learnings/rejected-instincts.json`, and `add` and `review --auto` refuse it.
+
 ### Step 2: Analyze Observations
+
+You do not always need to run this step by hand. The `learn-auto.js` Stop hook asks Claude for this step once per session after a turn with 3+ tool calls. The `learn-digest.js` SessionStart hook auto-activates candidates at 0.7 or higher.
 
 1. **Load observations** from the current project's `observations.jsonl`
 2. **Analyze patterns** looking for:
@@ -41,8 +45,31 @@ If pending instincts exist, present each to the user with its signal, confidence
    - Repeated workflows (same tool sequences)
    - Tool preferences (consistently using one tool over another)
 3. **Check existing instincts** to avoid duplicates
-4. **Create/update instincts** in `~/.claude/forgebee-learning/projects/<hash>/instincts/personal/`
-5. **Report** what was learned
+4. **Create/update instincts** with `add`. It validates, redacts, and writes `~/.claude/forgebee-learning/projects/<hash>/instincts/personal/<id>.yaml`:
+   ```bash
+   node "${CLAUDE_PLUGIN_ROOT}/skills/continuous-learning/scripts/instinct-cli.js" add \
+     --id <kebab-id> --trigger "when ..." --confidence 0.5 --domain workflow [--scope global] <<'EOF'
+   ## Action
+   ...
+   ## Evidence
+   - ...
+   EOF
+   ```
+   Confidence 0.7 or higher saves as `active`. Lower saves as `pending`. A re-add never replaces a higher-confidence instinct.
+5. **Save code learnings** with `learning-cli.js add` when the session worked out something about the code. It writes a new file in `docs/learnings/`, never an edit. Commit it with the code:
+   ```bash
+   node "${CLAUDE_PLUGIN_ROOT}/skills/continuous-learning/scripts/learning-cli.js" add \
+     --title "<what it was about>" [--touches a/b.js,c.php] [--standing] <<'EOF'
+   ## Decided
+   ...
+   ## Tried and ruled out
+   ...
+   ## Watch out
+   ...
+   EOF
+   ```
+   Use `--standing` when the user corrected how something is done in this repo.
+6. **Report** what was learned
 
 ### Step 3: Compress Aged Learnings (auto)
 

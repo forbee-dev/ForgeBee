@@ -99,6 +99,59 @@ When the user provides a single piece and asks to repurpose:
 4. Dispatch `content-creator` for long-form derivatives
 5. Dispatch `seo-specialist` for any blog/web content
 
+## Flags
+
+### --from-diff
+
+Generate content from what shipped. Invocation: `/content --from-diff [--since <git date>]`. Default `--since`: `1 week ago`.
+
+1. List the commits: `git log --since="<date>" --pretty=format:"%h - %s (%an, %ar)"`.
+2. When `gh` is available, list merged PRs: `gh pr list --state merged`.
+3. Tier each change by impact: high (new features, breaking changes, major improvements), medium (enhancements, notable fixes, performance gains), low (minor fixes, refactors, dependency updates).
+4. Read the changed files before writing. Ground every claim in the diff.
+5. Delegate to `content-creator` with the brief: the tiered change list, file paths, audience, and `references/content-creator.md#from-diff`.
+6. Present the weekly summary.
+
+Output skeleton:
+
+```markdown
+## Week of [date range]
+
+### Summary
+[What shipped, in two sentences]
+
+### High impact
+- [Change]: [what it does for the user]
+
+### Medium impact
+- [Change]: [description]
+
+### Low impact
+- [Change]: [description]
+
+### Blog ideas
+1. **"[Title]"**: [angle, key points, audience]
+
+### Social drafts
+1. Launch post: [draft]
+2. Thread: [topic and points]
+3. Tip: [one quick takeaway]
+
+### Changelog entry
+## [Version] - [Date]
+### Added
+- [Feature]: [user-facing description]
+### Fixed
+- [Bug]: [what changed]
+
+### Email subject lines
+- "[Option 1]"
+- "[Option 2]"
+
+### Docs updates
+- [ ] Update [page] with [information]
+```
+
 ## Available Agents
 
 | Agent | Specialty |

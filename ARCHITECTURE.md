@@ -28,7 +28,7 @@ see [`CONTRIBUTING.md`](./CONTRIBUTING.md).
 
 ## Hooks (Claude Code only)
 
-`forgebee/hooks/hooks.json` wires 25 Node lifecycle hooks (`forgebee/hooks/scripts/`)
+`forgebee/hooks/hooks.json` wires 27 Node lifecycle hooks (`forgebee/hooks/scripts/`)
 to Claude Code events (SessionStart, UserPromptSubmit, PreToolUse, PostToolUse,
 PreCompact, Stop, PermissionDenied, Notification, TaskCompleted, TeammateIdle).
 `_common.js` is the shared helper library (not itself a hook). These are the
@@ -46,7 +46,10 @@ the README.
   verification verdicts, and dispatches to `.claude/audit/*.jsonl`; query via `/audit`.
 - **Continuous learning** — `observe.js` (PreToolUse/PostToolUse) records tool-use
   observations; `self-improve.js` (Stop) flags repeated patterns as pending instincts;
-  `/learn` and `/evolve` promote them. Scoring/scope/conflict rules live in
+  `learn-auto.js` (Stop) asks Claude once per session to save instincts with
+  `instinct-cli.js add`; `learn-digest.js` (SessionStart) auto-activates ≥0.7 and
+  injects active instincts. `learn-recall.js` (UserPromptSubmit) injects matching code
+  learnings from `docs/learnings/`. `/learn` and `/evolve` are the manual entry points. Scoring/scope/conflict rules live in
   `forgebee/skills/continuous-learning/references/scope-and-confidence.md`.
 
 ## Build & quality scripts (`scripts/`)

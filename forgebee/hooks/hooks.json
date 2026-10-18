@@ -31,7 +31,7 @@
           },
           {
             "type": "command",
-            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/learn-nudge.js",
+            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/learn-digest.js",
             "timeout": 5
           },
           {
@@ -49,6 +49,11 @@
           {
             "type": "command",
             "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/skill-activator.js",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/learn-recall.js",
             "timeout": 5
           }
         ]
@@ -182,6 +187,11 @@
           {
             "type": "command",
             "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/audit-trail.js",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/learn-auto.js",
             "timeout": 10
           }
         ]

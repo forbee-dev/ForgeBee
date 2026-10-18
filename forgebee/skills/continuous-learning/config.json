@@ -3,5 +3,11 @@
   "observer": {
     "enabled": true,
     "max_observations_file_mb": 10
+  },
+  "auto_learn": {
+    "enabled": true,
+    "min_tool_calls": 3,
+    "auto_activate_confidence": 0.7,
+    "code_learnings": true
   }
 }

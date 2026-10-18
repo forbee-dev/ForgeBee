@@ -3,7 +3,7 @@
   <img src="https://img.shields.io/badge/Codex-Compatible-10B981?style=for-the-badge&logoColor=white" alt="Codex" />
   <img src="https://img.shields.io/badge/Cursor-Compatible-1F2937?style=for-the-badge&logoColor=white" alt="Cursor" />
   <img src="https://img.shields.io/badge/Gemini-Compatible-4285F4?style=for-the-badge&logoColor=white" alt="Gemini" />
-  <img src="https://img.shields.io/badge/version-6.0.0-blue?style=for-the-badge" alt="Version" />
+  <img src="https://img.shields.io/badge/version-6.1.0-blue?style=for-the-badge" alt="Version" />
   <img src="https://img.shields.io/badge/license-MIT-green?style=for-the-badge" alt="License" />
 </p>
 
@@ -22,7 +22,7 @@
 
 <p align="center">
   <strong>A colony of AI agents forging your product</strong><br/>
-  46 specialist agents. 35 skills. 39 slash commands. 25 lifecycle hooks.<br/>
+  46 specialist agents. 35 skills. 39 slash commands. 27 lifecycle hooks.<br/>
   Three execution modes: inline skills, context:fork, subagents.<br/>
   Adaptive pipeline. Karpathy principles. Adversarial debate. Continuous learning.<br/>
   <em>Works with Claude Code, Codex, Cursor, Gemini, and OpenClaw.</em>
@@ -61,7 +61,7 @@ Claude Code and OpenClaw are powerful out of the box. ForgeBee makes them **opin
 | Skill descriptions drift silently | All skill descriptions follow "Use when..." triggering format — Claude reads triggers, not workflow summaries |
 | Version numbers drift across manifests | `.version-bump.json` + `scripts/bump-version.sh` — single source of truth, drift detection, full-repo audit |
 | Debug loops forever on the same bug | 3-failed-fix Iron Law — debugger-detective escalates to architecture question after 3 failed attempts |
-| User forgets to run `/learn` | Auto-nudge on SessionStart when ≥5 pending instincts and no `/learn` in 24h |
+| User forgets to run `/learn` | Stop hook asks Claude to save instincts after a 3+ tool-call turn; SessionStart digest applies active instincts and auto-activates ≥0.7 |
 | One implementation = one harness | Single source ships to Claude Code, Codex, Cursor, Gemini via dedicated manifests |
 | Agents make silent assumptions | Karpathy P1–P4 baked into every code-producing agent: trace test, senior-engineer check, YAGNI timing, orphan rule |
 | Orchestrators idle after dispatch | P5 Anti-Stop Rule in `/workflow` + `/team`: continue with next-step work immediately, the harness wakes you when sub-agents return |
@@ -381,6 +381,9 @@ Invoke with a slash: `/review`, `/debug`, `/workflow`, etc.
 | Hook | Event | What it does |
 |:-----|:------|:------------|
 | `observe` | `PreToolUse` + `PostToolUse` (*) | Captures every tool call lifecycle for pattern extraction |
+| `learn-auto` | `Stop` | Once per session, asks Claude to save instincts after a turn with 3+ tool calls |
+| `learn-digest` | `SessionStart` | Auto-activates ≥0.7 candidates, injects active instincts and standing code learnings, lists pending and evolve candidates |
+| `learn-recall` | `UserPromptSubmit` | Injects code learnings from `docs/learnings/` that match the prompt's files or words, once per session |
 
 **Intelligence & governance:**
 
@@ -406,7 +409,7 @@ The **skills, agents, and commands** are portable — they ship to Claude Code, 
 | Capability | Claude Code | Codex / Cursor / Gemini |
 |:-----------|:-----------:|:-----------------------:|
 | Skills, agents, commands | ✅ | ✅ (via manifest) |
-| 25 lifecycle hooks (permission-guard, secret-scan, audit-trail, …) | ✅ | ❌ |
+| 27 lifecycle hooks (permission-guard, secret-scan, audit-trail, …) | ✅ | ❌ |
 | Governance / audit trail | ✅ | ❌ |
 | Continuous learning (observe → instincts) | ✅ | ❌ |
 | Auto project-triage routing | ✅ | ❌ |
@@ -449,7 +452,7 @@ If the pipeline works correctly, `review-all` finds nothing. Issues caught in re
 
 ## Continuous Learning
 
-ForgeBee learns from your sessions automatically. Every tool call is observed (PreToolUse + PostToolUse), patterns are detected by a heuristic engine, and candidates are surfaced for your approval.
+ForgeBee learns from your sessions automatically. Every tool call is observed (PreToolUse + PostToolUse), patterns are detected by a heuristic engine and by a once-per-session Stop ask, and the next session start applies the active instincts.
 
 ```
 Session Activity (every tool call)
@@ -457,20 +460,20 @@ Session Activity (every tool call)
       ▼
   observations.jsonl (automatic — Pre + Post)
       │
-      ▼  Stop hook heuristics (no API calls)
-  pending-instincts.jsonl (auto-detected candidates)
+      ▼  Stop hooks: heuristics (no API calls) + learn-auto ask → instinct-cli.js add
+  pending-instincts.jsonl + instincts/personal/ (pending < 0.7 ≤ active)
       │
-      ▼  /learn (review + approve/reject)
-  instincts/personal/ (project-scoped, active)
+      ▼  SessionStart learn-digest (auto-activate ≥0.7, veto) or /learn (review)
+  instincts/personal/ (project-scoped, active) → injected at session start
       │
-      ▼  /evolve
+      ▼  /evolve (candidates also in the daily digest)
   evolved/ → skills, commands, agents
 ```
 
 **Key concepts:**
 
-- **Two-stage pipeline** — heuristics flag candidates automatically; `/learn` lets you review and approve
-- **Pending instincts** — auto-detected patterns start in `pending` state, never activate without your approval
+- **Automatic loop** — heuristics and the Stop ask create instincts; the SessionStart digest applies them; `/learn` stays the manual review
+- **Pending instincts** — patterns below 0.7 start in `pending` state and need your approval; ≥0.7 activate automatically with a veto command
 - **Instincts** are atomic patterns: one trigger, one action, confidence-scored (0.3–0.9)
 - **Project-scoped** by default — React patterns stay in your React project, Python conventions in your Python project
 - **Global promotion** — when the same instinct appears in 2+ projects with ≥0.8 confidence, it's promoted to global
@@ -478,6 +481,8 @@ Session Activity (every tool call)
 - **Portable** — export/import instincts across machines and teammates
 
 Storage lives at `~/.claude/forgebee-learning/` with per-project isolation via git remote URL hashing.
+
+**Code learnings** store what a session worked out about the code: what was decided, what was ruled out, and what to watch out for. They live in `docs/learnings/` and you commit them with the code. The Stop ask saves one after real digging. The `learn-recall` hook injects it on a later prompt that names the same files or words.
 
 ---
 

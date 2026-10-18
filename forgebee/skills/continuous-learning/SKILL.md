@@ -65,6 +65,27 @@ Run this in-session. The references explain storage; these thresholds decide wha
 
 Below threshold (1-2 observations, or one event type), leave it in the pool. Filtering thin evidence is the point of this loop.
 
+## Automatic loop
+
+The loop runs without `/learn`. Set `auto_learn.enabled: false` in `config.json` to stop it.
+
+1. **Stop ask.** `learn-auto.js` blocks one Stop per session when the turn made 3+ tool calls and saved nothing. Claude then reviews the session against the thresholds above.
+2. **Save.** Claude runs `instinct-cli.js add` once per pattern, with the body on stdin.
+3. **Auto-activate.** `add` saves an instinct at 0.7 or higher as `active`, else as `pending`. At session start, `learn-digest.js` also activates heuristic candidates at 0.7 or higher.
+4. **Apply.** The session-start digest injects all active instincts. It lists new activations with the veto command `review --reject <id>`.
+5. **Evolve.** Once per 24 h, with 3+ active instincts, the digest lists evolve candidates.
+
+## Code learnings
+
+Instincts store how the user works. Code learnings store what a session worked out about the code, so the next session does not explore it again.
+
+- **Store.** `<project>/docs/learnings/YYYY-MM-DD-<slug>.md`. Frontmatter: `title`, `author`, `date`, optional `standing: true`, and `touches:` (repo-relative paths). The body uses `## Decided`, `## Tried and ruled out`, and `## Watch out`.
+- **Capture.** The Stop ask also asks for one code learning when the turn found a decision, a dead end, or a trap. Claude runs `learning-cli.js add --title "..." [--touches a,b] [--standing]` with the body on stdin. Without `--touches`, the CLI uses paths named in the body plus files changed in the working tree.
+- **Recall.** `learn-recall.js` (UserPromptSubmit) injects up to 3 learnings that share a file or words with the prompt. Files this session edited also count. Each learning is injected once per session.
+- **Standing.** Use `--standing` when the user corrects how something is done in this repo. The session-start digest lists standing learnings.
+- **Commit.** Commit `docs/learnings/` with the change it explains.
+- Set `auto_learn.code_learnings: false` to turn this layer off. When `<project>/.trail/learnings` exists, Trail owns learnings and these hooks stay silent.
+
 ## Commands
 
 | Command | Purpose |
@@ -75,6 +96,8 @@ Below threshold (1-2 observations, or one event type), leave it in the pool. Fil
 | `/instinct-export` | Export instincts (filterable by scope/domain) |
 | `/instinct-import` | Import instincts with scope control |
 
+`/learn` and `/evolve` are manual entry points for the same loop.
+
 ## References
 
 - `references/architecture.md` — observation flow, project detection, hooks, file structure. Read for paths and storage.
@@ -82,7 +105,8 @@ Below threshold (1-2 observations, or one event type), leave it in the pool. Fil
 
 ## Never
 
-- Never activate an instinct without explicit user approval.
+- Never activate an instinct below 0.7 without explicit user approval. Instincts at or above 0.7 activate automatically and the next session start lists them with the veto command.
 - Never mix project-scoped instincts across projects.
 - Never create instincts from one-time events (API outages, typos).
 - Never export raw observations. Export instincts only.
+- Never edit or delete an existing code learning. A change gets a new file.

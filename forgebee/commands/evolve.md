@@ -56,6 +56,8 @@ Shows:
 - Agent candidates (clusters of 3+ with avg confidence ≥ 75%)
 - Promotion candidates (project → global)
 
+Candidates also appear in the session-start digest, at most once per 24 h.
+
 ## Flags
 
 - `--generate`: Generate evolved files under `evolved/{skills,commands,agents}`

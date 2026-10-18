@@ -6,7 +6,20 @@ The format roughly follows [Keep a Changelog](https://keepachangelog.com/) and t
 
 ---
 
-## [Unreleased]
+## [6.1.0] — 2026-10-18
+
+### Added
+
+- **Automatic learning loop.** `learn-auto.js` (Stop) asks Claude once per session, after a turn with 3+ tool calls, to save instincts with `instinct-cli.js add` and one code learning with `learning-cli.js add`. `learn-digest.js` (SessionStart) auto-activates heuristic candidates at ≥0.7, injects active instincts, counts pending ones, and once per 24 h compresses aged learnings and lists evolve candidates. Replaces `learn-nudge.js`. Config: `auto_learn` in `skills/continuous-learning/config.json`.
+- **Code learnings.** What a session worked out about the code, saved in `docs/learnings/YYYY-MM-DD-<slug>.md` and committed with the change: `title`, `author`, `date`, `touches`, optional `standing`, and a body under Decided / Tried and ruled out / Watch out. `learn-recall.js` (UserPromptSubmit) injects up to three learnings that match the prompt's words, paths, or files edited this session, each once per session. Both hooks stand down where `.trail/learnings` exists.
+- **`instinct-cli.js add`**, `review --auto`, a Pending section in `status`, and a permanent veto: `review --reject` records the id in `.claude/learnings/rejected-instincts.json`; `add`, `review --auto`, and `self-improve.js` refuse it.
+- **`/seo` modes** `autopilot`, `refresh <url>`, and `titles [path]`, with playbooks in `agents/references/seo-specialist.md` (ported from Illyism/seo-skills, MIT; vendor links removed). `seo-specialist` gains `WebFetch`.
+- **`/content --from-diff`** turns commits and merged PRs into blog, social, changelog, email, and docs drafts (`references/content-creator.md#from-diff`).
+
+### Changed
+
+- Instincts at ≥0.7 activate without approval. The next session start lists them with the veto command. Below 0.7 still waits for `/learn`.
+- Hook count 25 → 27.
 
 ### Fixed
 

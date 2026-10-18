@@ -9,7 +9,7 @@ forgebee/
 ├── INDEX.md                     # Auto-generated routing index — loaded on SessionStart
 ├── hooks/
 │   ├── hooks.json               # Hook event wiring
-│   └── scripts/                 # 25 wired lifecycle hooks (+ _common.js shared helper)
+│   └── scripts/                 # 27 wired lifecycle hooks (+ _common.js shared helper)
 ├── agents/
 │   ├── *.md                     # 46 specialist agent personas
 │   └── references/              # Reference material extracted from agents (W16 bloat trim)
@@ -37,7 +37,7 @@ forgebee/
 └── eval/                        # Eval scenarios
 ```
 
-## Key Features (v6.0.0)
+## Key Features (v6.1.0)
 
 ### Behavioral discipline (Karpathy principles)
 - **P1 Trace test** — every changed line traces to the user's request; no drive-by edits
@@ -57,7 +57,7 @@ forgebee/
 ### Token efficiency
 - **Routing index** (`INDEX.md`) — Claude reads 1 file once per session vs. scanning every agent/skill/command frontmatter block
 - **Terse-report mode** — sub-agent reports compress ~65% via `responseStyle: "orchestrator"` contract
-- **Learnings compression** — `/learn` ages entries >14 days, archives originals
+- **Learnings compression** — `/learn` and the daily session-start digest age entries >14 days, archive originals
 - **Bloat-trimmed agents** — 6 worst offenders moved to `references/` (1,733 lines extracted)
 
 ### Safety
@@ -70,14 +70,14 @@ forgebee/
 - **38 slash commands** — orchestration, diagnosis, quality, growth, learning, meta
 - **46 specialist agents** — code, growth, debate, WordPress, Next.js, mobile, CRO, tool
 - **34 skills** — 13 inline + 21 context:fork
-- **25 lifecycle hooks** across 10 events
+- **27 lifecycle hooks** across 10 events
 - **6 templates** — decision log, addendum, failure-capture, investigation case file, prompt-defense baseline, brainstorming/spec
 
 ### Other capabilities
 - **Multi-platform** — works with Claude Code, Codex, Cursor, Gemini, OpenClaw (separate manifests)
 - **Adaptive pipeline** — `/workflow` scrum phase is promptable (full sprint planning OR direct delegation)
 - **Decision logs + addenda** — `/workflow` and `/plan` persist decisions across runs
-- **Continuous learning** — `/learn` extracts instincts; `/evolve` clusters them; auto-nudge on SessionStart
+- **Continuous learning** — Stop hook asks Claude to save instincts; SessionStart digest applies them and auto-activates ≥0.7; `/learn` and `/evolve` stay manual
 - **`/audit-self`** — re-runs the quality scorecard, surfaces regressions since last audit
 - **`/elicit`** — 18 named reasoning methods (Pre-mortem, Red Team, Inversion, Stakeholder Round Table) applied to artifacts
 - **Growth OS** — 9-phase marketing pipeline with strategy debate and CRO

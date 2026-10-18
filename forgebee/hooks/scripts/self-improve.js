@@ -230,6 +230,7 @@ try {
       for (const [cmd, count] of Object.entries(bashCmds)) {
         if (count >= 3) {
           const signal = `bash-repeat:${cmd}`;
+          if (pending[signal] && pending[signal].status === 'rejected') continue; // vetoed: never re-create or re-count
           if (pending[signal]) {
             const seen = pending[signal].sessions || [];
             if (seen.includes(sessionId)) continue; // Stop fires every turn; count a session once
@@ -257,6 +258,7 @@ try {
         if (count >= 3) {
           const relPath = fp.startsWith('/') ? path.relative(PROJECT_DIR, fp) : fp;
           const signal = `file-repeat:${relPath}`;
+          if (pending[signal] && pending[signal].status === 'rejected') continue; // vetoed: never re-create or re-count
           if (pending[signal]) {
             const seen = pending[signal].sessions || [];
             if (seen.includes(sessionId)) continue; // Stop fires every turn; count a session once
@@ -281,8 +283,8 @@ try {
 
       // Write back pending instincts
       if (changed) {
+        // Rejected entries stay, so the veto above still sees them next session.
         const entries = Object.values(pending)
-          .filter(e => e.status !== 'rejected')
           .map(e => JSON.stringify(e))
           .join('\n');
         fs.writeFileSync(PENDING_FILE, entries + '\n');

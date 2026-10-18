@@ -16,7 +16,6 @@ Write findings to `docs/planning/audit-YYYY-MM-DD.md` (timestamped, never overwr
 
 - User invokes `/audit-self`.
 - Before a version bump (recommended manual step).
-- `learn-nudge.js` may hint when the last audit is > 60 days old and the project changed a lot.
 
 ## Scorecards
 

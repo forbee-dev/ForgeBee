@@ -93,6 +93,35 @@ On-screen text · Music/sound · Visual notes
 ### Email
 Owned by `email-strategist`. Hand off with: `Email work detected. Dispatching to email-strategist with: <task>.`
 
+## From diff
+
+Input: the git log, merged PRs, and changed files that `/content --from-diff` hands you. Write from the diff and the source files, not from the commit message alone.
+
+### Impact tiers
+
+| Tier | Includes | Channels |
+|---|---|---|
+| High | New features, breaking changes, major improvements | Blog, social, changelog, email, docs |
+| Medium | Enhancements, notable bug fixes, performance gains | Social, changelog, email, docs |
+| Low | Minor fixes, refactors, dependency updates | Changelog |
+
+### Per channel
+
+- **Blog** (high only): problem → solution → benefit → example or code when useful. 800–2,000 words. Angles: "Introducing [Feature]", "How [Feature] helps you [outcome]", "Building [Feature]".
+- **Social** (all tiers): launch post with the benefit and a visual; thread that breaks down one feature; tip post with one takeaway; one decision or trade-off from the build. Short and specific. A meaningful release is a launch: suggest one way to collect early feedback.
+- **Changelog**: `## [Version] - [Date]` with Added / Changed / Fixed / Deprecated / Removed / Security as applicable. User-facing language. Link docs or the blog post for major features.
+- **Email** (medium and high): subject lines only, plus a one-line brief (hero, intro, highlights, CTA) for `email-strategist`.
+- **Docs**: list the getting-started, feature, API reference, example, and troubleshooting pages the change affects.
+
+### Writing standards
+
+- Say what shipped and what it does.
+- Never invent metrics, customer results, or product behavior.
+- Ground every claim in the diff and the source files.
+- Plain language. No unsupported superlatives, no generic launch copy.
+- Sentence-case headings.
+- End with the reader's next action.
+
 ## Hook Stacking (video)
 
 Stack hooks on every channel in the first frame:

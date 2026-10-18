@@ -10,6 +10,7 @@
  *   evolve   - Cluster instincts into skills/commands/agents
  *   promote  - Promote project instincts to global scope
  *   projects - List known projects and instinct counts
+ *   add      - Save one instinct (body on stdin)
  */
 
 const fs = require('fs');
@@ -28,6 +29,19 @@ const {
 const PROMOTE_CONFIDENCE_THRESHOLD = 0.8;
 const PROMOTE_MIN_PROJECTS = 2;
 const ALLOWED_EXTENSIONS = ['.yaml', '.yml', '.md'];
+const DOMAINS = ['code-style', 'testing', 'git', 'debugging', 'workflow', 'security', 'general'];
+const MAX_TRIGGER_CHARS = 200;
+const MAX_BODY_CHARS = 4096;
+const AUTO_LEARN_DEFAULTS = { enabled: true, min_tool_calls: 3, auto_activate_confidence: 0.7, code_learnings: true };
+
+function autoLearnConfig() {
+  try {
+    const cfg = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'config.json'), 'utf8'));
+    return { ...AUTO_LEARN_DEFAULTS, ...(cfg.auto_learn || {}) };
+  } catch (e) {
+    return { ...AUTO_LEARN_DEFAULTS };
+  }
+}
 
 // ─────────────────────────────────────────────
 // Instinct ID Validation
@@ -181,8 +195,10 @@ function cmdStatus() {
     return 0;
   }
 
-  const projectInstincts = instincts.filter(i => i._scope_label === 'project');
-  const globalInstincts = instincts.filter(i => i._scope_label === 'global');
+  const pending = instincts.filter(i => i.status === 'pending');
+  const active = instincts.filter(i => i.status !== 'pending');
+  const projectInstincts = active.filter(i => i._scope_label === 'project');
+  const globalInstincts = active.filter(i => i._scope_label === 'global');
 
   console.log(`\n${'='.repeat(60)}`);
   console.log(`  INSTINCT STATUS - ${instincts.length} total`);
@@ -200,6 +216,11 @@ function cmdStatus() {
   if (globalInstincts.length) {
     console.log(`## GLOBAL (apply to all projects)\n`);
     printInstinctsByDomain(globalInstincts);
+  }
+
+  if (pending.length) {
+    console.log(`## PENDING (not applied until activated: instinct-cli.js review)\n`);
+    printInstinctsByDomain(pending);
   }
 
   // Observations stats
@@ -444,28 +465,7 @@ function cmdExport(options = {}) {
 // Evolve Command
 // ─────────────────────────────────────────────
 
-function cmdEvolve(options = {}) {
-  const project = detectProject();
-  const instincts = loadAllInstincts(project);
-
-  if (instincts.length < 3) {
-    console.log(`Need at least 3 instincts to analyze patterns.`);
-    console.log(`Currently have: ${instincts.length}`);
-    return 1;
-  }
-
-  const projectInstincts = instincts.filter(i => i._scope_label === 'project');
-  const globalInstincts = instincts.filter(i => i._scope_label === 'global');
-
-  console.log(`\n${'='.repeat(60)}`);
-  console.log(`  EVOLVE ANALYSIS - ${instincts.length} instincts`);
-  console.log(`  Project: ${project.name} (${project.id})`);
-  console.log(`  Project-scoped: ${projectInstincts.length} | Global: ${globalInstincts.length}`);
-  console.log(`${'='.repeat(60)}\n`);
-
-  const highConf = instincts.filter(i => (i.confidence || 0) >= 0.8);
-  console.log(`High confidence instincts (>=80%): ${highConf.length}`);
-
+function analyzeEvolve(instincts) {
   // Find trigger clusters
   const triggerClusters = {};
   for (const inst of instincts) {
@@ -495,6 +495,35 @@ function cmdEvolve(options = {}) {
   }
   skillCandidates.sort((a, b) => b.instincts.length - a.instincts.length || b.avg_confidence - a.avg_confidence);
 
+  const workflowInstincts = instincts.filter(i => i.domain === 'workflow' && (i.confidence || 0) >= 0.7);
+  const agentCandidates = skillCandidates.filter(c => c.instincts.length >= 3 && c.avg_confidence >= 0.75);
+  return { skillCandidates, workflowInstincts, agentCandidates };
+}
+
+function cmdEvolve(options = {}) {
+  const project = detectProject();
+  const instincts = loadAllInstincts(project);
+
+  if (instincts.length < 3) {
+    console.log(`Need at least 3 instincts to analyze patterns.`);
+    console.log(`Currently have: ${instincts.length}`);
+    return 1;
+  }
+
+  const projectInstincts = instincts.filter(i => i._scope_label === 'project');
+  const globalInstincts = instincts.filter(i => i._scope_label === 'global');
+
+  console.log(`\n${'='.repeat(60)}`);
+  console.log(`  EVOLVE ANALYSIS - ${instincts.length} instincts`);
+  console.log(`  Project: ${project.name} (${project.id})`);
+  console.log(`  Project-scoped: ${projectInstincts.length} | Global: ${globalInstincts.length}`);
+  console.log(`${'='.repeat(60)}\n`);
+
+  const highConf = instincts.filter(i => (i.confidence || 0) >= 0.8);
+  console.log(`High confidence instincts (>=80%): ${highConf.length}`);
+
+  const { skillCandidates, workflowInstincts, agentCandidates } = analyzeEvolve(instincts);
+
   console.log(`\nPotential skill clusters found: ${skillCandidates.length}`);
 
   if (skillCandidates.length) {
@@ -515,7 +544,6 @@ function cmdEvolve(options = {}) {
   }
 
   // Command candidates (workflow instincts with high confidence)
-  const workflowInstincts = instincts.filter(i => i.domain === 'workflow' && (i.confidence || 0) >= 0.7);
   if (workflowInstincts.length) {
     console.log(`\n## COMMAND CANDIDATES (${workflowInstincts.length})\n`);
     for (const inst of workflowInstincts.slice(0, 5)) {
@@ -529,7 +557,6 @@ function cmdEvolve(options = {}) {
   }
 
   // Agent candidates (complex clusters 3+)
-  const agentCandidates = skillCandidates.filter(c => c.instincts.length >= 3 && c.avg_confidence >= 0.75);
   if (agentCandidates.length) {
     console.log(`\n## AGENT CANDIDATES (${agentCandidates.length})\n`);
     for (const cand of agentCandidates.slice(0, 3)) {
@@ -919,6 +946,14 @@ function parseArgs() {
       options.reject = args[++i];
     } else if (arg === '--include-pending') {
       options.includePending = true;
+    } else if (arg === '--auto') {
+      options.auto = true;
+    } else if (arg === '--id' && args[i + 1]) {
+      options.id = args[++i];
+    } else if (arg === '--trigger' && args[i + 1]) {
+      options.trigger = args[++i];
+    } else if (arg === '--confidence' && args[i + 1]) {
+      options.confidence = args[++i];
     } else if (!arg.startsWith('-')) {
       positional.push(arg);
     }
@@ -1024,92 +1059,354 @@ ${candidate.type}
 }
 
 // ─────────────────────────────────────────────
+// Pending candidates (jsonl) and pending/active YAML helpers
+// ─────────────────────────────────────────────
+
+function pendingJsonlFile(projectDir) {
+  return path.join(projectDir, '.claude/learnings/pending-instincts.jsonl');
+}
+
+// Malformed lines are kept verbatim so a rewrite never drops data.
+function readJsonl(file) {
+  if (!fs.existsSync(file)) return [];
+  return fs.readFileSync(file, 'utf8').split('\n').filter(l => l.trim()).map(raw => {
+    try { return { raw, entry: JSON.parse(raw) }; } catch (e) { return { raw, entry: null }; }
+  });
+}
+
+function writeJsonl(file, rows) {
+  fs.writeFileSync(file, rows.map(r => (r.entry ? JSON.stringify(r.entry) : r.raw)).join('\n') + '\n');
+}
+
+// Vetoed ids. `add` and `review --auto` refuse them, so a veto survives re-detection.
+function rejectedFile(projectDir) {
+  return path.join(projectDir, '.claude/learnings/rejected-instincts.json');
+}
+
+function readRejected(projectDir) {
+  try {
+    const ids = JSON.parse(fs.readFileSync(rejectedFile(projectDir), 'utf8'));
+    return Array.isArray(ids) ? ids : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function recordRejected(projectDir, id) {
+  const ids = readRejected(projectDir);
+  if (ids.includes(id)) return;
+  ensureDir(path.dirname(rejectedFile(projectDir)));
+  fs.writeFileSync(rejectedFile(projectDir), JSON.stringify([...ids, id], null, 2) + '\n');
+}
+
+function isPendingEntry(entry) {
+  return !!entry && (entry.status || 'pending') === 'pending';
+}
+
+function personalDirs(project) {
+  return [...new Set([project.instincts_personal, GLOBAL_PERSONAL_DIR])];
+}
+
+function loadPendingYaml(project) {
+  const pending = [];
+  for (const dir of personalDirs(project)) {
+    const scopeLabel = dir === GLOBAL_PERSONAL_DIR ? 'global' : 'project';
+    pending.push(...loadInstinctsFromDir(dir, 'personal', scopeLabel).filter(i => i.status === 'pending'));
+  }
+  return pending;
+}
+
+function loadActiveInstincts(project) {
+  return loadAllInstincts(project).filter(i => i.status !== 'pending');
+}
+
+function pendingSummary(project, projectDir) {
+  const items = [
+    ...readJsonl(pendingJsonlFile(projectDir)).map(r => r.entry).filter(isPendingEntry),
+    ...loadPendingYaml(project),
+  ];
+  return { total: items.length, high: items.filter(i => Number(i.confidence) >= 0.5).length };
+}
+
+function findInstinctFile(project, id) {
+  for (const dir of personalDirs(project)) {
+    for (const ext of ALLOWED_EXTENSIONS) {
+      const file = path.join(dir, id + ext);
+      if (fs.existsSync(file)) return file;
+    }
+  }
+  return null;
+}
+
+// Newlines in a value would end the frontmatter line and inject new keys.
+function yamlScalar(value) {
+  return String(value).replace(/[\r\n]+/g, ' ').trim();
+}
+
+function writeInstinctFile(file, frontmatter, body) {
+  let out = '---\n';
+  for (const [key, value] of Object.entries(frontmatter)) {
+    if (value === undefined || value === null || value === '') continue;
+    out += key === 'trigger' ? `${key}: "${yamlScalar(value)}"\n` : `${key}: ${yamlScalar(value)}\n`;
+  }
+  out += '---\n\n' + body.trim() + '\n';
+  ensureDir(path.dirname(file));
+  fs.writeFileSync(file, out);
+}
+
+function setFrontmatterStatus(file, status) {
+  const content = fs.readFileSync(file, 'utf8');
+  const fmEnd = content.indexOf('---', content.indexOf('---') + 3);
+  const frontmatter = content.substring(0, fmEnd).replace(/^status: .*$/m, `status: ${status}`);
+  fs.writeFileSync(file, frontmatter + content.substring(fmEnd));
+}
+
+function activateJsonlEntry(entry, project) {
+  const scope = project.id === 'global' ? 'global' : 'project';
+  const file = path.join(project.instincts_personal, `${entry.id}.yaml`);
+  if (fs.existsSync(file)) {
+    const existing = parseInstinctFile(fs.readFileSync(file, 'utf8'))[0];
+    if (existing && existing.status !== 'pending') return;
+  }
+  const subject = String(entry.signal || '').split(':').slice(1).join(':') || entry.id;
+  const sessions = entry.sessions_seen || 1;
+  let trigger = `when ${entry.signal}`;
+  let action = String(entry.signal);
+  if (entry.type === 'command-repeat') {
+    trigger = 'when running project commands';
+    action = `Prefer \`${subject}\`: it repeated in ${sessions} session(s).`;
+  } else if (entry.type === 'file-repeat') {
+    trigger = `when editing ${subject}`;
+    action = `Expect repeated edits to ${subject}: it changed in ${sessions} session(s).`;
+  }
+  writeInstinctFile(file, {
+    id: entry.id,
+    trigger,
+    confidence: entry.confidence,
+    domain: 'workflow',
+    source: 'auto-heuristic',
+    scope,
+    project_id: scope === 'project' ? project.id : undefined,
+    project_name: scope === 'project' ? project.name : undefined,
+    status: 'active',
+    created: entry.created_at || new Date().toISOString(),
+  }, `## Action\n${action}\n\n## Evidence\n- Signal ${entry.signal} seen in ${sessions} session(s)\n- Auto-activated at confidence ${entry.confidence}`);
+}
+
+function autoActivate(project, projectDir, threshold = autoLearnConfig().auto_activate_confidence) {
+  const file = pendingJsonlFile(projectDir);
+  const rows = readJsonl(file);
+  const rejected = readRejected(projectDir);
+  const activated = [];
+  const refused = [];
+  for (const row of rows) {
+    const entry = row.entry;
+    if (!isPendingEntry(entry) || !(Number(entry.confidence) >= threshold) || !validateInstinctId(entry.id)) continue;
+    if (rejected.includes(entry.id)) {
+      entry.status = 'rejected';
+      refused.push(entry.id);
+      continue;
+    }
+    activateJsonlEntry(entry, project);
+    entry.status = 'active';
+    activated.push(entry.id);
+  }
+  if (activated.length || refused.length) writeJsonl(file, rows);
+  return { activated, refused };
+}
+
+// ─────────────────────────────────────────────
 // S-010: Review Pending Instincts
 // ─────────────────────────────────────────────
 
 function cmdReview(action, options) {
   const project = detectProject();
-  const instinctDir = path.join(PROJECTS_DIR, project.id, 'instincts', 'personal');
+  const projectDir = process.env.CLAUDE_PROJECT_DIR || process.cwd();
+  const pendingFile = pendingJsonlFile(projectDir);
 
-  if (!fs.existsSync(instinctDir)) {
-    console.log('No instincts directory found.');
+  if (options.auto) {
+    const { activated, refused } = autoActivate(project, projectDir);
+    for (const id of activated) console.log(id);
+    for (const id of refused) console.log(`rejected earlier: ${id}`);
     return 0;
-  }
-
-  const files = fs.readdirSync(instinctDir).filter(f => ALLOWED_EXTENSIONS.some(e => f.endsWith(e)));
-  const pendingInstincts = [];
-
-  for (const f of files) {
-    const content = fs.readFileSync(path.join(instinctDir, f), 'utf8');
-    if (content.includes('status: pending')) {
-      const parsed = parseInstinctFile(content);
-      pendingInstincts.push({ file: f, content, parsed });
-    }
   }
 
   if (options.activate) {
     const id = options.activate;
-    const match = pendingInstincts.find(p => p.file.replace(/\.(yaml|yml|md)$/, '') === id);
-    if (!match) {
+    const yaml = loadPendingYaml(project).find(i => i.id === id);
+    if (yaml) {
+      setFrontmatterStatus(yaml._source_file, 'active');
+      console.log(`Activated: ${id}`);
+      return 0;
+    }
+    const rows = readJsonl(pendingFile);
+    const row = rows.find(r => isPendingEntry(r.entry) && r.entry.id === id);
+    if (!row || !validateInstinctId(id)) {
       console.error(`Pending instinct "${id}" not found.`);
       return 1;
     }
-    // Scope replace to frontmatter only (between first pair of ---)
-    const fmEnd = match.content.indexOf('---', match.content.indexOf('---') + 3);
-    const frontmatter = match.content.substring(0, fmEnd).replace('status: pending', 'status: active');
-    const updated = frontmatter + match.content.substring(fmEnd);
-    fs.writeFileSync(path.join(instinctDir, match.file), updated);
+    activateJsonlEntry(row.entry, project);
+    row.entry.status = 'active';
+    writeJsonl(pendingFile, rows);
     console.log(`Activated: ${id}`);
     return 0;
   }
 
+  // Covers active instincts too: auto-activated ones are vetoed with --reject.
   if (options.reject) {
     const id = options.reject;
-    const match = pendingInstincts.find(p => p.file.replace(/\.(yaml|yml|md)$/, '') === id);
-    if (!match) {
-      console.error(`Pending instinct "${id}" not found.`);
+    if (!validateInstinctId(id)) {
+      console.error(`Invalid instinct ID: '${id}'.`);
       return 1;
     }
-    fs.unlinkSync(path.join(instinctDir, match.file));
-    console.log(`Rejected and removed: ${id}`);
-
-    // Mark as rejected in pending-instincts.jsonl
-    const projectDir = process.env.CLAUDE_PROJECT_DIR || process.cwd();
-    const pendingFile = path.join(projectDir, '.claude/learnings/pending-instincts.jsonl');
-    if (fs.existsSync(pendingFile)) {
-      const lines = fs.readFileSync(pendingFile, 'utf8').split('\n').filter(l => l.trim());
-      const updated = lines.map(l => {
-        try {
-          const entry = JSON.parse(l);
-          if (entry.id === id) entry.status = 'rejected';
-          return JSON.stringify(entry);
-        } catch { return l; }
-      });
-      fs.writeFileSync(pendingFile, updated.join('\n') + '\n');
+    const file = findInstinctFile(project, id);
+    if (file) fs.unlinkSync(file);
+    const rows = readJsonl(pendingFile);
+    const hits = rows.filter(r => r.entry && r.entry.id === id);
+    for (const r of hits) r.entry.status = 'rejected';
+    if (hits.length) writeJsonl(pendingFile, rows);
+    if (!file && !hits.length) {
+      console.error(`Instinct "${id}" not found.`);
+      return 1;
     }
+    recordRejected(projectDir, id);
+    console.log(`Rejected and removed: ${id}`);
     return 0;
   }
 
   // Default: list pending instincts
-  if (pendingInstincts.length === 0) {
+  const yamlPending = loadPendingYaml(project);
+  const jsonlPending = readJsonl(pendingFile).map(r => r.entry).filter(isPendingEntry);
+  if (!yamlPending.length && !jsonlPending.length) {
     console.log('No pending instincts awaiting review.');
     return 0;
   }
 
-  console.log(`\n  ${pendingInstincts.length} pending instinct(s) awaiting review:\n`);
-  for (const p of pendingInstincts) {
-    const id = p.file.replace(/\.(yaml|yml|md)$/, '');
-    const triggerMatch = p.content.match(/trigger:\s*"?(.+?)"?\s*$/m);
-    const confMatch = p.content.match(/confidence:\s*(\S+)/);
-    const sessionsMatch = p.content.match(/sessions_seen:\s*(\d+)/);
-    console.log(`  [PENDING] ${id}`);
-    if (triggerMatch) console.log(`    Signal: ${triggerMatch[1]}`);
-    if (confMatch) console.log(`    Confidence: ${confMatch[1]}`);
-    if (sessionsMatch) console.log(`    Sessions: ${sessionsMatch[1]}`);
+  console.log(`\n  ${yamlPending.length + jsonlPending.length} pending instinct(s) awaiting review:\n`);
+  for (const p of yamlPending) {
+    console.log(`  [PENDING] ${p.id} [${p.scope || '?'}]`);
+    if (p.trigger) console.log(`    Signal: ${p.trigger}`);
+    if (p.confidence !== undefined) console.log(`    Confidence: ${p.confidence}`);
+    if (p.sessions_seen) console.log(`    Sessions: ${p.sessions_seen}`);
+    console.log('');
+  }
+  for (const e of jsonlPending) {
+    console.log(`  [CANDIDATE] ${e.id}`);
+    console.log(`    Signal: ${e.signal}`);
+    console.log(`    Confidence: ${e.confidence}`);
+    console.log(`    Sessions: ${e.sessions_seen || 1}`);
     console.log('');
   }
   console.log('  Use: instinct-cli.js review --activate <id>');
   console.log('  Use: instinct-cli.js review --reject <id>');
+  console.log(`  Use: instinct-cli.js review --auto  (activates candidates >= ${autoLearnConfig().auto_activate_confidence})`);
+  return 0;
+}
+
+// ─────────────────────────────────────────────
+// Add Command
+// ─────────────────────────────────────────────
+
+const EVIDENCE_RE = /^## Evidence[ \t]*\n([\s\S]*?)(?=^## |(?![\s\S]))/m;
+
+function evidenceLines(text) {
+  const m = text.match(EVIDENCE_RE);
+  return m ? m[1].split('\n').map(l => l.trimEnd()).filter(l => l.trim()) : [];
+}
+
+function mergeEvidence(oldContent, newBody) {
+  const oldLines = evidenceLines(oldContent);
+  const lines = [...oldLines, ...evidenceLines(newBody).filter(l => !oldLines.includes(l))];
+  const rest = newBody.replace(EVIDENCE_RE, '').trim();
+  return lines.length ? `${rest}\n\n## Evidence\n${lines.join('\n')}` : rest;
+}
+
+function cmdAdd(options) {
+  let redactForPrompt;
+  try {
+    ({ redactForPrompt } = require('../../../hooks/scripts/_common.js'));
+  } catch (e) {
+    console.error('Error: redactor unavailable. Refusing to save unredacted text.');
+    return 1;
+  }
+
+  const id = options.id;
+  if (!validateInstinctId(id)) {
+    console.error(`Invalid instinct ID: '${id}'.`);
+    return 1;
+  }
+  if (readRejected(process.env.CLAUDE_PROJECT_DIR || process.cwd()).includes(id)) {
+    console.log(`rejected earlier: ${id}`);
+    return 1;
+  }
+  const confidence = Number(options.confidence);
+  if (!Number.isFinite(confidence) || confidence < 0.1 || confidence > 1) {
+    console.error('Error: --confidence must be a number from 0.1 to 1.');
+    return 1;
+  }
+  if (!DOMAINS.includes(options.domain)) {
+    console.error(`Error: --domain must be one of: ${DOMAINS.join(', ')}.`);
+    return 1;
+  }
+  const trigger = (options.trigger || '').replace(/\s+/g, ' ').trim();
+  if (!trigger || trigger.length > MAX_TRIGGER_CHARS) {
+    console.error(`Error: --trigger is required, at most ${MAX_TRIGGER_CHARS} characters.`);
+    return 1;
+  }
+  let scope = options.scope || 'project';
+  if (scope !== 'project' && scope !== 'global') {
+    console.error('Error: --scope must be project or global.');
+    return 1;
+  }
+
+  let body = '';
+  if (!process.stdin.isTTY) {
+    try { body = fs.readFileSync(0, 'utf8').trim(); } catch (e) { body = ''; }
+  }
+  if (!body) {
+    console.error('Error: pass the instinct body on stdin (## Action, ## Evidence).');
+    return 1;
+  }
+  if (body.length > MAX_BODY_CHARS) {
+    console.error(`Error: body is over ${MAX_BODY_CHARS} characters.`);
+    return 1;
+  }
+  // parseInstinctFile treats a bare --- line as a new frontmatter block.
+  if (body.split('\n').some(l => l.trim() === '---')) {
+    console.error("Error: body must not contain a '---' line.");
+    return 1;
+  }
+
+  const project = detectProject();
+  if (scope === 'project' && project.id === 'global') scope = 'global';
+  const dir = scope === 'global' ? GLOBAL_PERSONAL_DIR : project.instincts_personal;
+  const file = path.join(dir, `${id}.yaml`);
+  const existing = fs.existsSync(file) ? parseInstinctFile(fs.readFileSync(file, 'utf8'))[0] : null;
+
+  if (existing && (existing.confidence || 0) > confidence) {
+    console.log(`kept existing ${id} (higher confidence)`);
+    return 0;
+  }
+
+  // An equal-or-higher re-add never demotes an instinct that is already applied.
+  const status = confidence >= autoLearnConfig().auto_activate_confidence || (existing && existing.status !== 'pending')
+    ? 'active' : 'pending';
+  const cleanBody = redactForPrompt(body);
+
+  writeInstinctFile(file, {
+    id,
+    trigger: redactForPrompt(trigger),
+    confidence,
+    domain: options.domain,
+    source: 'session-observation',
+    scope,
+    project_id: scope === 'project' ? project.id : undefined,
+    project_name: scope === 'project' ? project.name : undefined,
+    status,
+    created: (existing && existing.created) || new Date().toISOString(),
+  }, existing ? mergeEvidence(existing.content || '', cleanBody) : cleanBody);
+
+  console.log(`saved ${scope} instinct ${id} (confidence ${confidence}, ${status})`);
   return 0;
 }
 
@@ -1153,6 +1450,9 @@ function main() {
     case 'review':
       exitCode = cmdReview(positional[0], options);
       break;
+    case 'add':
+      exitCode = cmdAdd(options);
+      break;
     default:
       console.log('ForgeBee Instinct CLI');
       console.log('\nCommands:');
@@ -1162,7 +1462,8 @@ function main() {
       console.log('  evolve            Cluster instincts into skills/commands/agents');
       console.log('  promote [id]      Promote project instincts to global scope');
       console.log('  promote-pending   Promote high-confidence candidates to pending instincts');
-      console.log('  review <action>   Review pending instincts (--activate <id> | --reject <id> | --list)');
+      console.log('  review <action>   Review pending instincts (--activate <id> | --reject <id> | --auto | --list)');
+      console.log('  add               Save an instinct: --id --trigger --confidence --domain [--scope], body on stdin');
       console.log('  projects          List known projects and instinct counts');
       exitCode = command === 'help' ? 0 : 1;
   }
@@ -1170,4 +1471,16 @@ function main() {
   process.exit(exitCode);
 }
 
-main();
+if (require.main === module) {
+  main();
+} else {
+  module.exports = {
+    parseInstinctFile,
+    validateInstinctId,
+    autoLearnConfig,
+    loadActiveInstincts,
+    pendingSummary,
+    autoActivate,
+    analyzeEvolve,
+  };
+}
