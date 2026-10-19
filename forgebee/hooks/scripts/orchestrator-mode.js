@@ -88,7 +88,9 @@ const isScratch = t => /^(\/dev\/(null|stdout|stderr)|&\d|\$|\/tmp\/|\/private\/
 // `>` inside a string or a format argument is not read as a redirection.
 // shortcut: lexical, not a shell parser (no subshells, eval, or `cd` tracking); upgrade if real bypasses show up.
 function bashWriteTargets(cmd) {
-  const bare = cmd.replace(/'[^']*'|"(?:[^"\\]|\\.)*"/g, '""');
+  // Heredoc bodies are data, not commands; keep the opening line, which can hold a real redirection.
+  const noHeredoc = cmd.replace(/<<-?\s*(['"]?)(\w+)\1([^\n]*)\n[\s\S]*?\n[ \t]*\2[ \t]*(?=\n|$)/g, '<<$2$3');
+  const bare = noHeredoc.replace(/'[^']*'|"(?:[^"\\]|\\.)*"/g, '""');
   const targets = [];
   for (const m of bare.matchAll(/(?<![=\-<>&0-9])\d?>>?\s*([^\s;&|<>()]+)/g)) targets.push(m[1]);
   for (const seg of bare.split(/&&|\|\||[;|\n]/)) {

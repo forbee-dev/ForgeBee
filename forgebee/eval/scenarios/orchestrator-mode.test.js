@@ -111,8 +111,9 @@ try {
       'git status', 'git diff --stat', 'npm test 2>&1 | tail -5', 'ls > /dev/null', 'rg foo src',
       'echo note >> docs/pm/log.md', 'out=$(mktemp); npm test > "$out" 2>&1; tail "$out"',
       'git log --format="%h > %s" -3', "node -e 'const f = a => a > 1'", 'echo hi > /tmp/x', 'cmd >&2',
-      'cp notes.md .claude/notes.md',
+      'cp notes.md .claude/notes.md', "cat <<'EOF'\nrm stale > y\nEOF",
     ]) assert.strictEqual(bash(c).status, 0, c);
+    assert.strictEqual(bash("cat <<'EOF' > src/a.ts\nx\nEOF").status, 2, 'redirect on heredoc opening line');
   });
   test('bash: subagents are never blocked', () => {
     assert.strictEqual(bash('echo hi > src/a.ts', { agent_id: 'a1', agent_type: 'forgebee:backend-engineer' }).status, 0);
