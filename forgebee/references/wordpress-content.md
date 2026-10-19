@@ -47,7 +47,7 @@ Working library for `forgebee/agents/wordpress-content.md`. The persona holds th
 <!-- /wp:paragraph -->
 ```
 
-The meta key must be registered with `show_in_rest => true`.
+The meta key must be registered with `show_in_rest => true`. For ACF fields use source `acf/field` with `"args":{"key":"<field name>"}`. It needs ACF PRO 6.8.1+, WP 6.7+, the `acf/settings/enable_datastore` filter, and the field setting "Allow Access to Value in Editor UI" (Presentation tab). SCF support is unconfirmed: verify against the SCF docs.
 
 ## Block pattern
 

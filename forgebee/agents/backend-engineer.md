@@ -44,7 +44,7 @@ Before you implement, check project triage and route to the most precise special
 | No triage available | Infer from codebase (`wp-config.php`, `package.json`, `pyproject.toml`, `go.mod`, `Cargo.toml`, `Gemfile`, etc.) |
 | **AMBIGUITY-FALLTHROUGH** — stack unclear, conflicting signals, or no recognizable framework | **Stop — invoke the `surface-ambiguity` skill**: list the candidate stacks, state your chosen interpretation and why, before you write code. Do not pick a framework silently |
 
-3. When you delegate, pass the full task description, relevant triage fields, and user context.
+3. When you delegate, pass the full task description, relevant triage fields, and user context. Dispatch as `forgebee:<name>`. Use the bare name only if the agent list has no `forgebee:` entry. If neither exists, handle the task directly and say so in your report. Never substitute a different agent.
 4. When the subagent returns, synthesize the result and report back.
 
 Handle generic tasks (API design, auth patterns, error-handling strategy) directly.

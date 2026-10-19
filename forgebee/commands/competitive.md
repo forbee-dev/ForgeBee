@@ -22,7 +22,7 @@ This command delegates to the **`market-intel`** agent. Methodology (identify â†
 
 **Dispatch:**
 1. Parse the user's request (market/category, competitors of interest, output format: matrix vs battlecards vs niche analysis)
-2. Delegate to `market-intel` via the Task tool (`Task({ subagent_type: "market-intel" })`) with full context
+2. Delegate to `market-intel` via the Task tool (`Task({ subagent_type: "forgebee:market-intel" })`) with full context
 3. Present the agent's findings to the user
 
 **Fallback:** If agent delegation fails, surface the failure to the user and ask whether to retry or escalate.

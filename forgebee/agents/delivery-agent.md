@@ -50,7 +50,7 @@ You receive:
    - `VERIFIED` → go to Step 2.
    - `PARTIALLY VERIFIED` → escalate with the unverified criteria; ask whether to proceed with caveats or stop.
    - `NOT VERIFIED` → stop. Report `BLOCKED` with the failing criteria.
-3. **No verdict in the session** → dispatch `verification-enforcer`, wait for its report, restart this step. Never substitute an ad-hoc test run.
+3. **No verdict in the session** → report `NEEDS_CONTEXT`: ask the orchestrator to run `verification-enforcer` first. Never substitute an ad-hoc test run. You have no Agent tool.
 4. **Check for unintended changes** (delivery's own check): review `git diff --name-only` for files that should not have changed.
 5. **Map evidence to acceptance criteria.** A criterion with no evidence row is unverified → treat as `PARTIALLY VERIFIED` and escalate. Do not run a new test to fill the gap.
 

@@ -31,9 +31,10 @@ const ARCHIVE_DIR = path.join(PROJECT_DIR, '.claude', 'learnings', 'archive');
 const argv = process.argv.slice(2);
 const dryRun = argv.includes('--dry-run');
 const daysFlag = argv.indexOf('--days');
-const ageDays = daysFlag >= 0
+const parsedDays = daysFlag >= 0
   ? parseInt(argv[daysFlag + 1], 10)
   : parseInt(process.env.FORGEBEE_LEARN_AGE_DAYS || '14', 10);
+const ageDays = Number.isFinite(parsedDays) ? parsedDays : 14;
 
 const SENSITIVE_PATTERNS = [
   /\.env\b/i,
@@ -57,9 +58,7 @@ const FILLER_PATTERNS = [
   // pleasantries that LLMs add
   { from: /\b(of course|naturally|obviously|clearly|as expected),?\s+/gi, to: '' },
   // collapse multiple spaces
-  { from: /  +/g, to: ' ' },
-  // collapse leading whitespace on bullet lines we just shortened
-  { from: /^ +- /gm, to: '- ' },
+  { from: /(\S)  +/g, to: '$1 ' },
 ];
 
 /**
@@ -114,7 +113,13 @@ function compressBody(body) {
   const stash = [];
   let stashed = body.replace(/```[\s\S]*?```|`[^`]+`/g, m => {
     stash.push(m);
-    return `__STASH_${stash.length - 1}__`;
+    return `\u0000${stash.length - 1}\u0000`;
+  });
+
+  // Quoted text (error messages) is kept verbatim; stash it too
+  stashed = stashed.replace(/"[^"\n]*"|“[^”\n]*”/g, m => {
+    stash.push(m);
+    return `\u0000${stash.length - 1}\u0000`;
   });
 
   // Apply filler rules (paths/dates/urls left alone — they're not articles/fillers)
@@ -122,8 +127,10 @@ function compressBody(body) {
     stashed = stashed.replace(from, to);
   }
 
-  // Restore stash
-  const compressed = stashed.replace(/__STASH_(\d+)__/g, (_, i) => stash[+i]);
+  // NUL-delimited placeholders cannot occur in learnings text, so user text never collides.
+  // Two passes: a stashed quote can hold a stashed code span, never deeper.
+  const restore = t => t.replace(/\u0000(\d+)\u0000/g, (_, i) => stash[+i]);
+  const compressed = restore(restore(stashed));
 
   return {
     compressed,
@@ -159,11 +166,17 @@ function main() {
   let totalAfter = 0;
 
   const out = [preamble];
+  const archived = [];
 
   for (const s of sessions) {
     const body = s.bodyLines.join('\n');
     totalBefore += body.length;
 
+    if (body.trimStart().startsWith('<!-- compressed -->')) {
+      out.push(s.raw.join('\n'));
+      totalAfter += body.length;
+      continue;
+    }
     if (!s.date || ageInDays(s.date) < ageDays) {
       skipped_recent++;
       out.push(s.raw.join('\n'));
@@ -178,6 +191,7 @@ function main() {
     }
 
     const { compressed } = compressBody(body);
+    archived.push(s.raw.join('\n'));
     compressed_n++;
     totalAfter += compressed.length;
     out.push([s.header, '<!-- compressed -->', compressed].join('\n'));
@@ -199,7 +213,7 @@ function main() {
   }
 
   if (compressed_n > 0) {
-    const archivePath = archiveOriginal(original);
+    const archivePath = archiveOriginal(archived.join('\n'));
     // Atomic write: stage to a temp file then rename, so a crash mid-write can
     // never truncate learnings.md (the original is already safely archived above).
     const tmpFile = `${LEARNINGS_FILE}.tmp.${process.pid}`;

@@ -101,6 +101,17 @@ if (fs.existsSync(checkpointDir)) {
 
 const topicsStr = topics.join(',');
 
+// Stop fires every turn; skip when nothing changed since the last entry of this session.
+try {
+  const lastLine = fs.readFileSync(INDEX_FILE, 'utf8').trimEnd().split('\n').pop();
+  const last = lastLine ? JSON.parse(lastLine) : null;
+  if (last && last.session === sessionId && (last.files || []).join(',') === filesChanged) {
+    process.exit(0);
+  }
+} catch {
+  // no index yet or unreadable — write a fresh entry
+}
+
 // ── Append to human-readable learnings.md ──────────────────────────────
 let learningsEntry = `### Session: ${timestamp}\n`;
 learningsEntry += `- Session ID: \`${sessionId}\`\n`;

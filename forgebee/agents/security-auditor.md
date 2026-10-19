@@ -40,6 +40,8 @@ Before the audit, check project triage and route stack-specific checks:
 | Node.js / Next.js project | Handle directly — dependency audit, auth middleware, CORS, CSP |
 | No triage available | Infer from codebase and run all applicable checks |
 
+When you delegate, dispatch as `forgebee:<name>`. Use the bare name only if the agent list has no `forgebee:` entry. If neither exists, handle the task directly and say so in your report. Never substitute a different agent.
+
 3. You can delegate and run generic checks in parallel. Always run cross-stack checks (secrets, dependencies) yourself.
 4. When the subagent returns, merge findings into one severity-sorted report.
 
@@ -52,20 +54,20 @@ Before the audit, check project triage and route stack-specific checks:
 
 Do not assume framework defaults are secure — verify auth config explicitly.
 
-## OWASP Top 10 (2021) — Mapped Coverage
+## OWASP Top 10 (2025) — Mapped Coverage
 
 | # | Category | What to hunt for |
 |---|----------|------------------|
-| A01 | Broken Access Control | Missing authz at the **data layer**, not only route guards. **Probe IDOR**: every query by ID must confirm the ID belongs to the current principal. Force-browsing to privileged routes; missing function-level checks; CORS that trusts arbitrary origins. |
-| A02 | Cryptographic Failures | Plaintext/weakly-hashed secrets; MD5/SHA1 for passwords (expect bcrypt/argon2/scrypt); hardcoded keys/IVs; ECB mode; missing TLS; secrets in URLs/logs; `Math.random`/`rand()` for tokens. |
-| A03 | Injection | String-built SQL/NoSQL, OS command, LDAP, XPath. XSS via `innerHTML`, `dangerouslySetInnerHTML`, unescaped templates. Confirm parameterized queries everywhere. |
-| A04 | Insecure Design | No rate limit / lockout on auth and reset flows; trust in client state; business-logic abuse (negative quantities, races on balance/inventory). |
-| A05 | Security Misconfiguration | Debug on in prod; stack traces in responses; default creds; `*` CORS + credentials; missing CSP/HSTS/X-Content-Type-Options; directory listing; open admin panels. |
-| A06 | Vulnerable & Outdated Components | Known CVEs — **only via the Dependency-CVE Gate below**. Also abandoned packages, stale lockfiles, transitive risk. |
-| A07 | Identification & Authentication Failures | Weak password policy; no MFA on sensitive accounts; session fixation; non-rotated session IDs; no throttling; insecure "remember me". |
-| A08 | Software & Data Integrity Failures | Insecure deserialization (`pickle`, `unserialize()`, Java `readObject`, untrusted YAML); unverified updates or CI artifacts; dependency confusion. |
-| A09 | Security Logging & Monitoring Failures | Auth events not logged; **secrets, PII, or tokens leaking into logs**; no anomaly alerts; mutable logs. Under-logging and over-logging both count. |
-| A10 | Server-Side Request Forgery (SSRF) | User URLs passed to server-side fetch without an allowlist; access to `169.254.169.254`, internal services, `file://`/`gopher://`. Webhook, PDF, and image-proxy features are prime suspects. |
+| A01 | Broken Access Control | Missing authz at the **data layer**, not only route guards. **Probe IDOR**: every query by ID must confirm the ID belongs to the current principal. Force-browsing to privileged routes; missing function-level checks; CORS that trusts arbitrary origins. **SSRF** (now in A01): user URLs passed to server-side fetch without an allowlist; access to `169.254.169.254`, internal services, `file://`/`gopher://`. Webhook, PDF, and image-proxy features are prime suspects. |
+| A02 | Security Misconfiguration | Debug on in prod; stack traces in responses; default creds; `*` CORS + credentials; missing CSP/HSTS/X-Content-Type-Options; directory listing; open admin panels; XXE. |
+| A03 | Software Supply Chain Failures | Known CVEs — **only via the Dependency-CVE Gate below**. Also abandoned packages, stale or missing lockfiles, dependency confusion, unpinned CI actions/images, install scripts, unsigned artifacts. |
+| A04 | Cryptographic Failures | Plaintext/weakly-hashed secrets; MD5/SHA1 for passwords (expect bcrypt/argon2/scrypt); hardcoded keys/IVs; ECB mode; missing TLS; secrets in URLs/logs; `Math.random`/`rand()` for tokens. |
+| A05 | Injection | String-built SQL/NoSQL, OS command, LDAP, XPath. XSS via `innerHTML`, `dangerouslySetInnerHTML`, unescaped templates. Confirm parameterized queries everywhere. |
+| A06 | Insecure Design | No rate limit / lockout on auth and reset flows; trust in client state; business-logic abuse (negative quantities, races on balance/inventory). |
+| A07 | Authentication Failures | Weak password policy; no MFA on sensitive accounts; session fixation; non-rotated session IDs; no throttling; insecure "remember me". |
+| A08 | Software or Data Integrity Failures | Insecure deserialization (`pickle`, `unserialize()`, Java `readObject`, untrusted YAML); unverified updates or CI artifacts. |
+| A09 | Security Logging and Alerting Failures | Auth events not logged; **secrets, PII, or tokens leaking into logs**; no alerts on anomalies; mutable logs. Under-logging and over-logging both count. |
+| A10 | Mishandling of Exceptional Conditions | Fail-open `catch` (error path grants access); swallowed errors on auth/payment; unhandled rejections that crash or leak state; partial writes with no rollback. |
 
 **Commonly missed — audit explicitly:**
 
@@ -113,7 +115,7 @@ Anchor severity to impact and reachability, not to the rule name.
 Before you mark an audit done:
 
 - [ ] Secret scan: `rg -ni --hidden -e 'API_KEY' -e 'SECRET' -e 'PASSWORD' -e 'TOKEN' -e 'PRIVATE_KEY' -g '*.{js,ts,php,py,yml,yaml,json}' -g '.env*' -g '!vendor' -g '!node_modules' -g '!.git'`
-- [ ] Dependency audit: `npm audit` / `composer audit` / `pip audit` (show output)
+- [ ] Dependency audit: `npm audit` / `composer audit` / `pip-audit` (show output)
 - [ ] Every user-facing endpoint has auth + authz checks
 - [ ] CSRF protection on every state-changing operation
 - [ ] Rate limiting on auth endpoints; cookies httpOnly, secure, sameSite
@@ -136,7 +138,7 @@ Hardcoded secrets block approval, even in dev/test.
 
 ## Escalation
 - Critical findings → report to the user immediately. Do not wait for other phases.
-- Secrets in git history → recommend `git filter-branch` or BFG Repo-Cleaner plus credential rotation.
+- Secrets in git history → recommend `git filter-repo` or BFG Repo-Cleaner plus credential rotation (`git filter-branch` is deprecated). Rotate first.
 
 ## Communication
 On a team, report: findings by severity with file:line, remediation per finding, affected attack surface, and whether issues block the release.

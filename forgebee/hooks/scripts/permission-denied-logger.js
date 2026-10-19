@@ -5,7 +5,7 @@
  * Useful for understanding what the classifier catches and tuning autoMode rules.
  */
 
-const { readStdinJson, log } = require('./_common.js');
+const { readStdinJson, log, redactForPrompt } = require('./_common.js');
 const { spawnSync } = require('child_process');
 const path = require('path');
 
@@ -21,9 +21,10 @@ async function main() {
   const auditPayload = JSON.stringify({
     event_type: 'permission_denied',
     tool_name: toolName,
-    command: command.substring(0, 200), // truncate for safety
+    // redact before truncating: a cut secret would no longer match its pattern
+    command: redactForPrompt(command).substring(0, 200),
     denial_reason: reason,
-    session_id: process.env.SESSION_ID || 'unknown',
+    session_id: input.session_id || 'unknown',
   });
 
   try {

@@ -41,12 +41,14 @@ theme-name/
     "color": {
       "palette": [
         { "slug": "primary", "color": "#1a1a2e", "name": "Primary" },
-        { "slug": "secondary", "color": "#16213e", "name": "Secondary" }
+        { "slug": "secondary", "color": "#16213e", "name": "Secondary" },
+        { "slug": "base", "color": "#ffffff", "name": "Base" }
       ],
       "custom": false,
       "defaultPalette": false
     },
     "typography": {
+      "defaultFontSizes": false,
       "fontFamilies": [
         {
           "fontFamily": "Inter, sans-serif",
@@ -71,7 +73,7 @@ theme-name/
   "styles": {
     "color": {
       "background": "var(--wp--preset--color--primary)",
-      "text": "#ffffff"
+      "text": "var(--wp--preset--color--base)"
     },
     "typography": {
       "fontFamily": "var(--wp--preset--font-family--body)",

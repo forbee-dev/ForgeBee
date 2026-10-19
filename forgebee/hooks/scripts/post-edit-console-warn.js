@@ -7,7 +7,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { log } = require('./_common.js');
+const { output } = require('./_common.js');
 
 async function main() {
   let input = '';
@@ -45,19 +45,30 @@ async function main() {
 
   const ext = path.extname(filePath).toLowerCase();
 
+  let warning = [];
   if (['.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs'].includes(ext)) {
-    checkJsDebug(filePath);
+    warning = checkJsDebug(filePath);
   } else if (ext === '.php') {
-    checkPhpDebug(filePath);
+    warning = checkPhpDebug(filePath);
   }
 
-  process.stdout.write(input);
+  // stderr with exit 0 never reaches Claude; additionalContext does.
+  if (warning.length > 0) {
+    output({
+      hookSpecificOutput: {
+        hookEventName: 'PostToolUse',
+        additionalContext: warning.join('\n'),
+      },
+    });
+  } else {
+    process.stdout.write(input);
+  }
   process.exit(0);
 }
 
 function checkJsDebug(file) {
   if (!fs.existsSync(file)) {
-    return;
+    return [];
   }
 
   try {
@@ -72,24 +83,28 @@ function checkJsDebug(file) {
     });
 
     if (matches.length > 0) {
-      log(`[Hook] WARNING: console.log found in ${path.basename(file)}`);
-      matches.slice(0, 5).forEach((match) => log(`  ${match}`));
-      log('[Hook] Remove console.log before committing');
+      return [
+        `[Hook] WARNING: console.log found in ${path.basename(file)}`,
+        ...matches.slice(0, 5).map((match) => `  ${match}`),
+        '[Hook] Remove console.log before committing',
+      ];
     }
   } catch (e) {
     // Silently fail
   }
+  return [];
 }
 
 function checkPhpDebug(file) {
   if (!fs.existsSync(file)) {
-    return;
+    return [];
   }
 
   try {
     const content = fs.readFileSync(file, 'utf8');
     const lines = content.split('\n');
-    const debugPattern = /(var_dump|error_log|print_r|dd)\s*\(/;
+    // Lookbehind skips method calls and variables such as $cart->add( or Foo::add(.
+    const debugPattern = /(?<![>:$\w])\b(?:var_dump|error_log|print_r|dd)\s*\(/;
 
     const matches = [];
     lines.forEach((line, index) => {
@@ -99,13 +114,16 @@ function checkPhpDebug(file) {
     });
 
     if (matches.length > 0) {
-      log(`[Hook] WARNING: Debug statements found in ${path.basename(file)}`);
-      matches.slice(0, 5).forEach((match) => log(`  ${match}`));
-      log('[Hook] Remove debug statements before committing');
+      return [
+        `[Hook] WARNING: Debug statements found in ${path.basename(file)}`,
+        ...matches.slice(0, 5).map((match) => `  ${match}`),
+        '[Hook] Remove debug statements before committing',
+      ];
     }
   } catch (e) {
     // Silently fail
   }
+  return [];
 }
 
 main().catch(() => {

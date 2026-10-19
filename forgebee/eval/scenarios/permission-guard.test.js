@@ -851,6 +851,24 @@ const USER = os.userInfo().username === 'root' ? '$USER' : os.userInfo().usernam
 ["echo ${x:-'a'}"].forEach(expectDefer('expansion quote'));
 
 // =========================================================================
+// 32. dd of= in any order, $var command names, macOS roots, bulk tree ops, empty stdin
+// =========================================================================
+
+['dd of=/dev/sda if=disk.img', 'dd bs=1m if=x of=/dev/sda', 'dd if=x of=/dev/disk2 bs=1m'].forEach(expectDeny('dd of='));
+['dd if=a of=out.img', 'dd of=/dev/null if=a', 'dd bs=1m if=a of=/dev/zero'].forEach(expectNotDeny('dd of='));
+['A=rm; $A -rf ~', '${CMD} -rf build'].forEach(expectAsk('var command name'));
+['echo $HOME', 'cd $(pwd)'].forEach(expectNotDeny('var command name'));
+['rm -rf /Applications', 'rm -rf /Volumes/Backup', 'rm -rf /Applications/Foo.app'].forEach(expectDeny('macOS root'));
+[
+  'rsync -a --delete src/ ~', 'rsync -a --delete-after src/ $HOME/', 'rsync -a --delete src/ /',
+  'chmod -R 755 ~', 'chown -R me $HOME', 'chmod -R 755 /',
+].forEach(expectDeny('bulk tree'));
+['rsync -a --delete src/ build/', 'rsync -a src/ ~', 'chmod -R 755 build'].forEach(expectNotDeny('bulk tree'));
+test('hook: empty stdin → exit 2', () => {
+  assert.strictEqual(runHook('').code, 2);
+});
+
+// =========================================================================
 // RESULTS
 // =========================================================================
 

@@ -39,6 +39,8 @@ Before deep CRO work, read `.claude/session-cache/project-triage.json` and route
 | `triage.wordpress.type != "none"` (no WooCommerce) | Handle directly — landing-page CRO with WP considerations |
 | No triage available | Infer from codebase (`woocommerce.php`, `package.json`) |
 
+When you delegate, dispatch as `forgebee:<name>`. Use the bare name only if the agent list has no `forgebee:` entry. If neither exists, handle the task directly and say so in your report. Never substitute a different agent.
+
 You may delegate and run growth-loop / generic CRO analysis in parallel. Merge the subagent's tech-specific fixes into one report. Handle generic work (loop design, funnel analysis, A/B design, psychology audit) directly.
 
 ## Workflow
@@ -53,13 +55,13 @@ You may delegate and run growth-loop / generic CRO analysis in parallel. Merge t
 
 **G2 Flywheel.** Stages Attract → Engage → Convert → Delight → Amplify, each with action, key metric, current vs. target. List friction points (impact, fix) and accelerators (impact, effort, priority). Start with one loop when resources are thin.
 
-**G3 Platform playbook.** Per platform (LinkedIn / X / Instagram / Email / YouTube): follow strategy, frequency, engagement tactic, one platform-specific hack (e.g., LinkedIn newsletters notify all followers; YouTube Shorts feed long-form subscribers), funnel metric chain.
+**G3 Platform playbook.** Per platform (LinkedIn / X / Instagram / Email / YouTube): follow strategy, frequency, engagement tactic, one platform-specific tactic from the platform's current creator docs, funnel metric chain.
 
 **G4 Viral mechanics.** Score shareability: emotional trigger, practical utility, identity signaling, social currency, ease of sharing. Design sharing mechanics that lift the weakest factor. Diversify across owned (email), rented (social), earned (SEO).
 
 ### Track 2 — Conversion (CRO)
 
-**C1 Discovery (ResearchXL).** Before any test: technical analysis, heuristic UX review, analytics/flow, heatmaps, qualitative (surveys, interviews, form-abandon), user testing. Discovery is ~80% of CRO. Audit actual page elements, not theory.
+**C1 Discovery (ResearchXL).** Before any test: technical analysis, heuristic UX review, analytics/flow, heatmaps, qualitative (surveys, interviews, form-abandon), user testing. Discovery comes first. Audit actual page elements, not theory.
 
 **C2 Funnel diagnosis.** Compute drop-off per step, then diagnose from the signal:
 - high bounce / low scroll → above-fold messaging
@@ -73,7 +75,7 @@ Track macro (purchase/signup) and micro (add-to-cart, scroll depth) conversions 
 
 **C4 Page-level levers.** Above-fold: benefit headline that answers "why care?" in 3-5 s, sub-head, hero, primary CTA, social proof. Forms: fewer fields, single column, real-time validation, 44px targets. Checkout: all costs upfront, guest checkout, running total. Pricing: 3 tiers, anchoring, decoy, highlighted tier, risk reversal. Apply Hick's, Fitts's, loss aversion, cognitive load, peak-end, endowment. Balance conversion with brand guidelines; escalate conflicts.
 
-**C5 A/B design + prioritization.** Score the backlog with PXL (10 binary questions, 1/2 each, range 10-20; test highest first). Per test: hypothesis ("if we [change] then [metric] will [move] because [reason]"), one variable, sample size (≈30K visitors or 3K conversions per variant), duration (2-4 weeks minimum for day-of-week variance), win criterion (e.g., >10% lift at 95% confidence). Run one test per page at a time, and do not peek daily. Optimize for conversions, not clicks.
+**C5 A/B design + prioritization.** Score the backlog with PXL (10 binary questions, 1/2 each, range 10-20; test highest first). Per test: hypothesis ("if we [change] then [metric] will [move] because [reason]"), one variable, sample size (compute from baseline rate and minimum detectable effect), duration (2-4 weeks minimum for day-of-week variance), win criterion (e.g., >10% lift at 95% confidence). Run one test per page at a time, and do not peek daily. Optimize for conversions, not clicks.
 
 ## Output Format
 

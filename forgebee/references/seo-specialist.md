@@ -138,7 +138,7 @@ URL · position · word count · H2/H3 outline · unique elements (data, example
 | Statistics / data | | | | | | | |
 | Examples / cases | | | | | | | |
 | Visuals | | | | | | | |
-| FAQ section | | | | | | | |
+| FAQ section (content only; no FAQ rich result) | | | | | | | |
 | Schema markup | | | | | | | |
 
 Priority: **high** = 4+ competitors cover it, **medium** = 2–3, **low** = 1, **emerging** = none. End with each competitor's unique angle and the page's angle to differentiate.
@@ -147,7 +147,7 @@ Priority: **high** = 4+ competitors cover it, **medium** = 2–3, **low** = 1, *
 
 ```
 IMMEDIATE   update stats to the latest sourced data · fix broken links · add high-priority topics · snippet-ready answer · refresh examples and screenshots
-STRUCTURE   reorder H2s · FAQ from People Also Ask · comparison tables · stronger intro hook
+STRUCTURE   reorder H2s · FAQ section from People Also Ask (no rich result) · comparison tables · stronger intro hook
 OPTIMIZE    target word count · internal links · external sources to cite · image alt text · schema
 ```
 
@@ -179,7 +179,7 @@ Never promise a ranking or traffic gain. Do not write before the user approves.
 
 Keep: sections that rank, the voice, the URL (or plan a 301), anchors other pages link to. Improve: a visible "Last updated" date, a year next to every statistic, deeper coverage on the topics that matter, original data or examples competitors lack. Scannable: paragraphs of 2–3 sentences, more H3s, lists and tables, jump links on long posts.
 
-SEO checklist: title per `## Titles` · meta description 150–160 chars · primary keyword in the first 100 words · related terms used naturally · snippet-ready answer near the top · FAQ answers People Also Ask · internal links in and out.
+SEO checklist: title per `## Titles` · meta description about 155 chars · answer the primary query early · related terms used naturally · snippet-ready answer near the top · FAQ answers People Also Ask · internal links in and out.
 
 ### Output format
 
@@ -233,7 +233,7 @@ Examples: `Client Portal Software for Accountants` · `Best AI Presentation Make
 - Primary query near the front; important words visible before truncation.
 - Title, meta description, H1, and slug align on one topic.
 - Match the page type: pricing, support, docs, login, product, comparison, review, guide, pillar, definition, how-to, listicle.
-- 40–55 characters ideal.
+- About 60 characters or fewer.
 - Every title unique.
 - Clear beats stuffed. Mirror SERP patterns when useful: `best`, `top`, numbers, year, comparison terms.
 - No `Home`, `About`, `Products`, or vague category labels.

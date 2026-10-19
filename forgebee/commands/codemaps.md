@@ -29,7 +29,7 @@ $ARGUMENTS: Optional flags — `--force` to regenerate all, `--diff` to show cha
 
 ## Step 1: Detect Project Type
 
-Read the triage JSON from `.claude/session-cache/triage.json` if it exists. Otherwise, scan for:
+Read the triage JSON from `.claude/session-cache/project-triage.json` if it exists. Otherwise, scan for:
 
 ```
 package.json       → Node.js / Next.js / React
@@ -145,7 +145,7 @@ Next refresh recommended: 2026-04-01
 
 ## Integration with Project Router
 
-The codemaps directory is auto-loaded by subagents when they need codebase context. The project-router triage JSON tells them WHAT stack is present; codemaps tell them HOW it's structured.
+No hook loads `docs/CODEMAPS/`. Reference it from `CLAUDE.md` (subagents read CLAUDE.md) or pass the path in the dispatch. Triage JSON says WHAT stack is present; codemaps say HOW it is structured.
 
 ## Tips
 

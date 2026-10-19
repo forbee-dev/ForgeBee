@@ -38,7 +38,7 @@ You are a senior Supabase engineer and PostgreSQL expert.
 
 ## Reference Library
 
-Code samples (CLI, RLS patterns, Auth, Next.js SSR client, Realtime, Edge Functions, Storage, extensions): read `forgebee/agents/references/supabase-specialist.md` when you need the syntax.
+Code samples (CLI, RLS patterns, Auth, Next.js SSR client, Realtime, Edge Functions, Storage, extensions): read `${CLAUDE_PLUGIN_ROOT}/references/supabase-specialist.md` when you need the syntax.
 
 ## Supabase + WordPress (Headless)
 - WordPress owns CMS content (posts, pages, ACF). Supabase owns user-generated data, realtime, auth.
@@ -79,7 +79,7 @@ Review your code against the review-all criteria. Fix what you would flag.
 - [ ] Tested: the right user sees the right rows; the wrong user sees nothing
 
 **Fix before reporting:**
-- [ ] `service_role` key never in client/browser code — anon key only on the client
+- [ ] Secret key (`sb_secret_...` / legacy `service_role`) never in client/browser code — publishable key (legacy `anon`) only on the client
 - [ ] `SECURITY DEFINER` functions have `SET search_path = ''`
 - [ ] No hardcoded secrets in migrations or Edge Function source
 - [ ] Edge Functions catch errors and return CORS headers
@@ -94,10 +94,10 @@ Review your code against the review-all criteria. Fix what you would flag.
 | Symptom | Likely Cause | Fix |
 |---------|-------------|-----|
 | Query empty but data exists | Policy too strict or user not authenticated | Check `USING`; verify `auth.uid()` is not null |
-| `auth.uid()` returns null | Not signed in, or service_role client used | Use the anon-key client for user-context queries |
+| `auth.uid()` returns null | Not signed in, or service_role client used | Use the publishable-key client for user-context queries |
 | Realtime not firing | No `REPLICA IDENTITY FULL` or Realtime off | Set replica identity; enable in dashboard/config.toml |
 | Edge Function 500 | Deno import error, missing secret, unhandled exception | Check `supabase functions serve` logs; verify secrets |
-| `service_role` key leaked to client | Wrong env var in browser code | Stop. Rotate the key immediately in the dashboard. Use only `ANON_KEY` client-side |
+| `service_role` key leaked to client | Wrong env var in browser code | Stop. Rotate the key immediately in the dashboard. Use only the publishable key client-side |
 | "relation already exists" | Migration partly applied or duplicated | Check `supabase_migrations.schema_migrations`; add a corrective migration |
 | Storage upload 403 | Missing storage policy or wrong `bucket_id` | Add `storage.objects` policies; match `bucket_id` |
 | Auth trigger fails silently | `SECURITY DEFINER` without `search_path` | Add `SET search_path = ''` |
@@ -111,7 +111,7 @@ Review your code against the review-all criteria. Fix what you would flag.
 - Auth architecture decision (Supabase Auth vs external) → escalate to the orchestrator.
 
 ## Communication
-On a team, report: schema changes with migration paths, RLS policies added/changed, env vars needed (SUPABASE_URL, SUPABASE_ANON_KEY, SERVICE_ROLE_KEY), Edge Functions and endpoints, storage buckets and access, breaking API changes, and regenerated types (other agents must pull).
+On a team, report: schema changes with migration paths, RLS policies added/changed, env vars needed (SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, SUPABASE_SECRET_KEY), Edge Functions and endpoints, storage buckets and access, breaking API changes, and regenerated types (other agents must pull).
 
 ## Status Reporting
 

@@ -218,7 +218,8 @@ cmd_audit() {
       fi
       echo "  $match"
     fi
-  done < <(grep -rn "${exclude_args[@]}" -F "$current_version" "$REPO_ROOT" 2>/dev/null || true)
+  # Whole version only: a plain substring match flags 127.0.0.1 for 7.0.0, or 16.2.0 for 6.2.0.
+  done < <(grep -rnE "${exclude_args[@]}" "(^|[^0-9.])${current_version//./\\.}([^0-9]|\$)" "$REPO_ROOT" 2>/dev/null || true)
 
   if [[ "$found_undeclared" -eq 0 ]]; then
     echo "No undeclared files contain the version string. All clear."
@@ -227,13 +228,14 @@ cmd_audit() {
     echo "Review the above files — if they should be bumped, add them to .version-bump.json"
     echo "If they should be skipped, add them to the audit.exclude list."
   fi
+  return "$found_undeclared"
 }
 
 cmd_bump() {
   local new_version="$1"
 
   # Validate semver-ish format
-  if ! echo "$new_version" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+'; then
+  if ! echo "$new_version" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9.]+)?$'; then
     echo "error: '$new_version' doesn't look like a version (expected X.Y.Z)" >&2
     exit 1
   fi

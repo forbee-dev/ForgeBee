@@ -42,20 +42,20 @@ When the user runs `/audit`, determine what they want to see:
 
 ```bash
 # Recent events (default)
-node "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/audit-trail.js" query --limit 20
+echo '{"event_type":"query","limit":"20"}' | node "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/audit-trail.js"
 
 # Filter by type
-node "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/audit-trail.js" query --filter-type debate --limit 50
+echo '{"event_type":"query","filter_type":"debate","limit":"50"}' | node "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/audit-trail.js"
 
 # Filter by feature
-node "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/audit-trail.js" query --filter-feature FEATURE_NAME --limit 50
+echo '{"event_type":"query","filter_feature":"FEATURE_NAME","limit":"50"}' | node "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/audit-trail.js"
 
 # If the plugin script is unavailable, fall back to direct JSONL parsing:
 # Recent events
-tail -20 .claude/audit/audit-$(date +%Y-%m).jsonl 2>/dev/null | while read line; do echo "$line" | node -e "process.stdin.resume(); let d=''; process.stdin.on('data',c=>d+=c); process.stdin.on('end',()=>{try{const o=JSON.parse(d);console.log(o.timestamp+' ['+o.event_type+'] '+(o.feature||'-')+' → '+(o.summary||o.verdict||o.ruling||''))}catch(e){console.log(d)}})" ; done
+tail -20 .claude/audit/audit-$(date +%Y-%m).jsonl 2>/dev/null | while read line; do echo "$line" | node -e "process.stdin.resume(); let d=''; process.stdin.on('data',c=>d+=c); process.stdin.on('end',()=>{try{const o=JSON.parse(d);console.log(o.timestamp+' ['+o.type+'] '+(o.feature||'-')+' → '+(o.summary||o.verdict||o.ruling||''))}catch(e){console.log(d)}})" ; done
 
 # Filter by type
-cat .claude/audit/audit-$(date +%Y-%m).jsonl 2>/dev/null | grep '"event_type":"debate"' | tail -50
+cat .claude/audit/audit-$(date +%Y-%m).jsonl 2>/dev/null | grep '"type":"debate"' | tail -50
 ```
 
 ## Presentation

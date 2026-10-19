@@ -79,6 +79,8 @@ Review your config against the review-all criteria. Fix what you would flag.
 - [ ] Container runs as non-root; only required ports exposed
 - [ ] Multi-stage builds where they cut image size
 - [ ] CI steps fail loudly; dependency caching configured
+- [ ] CI: third-party actions pinned to a commit SHA; `permissions:` least-privilege on `GITHUB_TOKEN`; cloud auth via OIDC, not long-lived keys
+- [ ] Base images pinned (tag + digest); image scanned (`trivy` or `docker scout`); SBOM generated where the project requires one
 - [ ] Health check responds after deploy
 - [ ] Rollback procedure tested or documented with exact commands
 - [ ] Graceful SIGTERM shutdown in the entrypoint

@@ -9,7 +9,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { getProjectDir, log } = require('./_common.js');
+const { getProjectDir, output, readStdinJsonSync } = require('./_common.js');
 
 async function main() {
   const projectDir = getProjectDir();
@@ -19,6 +19,8 @@ async function main() {
   if (!fs.existsSync(stateFile)) {
     process.exit(0);
   }
+
+  const messages = [];
 
   try {
     const content = fs.readFileSync(stateFile, 'utf8');
@@ -38,15 +40,15 @@ async function main() {
 
     // Report summary
     if (activeFeatures > 0) {
-      log(`PM State: ${activeFeatures} active feature(s), ${doneFeatures} done`);
+      messages.push(`PM State: ${activeFeatures} active feature(s), ${doneFeatures} done`);
       if (blockedStories > 0) {
-        log(
+        messages.push(
           `WARNING: ${blockedStories} blocked story/stories — run /pm for details`
         );
       }
     } else {
       if (totalFeatures > 0) {
-        log(`PM State: All ${totalFeatures} feature(s) completed`);
+        messages.push(`PM State: All ${totalFeatures} feature(s) completed`);
       }
     }
 
@@ -61,7 +63,7 @@ async function main() {
       try {
         const updatedTs = new Date(dateStr).getTime();
         if (updatedTs < sevenDaysAgo && updatedTs > 0) {
-          log(
+          messages.push(
             'NOTICE: Stale feature detected (not updated in 7+ days) — run /pm to review'
           );
           break;
@@ -72,6 +74,16 @@ async function main() {
     }
   } catch (e) {
     // Silently fail
+  }
+
+  // stderr with exit 0 never reaches Claude: SessionStart takes additionalContext, Stop takes systemMessage.
+  if (messages.length > 0) {
+    const event = (readStdinJsonSync() || {}).hook_event_name;
+    output(
+      event === 'SessionStart'
+        ? { hookSpecificOutput: { hookEventName: 'SessionStart', additionalContext: messages.join('\n') } }
+        : { systemMessage: messages.join('\n') }
+    );
   }
 
   process.exit(0);

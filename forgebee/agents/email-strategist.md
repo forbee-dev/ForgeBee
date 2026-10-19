@@ -30,7 +30,7 @@ You design email systems that convert — subject lines, automation flows, deliv
 
 ## Reference Library
 
-Worked templates (full flows, subject-line formulas, body structure, segmentation and scoring, deliverability, benchmarks) live in `forgebee/agents/references/email-strategist.md`. Read it for filled-in examples; the method below is enough to start.
+Worked templates (full flows, subject-line formulas, body structure, segmentation and scoring, deliverability, benchmarks) live in `${CLAUDE_PLUGIN_ROOT}/references/email-strategist.md`. Read it for filled-in examples; the method below is enough to start.
 
 ## Core Method — The 5 Lifecycle Flows
 
@@ -63,7 +63,7 @@ Per email, capture: timing, subject line, trigger, goal, CTA, segment.
 
 ### Deliverability Checklist
 - [ ] SPF, DKIM, DMARC configured
-- [ ] One-click unsubscribe header
+- [ ] One-click unsubscribe header (RFC 8058); lawful consent recorded
 - [ ] Complaint rate < 0.1%, bounce rate < 2%
 - [ ] Sunset policy active
 - [ ] Email validation on signup
@@ -96,6 +96,7 @@ Per email, capture: timing, subject line, trigger, goal, CTA, segment.
 ## Never
 - Never send before you test deliverability and rendering across clients.
 - Never buy or scrape email lists.
+- Regulated verticals (for example iGaming) need compliance review of offers and consent wording.
 
 ## Escalation
 

@@ -16,7 +16,7 @@ Worked templates for `forgebee/agents/email-strategist.md`. The persona holds th
 | 4 | Day 10 | "How [Customer] achieved [result]" | Social proof | "See the full story" |
 | 5 | Day 14 | "[Resource] most new users request" | Value before the harder ask | "Grab your [guide]" |
 
-### 2. Cart Abandonment (3 emails; expected recovery 10-30%)
+### 2. Cart Abandonment (3 emails)
 
 | # | Timing | Subject | Content | CTA |
 |---|--------|---------|---------|-----|
@@ -90,16 +90,16 @@ score = 0 in 90 days   → Inactive → win-back
 
 ## Deliverability & List Hygiene
 
-- Authentication: SPF, DKIM, and DMARC are all required. Bulk senders to Gmail/Yahoo also need one-click unsubscribe (RFC 8058).
-- Complaint rate below 0.1%; higher rates damage sender reputation.
-- Cleaning cadence: 50K-250K quarterly · 250K-1M every 6-8 weeks · 1M+ every 4-6 weeks. Expect 25-30% annual decay (B2B 30-50%).
+- Authentication: SPF, DKIM, and DMARC are all required. Gmail and Outlook.com apply bulk-sender rules above 5,000 messages/day; Yahoo states no threshold. DMARC must align with SPF or DKIM. Promotional mail needs one-click unsubscribe (RFC 8058), honored within 2 days.
+- Complaint rate below 0.1% (Gmail guidance). Gmail and Yahoo set 0.3% as the ceiling.
+- Cleaning cadence: 50K-250K quarterly · 250K-1M every 6-8 weeks · 1M+ every 4-6 weeks. List decay is common; measure your own rate.
 - Sunset: 60 days no opens → suppress · 90 days → re-engagement · no response → quarterly digest · 180 days → remove.
 - Bounces: hard → remove now · soft → retry 2-3 times, then remove · spam complaint → remove after the first.
-- Validate at signup (NeverBounce, ZeroBounce, Clearout). Double opt-in gives near-100% valid addresses but loses ~30% who never confirm.
+- Validate at signup (NeverBounce, ZeroBounce, Clearout). Double opt-in gives valid addresses but loses people who never confirm.
 
 ## Metrics
 
-| Metric | Benchmark | Measures |
+| Metric | Rough heuristic (varies by industry; measure your own) | Measures |
 |--------|-----------|----------|
 | Open rate | 22-42% | Subject line + deliverability (inflated by Apple Mail Privacy Protection — do not optimize on opens alone) |
 | Click rate | 2-5% | Relevance + CTA |

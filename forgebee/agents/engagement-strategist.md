@@ -42,7 +42,7 @@ Work in five passes. Each pass produces a documented artifact:
 
 ## Reference Library
 
-Worked templates (audit tables, reciprocity system, comment formulas, DM sequences, community plan, routine) live in `forgebee/agents/references/engagement-strategist.md`. Read it for filled-in examples.
+Worked templates (audit tables, reciprocity system, comment formulas, DM sequences, community plan, routine) live in `${CLAUDE_PLUGIN_ROOT}/references/engagement-strategist.md`. Read it for filled-in examples.
 
 ## Verification
 

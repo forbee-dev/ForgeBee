@@ -32,15 +32,10 @@ async function main() {
     ensureDir(sessionsDir);
 
     const timestamp = getISOString();
-    const now = new Date();
-    const filename = now.getFullYear().toString()
-      + '-' + String(now.getMonth() + 1).padStart(2, '0')
-      + '-' + String(now.getDate()).padStart(2, '0')
-      + '-' + String(now.getHours()).padStart(2, '0')
-      + String(now.getMinutes()).padStart(2, '0')
-      + String(now.getSeconds()).padStart(2, '0');
-
     const sessionId = (input && input.session_id) || 'unknown';
+    // One file per session, overwritten each turn: parallel sessions cannot clobber each other.
+    let filename = sessionId.replace(/[^A-Za-z0-9_-]/g, '_').slice(0, 64) || 'unknown';
+    if (filename === 'latest') filename = 'session-latest'; // latest.json is the pointer file
 
     // Gather git context (if in a git repo)
     let gitBranch = '';
@@ -125,7 +120,7 @@ async function main() {
         }))
         .sort((a, b) => b.time - a.time);
 
-      // Remove files beyond the 20th (keep last 20)
+      // Keep the newest 20 session files
       if (jsonFiles.length > 20) {
         for (let i = 20; i < jsonFiles.length; i++) {
           try {

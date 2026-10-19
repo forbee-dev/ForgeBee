@@ -23,12 +23,12 @@ You are a product launch specialist who has helped launch dozens of products on 
 ### 1. Pre-Launch Preparation (2 weeks before)
 
 **Product Hunt Prep:**
-- Draft tagline (60 chars, clear value prop)
-- Write description (260 chars, benefit-focused)
+- Draft tagline (max 60 chars, clear value prop)
+- Write description (max 500 chars, benefit-focused)
 - Create first comment (founder story, why you built this)
-- Prepare 5-6 screenshots/GIF demos
-- Line up 10+ hunters to upvote early (first hour matters)
-- Schedule for Tuesday-Thursday, 12:01 AM PT
+- Prepare gallery images (2 required, 1270x760 recommended) and a square thumbnail (240x240 recommended, under 3 MB). Add more screenshots/GIF demos as needed
+- Line up supporters to try the product and leave honest comments. Do not ask for upvotes.
+- Schedule for 12:01 AM PT. Product Hunt names no best day; Tuesday-Thursday is a heuristic
 - Draft responses to common questions
 
 **Hacker News Prep:**
@@ -61,7 +61,7 @@ You are a product launch specialist who has helped launch dozens of products on 
 - [ ] Post "Show HN" on Hacker News
 - [ ] Share on Twitter/X with launch thread
 - [ ] Post on LinkedIn (founder story angle)
-- [ ] DM 20 closest contacts for early support
+- [ ] Ask 20 close contacts to try the product and give feedback (never ask for HN upvotes; do not share direct HN vote links)
 - [ ] Respond to comments on PH and HN as fast as you can (best-effort, ideally within ~30 min)
 
 ## Hour 3-6 (Morning)

@@ -389,7 +389,8 @@ const SECRET_NAME = /(?:key|token|secret|password|passwd|pwd|auth|credential|(?<
 
 // Single source for secret-scan (detects) and redactForPrompt (redacts).
 // `redactOnly` shapes are too loose to block a commit on, but must still not
-// reach disk or a prompt. Quantifiers stay bounded because observe.js redacts
+// reach disk or a prompt. A `block` regex is the stricter form of a redactOnly
+// shape that secret-scan blocks on; placeholders (`${VAR}`, `<x>`, `password`) stay out of it. Quantifiers stay bounded because observe.js redacts
 // up to 1 MB per tool call inside a 3 s hook timeout.
 const SECRET_PATTERNS = [
   { kind: 'Private key block', label: 'private-key', re: /-----BEGIN (?:[A-Z]+ )?PRIVATE KEY(?: BLOCK)?-----(?:[\s\S]*?-----END (?:[A-Z]+ )?PRIVATE KEY(?: BLOCK)?-----|[\s\S]*)/ },
@@ -439,9 +440,9 @@ const SECRET_PATTERNS = [
   },
   // Lookbehind instead of \b: with \b every "eyJ" inside one long run is a new
   // start that rescans the run, which is quadratic ("eyJ-" x 100000 took 10 s).
-  { kind: 'JWT', label: 'jwt', re: /(?<![A-Za-z0-9_-])eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+/, redactOnly: true },
+  { kind: 'JWT', label: 'jwt', re: /(?<![A-Za-z0-9_-])eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+/, block: /(?<![A-Za-z0-9_-])eyJ[A-Za-z0-9_-]{7,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}/, redactOnly: true },
   // Before Email: that pattern needs a TLD, so user:pass@localhost slipped through.
-  { kind: 'URL credentials', label: 'password', re: /(?<![a-z0-9+.-])([a-z][a-z0-9+.-]{1,20}:\/\/[^\s:@/?#]{0,256}:)[^\s/?#]{1,256}@/i, replace: '$1[REDACTED:password]@', redactOnly: true },
+  { kind: 'URL credentials', label: 'password', re: /(?<![a-z0-9+.-])([a-z][a-z0-9+.-]{1,20}:\/\/[^\s:@/?#]{0,256}:)[^\s/?#]{1,256}@/i, replace: '$1[REDACTED:password]@', block: /(?<![a-z0-9+.-])[a-z][a-z0-9+.-]{1,20}:\/\/[^\s:@/?#]{0,256}:(?![$<{*%])(?!(?:password|passwd|pass|pwd|secret|user|changeme|x+)@)[^\s/?#@]{1,256}@/i, redactOnly: true },
   { kind: 'mysql -p password', label: 'password', re: /\b(mysql\w{0,10}\s(?:[^\n|;&]{0,100}?\s)?-p)(?=[^\s-])(?:'[^'\n]{0,256}'|"[^"\n]{0,256}"|[^\s'"]{1,256})/, replace: '$1[REDACTED:password]', redactOnly: true },
   { kind: 'curl -u credentials', label: 'credential', re: /\b(curl\s(?:[^\n|;&]{0,100}?\s)?(?:-u|--user(?=[\s=]))[\s=]?)(?:'[^'\n]{0,256}'|"[^"\n]{0,256}"|[^\s'"]{1,256})/, replace: '$1[REDACTED:credential]', redactOnly: true },
   { kind: 'Azure SAS signature', label: 'secret', re: /([?&]sig=)[A-Za-z0-9%+/=]{16,}/, replace: '$1[REDACTED:secret]', redactOnly: true },
@@ -459,6 +460,10 @@ const SECRET_PATTERNS = [
     // NAME=value, NAME: value, "name": "value" — keeps the name, drops the value.
     re: new RegExp(`(["']?)(?<![A-Za-z0-9_.-])([A-Za-z0-9_.-]{0,40}${SECRET_NAME.source}[A-Za-z0-9_.-]{0,40})\\1(\\s*[:=]\\s*)(?:"[^"\\n]{0,5000}"|'[^'\\n]{0,5000}'|(?!\\[REDACTED)[^\\s"'&;|,}]{1,5000})`, 'i'),
     replace: '$1$2$1$3[REDACTED:secret]',
+    // Unquoted value of 16+ token chars with a digit (`.env`). Quoted values with spaces stay
+    // redact-only: they are mostly UI labels ('password' => 'Enter your password').
+    // All-digit values and snake/kebab identifiers (translation_key: checkout_label_v2) are ids, not secrets.
+    block: new RegExp(`(?<![A-Za-z0-9_.-])[A-Za-z0-9_.-]{0,40}${SECRET_NAME.source}["']?[ \\t]*[:=][ \\t]*(?![=$<{%]|\\[REDACTED)(?!\\d+(?![A-Za-z0-9_+/=.-]))(?![a-z]+(?:[_-][a-z0-9]+)+(?![A-Za-z0-9_+/=.-]))(?=[A-Za-z0-9_+/=-]*\\d)[A-Za-z0-9_+/=-]{16,}(?![A-Za-z0-9_+/=.-])`, 'i'),
     redactOnly: true,
   },
   { kind: 'Email', label: 'email', re: /(?<![a-zA-Z0-9._%+-])[a-zA-Z0-9._%+-]{1,64}@[a-zA-Z0-9.-]{1,255}\.[a-zA-Z]{2,}/, redactOnly: true },
@@ -666,6 +671,8 @@ function runCommand(cmd, options = {}) {
     const output = execSync(cmd, {
       encoding: 'utf8',
       stdio: ['pipe', 'pipe', 'pipe'],
+      // Hooks run with an arbitrary cwd; git must see the project, not the hook's cwd.
+      cwd: getProjectDir(),
       ...options,
     });
     return {
@@ -700,34 +707,6 @@ function isGitRepo() {
 function runGit(subcommand) {
   const result = runCommand(`git ${subcommand}`);
   return result.success ? result.output : '';
-}
-
-/**
- * Gets modified files in git repository
- * @param {string|null} pattern - Optional regex pattern to filter files
- * @returns {string[]} Array of modified file paths
- */
-function getGitModifiedFiles(pattern = null) {
-  if (!isGitRepo()) {
-    return [];
-  }
-
-  const result = runCommand('git diff --name-only && git diff --cached --name-only', {
-    stdio: ['pipe', 'pipe', 'ignore'],
-  });
-
-  if (!result.success) {
-    return [];
-  }
-
-  let files = result.output.split('\n').filter(f => f.trim());
-
-  if (pattern) {
-    const regex = new RegExp(pattern);
-    files = files.filter(f => regex.test(f));
-  }
-
-  return files;
 }
 
 // ============================================================================
@@ -897,7 +876,6 @@ module.exports = {
   runCommand,
   runGit,
   isGitRepo,
-  getGitModifiedFiles,
 
   // Date & time
   getDateString,

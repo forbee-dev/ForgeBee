@@ -82,10 +82,10 @@ Check for:
 ### 5. Performance Analysis
 ```markdown
 Core Web Vitals targets:
-- LCP (Largest Contentful Paint): < 2.5s
-- FID (First Input Delay): < 100ms
-- CLS (Cumulative Layout Shift): < 0.1
-- INP (Interaction to Next Paint): < 200ms
+Good thresholds at the 75th percentile (FID is retired; INP replaced it):
+- LCP (Largest Contentful Paint): <= 2.5s
+- INP (Interaction to Next Paint): <= 200ms
+- CLS (Cumulative Layout Shift): <= 0.1
 
 Common fixes:
 - Lazy load images below the fold
@@ -93,7 +93,7 @@ Common fixes:
 - Code split by route
 - Defer non-critical JS
 - Use CSS containment for complex layouts
-- Optimize images (WebP, proper sizing)
+- Optimize images (AVIF/WebP, proper sizing)
 - Add resource hints (preconnect, prefetch)
 ```
 

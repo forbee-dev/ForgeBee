@@ -6,6 +6,62 @@ The format roughly follows [Keep a Changelog](https://keepachangelog.com/) and t
 
 ---
 
+## [7.0.0] — 2026-10-19
+
+### Breaking
+
+- The main thread runs as `forgebee:orchestrator` by default and cannot make non-trivial edits. Opt out: `claude --agent forgebee:direct`, or `"agent"` in your own settings.
+- Requires Claude Code 2.1.281+ (was 1.0.33+).
+- `agents/references/` moved to `references/`. `instinct-cli.js promote-pending`, `forgebee/sync.js`, and `scripts/inject-*.js` are removed.
+
+### Added
+
+- **Orchestrator mode by default.** The plugin `settings.json` runs the main thread as `forgebee:orchestrator` for every turn. Its empty body keeps Claude Code's system prompt. `orchestrator-mode.js` re-injects the orchestrator rules on each prompt. Tiny changes stay inline (an `Edit` or a new-file `Write` of up to 3 lines and 400 characters, at most 2 per request; the budget resets on each prompt), since a subagent costs more than a one-liner. It blocks other main-thread Edit / Write / NotebookEdit outside orchestration files (`docs/pm`, `docs/planning`, `docs/learnings`, `TASKS.md`, `CLAUDE.md`, `.claude/`, `~/.claude/`). Subagents (`agent_id` set) are not affected. Opt out with `claude --agent forgebee:direct`, or set `"agent"` in your own settings. Requires Claude Code 2.1.281+. `/team` Direct tier now dispatches one specialist. Main-thread Bash commands that write product files (redirection, `sed -i`, `tee`, `cp`, `mv`, `rm`, `touch`) are blocked too; read-only commands and scratch paths pass.
+- **Routing suggestions you can act on.** `skill-activator.js` prints `forgebee:<name>`, needs a trigger, a specific name token, or an acronym (generic words like "content", "hook", "session" no longer route), shows at most 3, and carries the last strong routing into short follow-ups ("yes, do it") in the same session.
+- **Opt-in Fable.** `/workflow --fable` and `/team --fable`, or asking for Fable in the prompt, dispatch `model: opus` agents with `model: "fable"`. When Fable is unavailable or rejected, the orchestrator re-dispatches once on Opus and says so. Agent frontmatter does not change, so Fable never bills usage credits unless someone asks for it.
+- `/team` and `/workflow` set `model: opus`, so the planning turn runs on Opus on every provider. A command model lasts one turn; later turns use the session model. Not `best`: an unrecognized command model fails the whole command, which would break older Claude Code versions and gateways that do not serve Fable.
+- `check-references.js` check 7 fails on repo-relative `forgebee/...` runtime paths in agents, skills, commands, and references.
+
+### Fixed
+
+- **Plugin files were not found outside this repo.** 58 agents, skills, and commands read `forgebee/skills/_debate-protocol.md`, `forgebee/INDEX.md`, `forgebee/references/*.md`, and `forgebee/templates/*` by repo-relative path. In a user's project these paths do not exist. They now use `${CLAUDE_PLUGIN_ROOT}/`, which Claude Code substitutes in skill, command, and agent content.
+- **Subagents ran on the wrong model.** Commands and delegating agents dispatched bare names (`backend-engineer`). The plugin registers agents as `forgebee:<name>`, so the bare name missed and the orchestrator substituted another agent that inherited the session model. All dispatch examples now use the prefix, and `load-index.js` injects the rule at session start.
+- **`permission-guard`:** denies `dd` with `of=/dev/…` in any argument order, `rm -rf` on `/Applications` and `/Volumes`, `rsync --delete`, `chmod -R` and `chown -R` on `~` or `/`. Asks when a variable is the command name (`$A -rf ~`). Empty input now fails closed.
+- **`secret-scan`:** the block message said "re-run with FORGEBEE_ALLOW_SECRET=1", but the hook reads Claude Code's environment, so an inline prefix never worked. It now says the user commits from a terminal or restarts with the variable. A placeholder word elsewhere on the line no longer skips the line. Now blocks `.env`-style `KEY=value`, credential URLs, and JWTs.
+- **Stop hooks:** `task-sync` and `self-improve` no longer append a duplicate entry every turn. `session-save` writes one file per session id, so parallel sessions do not overwrite each other. `checkpoint` stores finished pipelines as `done`.
+- `task-sync` SessionStart no longer cuts the task list at the letter "Z" (`\Z` is not an anchor in JS).
+- `suggest-compact` counts per session, and its hint now reaches Claude.
+- Warn-only hooks (`post-edit-typecheck`, `post-edit-console-warn`, `git-push-reminder`, `console-log-audit`, `pm-sync`) returned output on stderr, which Claude never receives. They now return `additionalContext` or `systemMessage`. Post-edit hooks also run on `Write`, and observe matchers include `Agent`.
+- Audit log: records the real session id and redacts secrets in denied commands.
+- `observe.js` keeps 5 archives and reads `observer.enabled` and `observer.max_observations_file_mb`.
+- `compress-learnings` no longer recompresses sessions, duplicates the archive, or changes quoted text. `--days` without a value defaults to 14.
+- `instinct-cli`: `evolve --generate` no longer overwrites existing files. `import` skips invalid ids and bodies that contain `---`.
+- `sync-local-install.js` deletes stale files only with `--prune`. It used to delete custom agents in `.claude/`.
+- `bump-version.sh` rejects versions with trailing text. `--audit` exits 1 on undeclared files, so the CI step can fail. It matches the whole version, so `127.0.0.1` no longer counts as `7.0.0`.
+- `/team` lists the debate roles as skills, not agents. `/review` invokes `review-*` with the Skill tool. `/audit` query commands use the stdin JSON the script reads.
+- `delivery-agent` and `tdd-enforcer` no longer tell themselves to dispatch agents they have no tool for.
+
+### Changed
+
+- **Content review of all agents, commands, and skills against current docs (2026-10).**
+  - Claude Code: `Agent` tool (formerly `Task`), debate roles run as skills (advocate and skeptic in parallel, then judge), sub-agent nesting cap, auto-mode requirements.
+  - Security and accessibility: OWASP Top 10 2025, OWASP LLM Top 10 2025, WCAG 2.2 AA (24px targets, new 2.2 criteria), INP replaces FID, `git filter-repo`, `pip-audit`, `osv-scanner`, GitHub Actions SHA pinning and OIDC.
+  - WordPress: block `apiVersion` 3, WP 6.9 / 7.x and the iframed editor, theme.json v3 default-preset override rule, SCF has Repeater, Flexible Content, and Options pages, `%i` identifiers, `wp_unslash`, REST `permission_callback`.
+  - JS stacks: Next.js 16 `proxy.ts`, Supabase publishable and secret keys and `getClaims()`, n8n 2.x, Riverpod 3, Swift 6, Stripe API version pinning, Paddle Billing.
+  - Growth and SEO: FAQ rich results ended, AI Overviews and AI Mode guidance, invented statistics removed or marked as heuristics, bulk-sender rules, Consent Mode v2, and one-line compliance reminders for regulated verticals.
+  - Fixed: `/codemaps` triage file name, `/pm` contradiction, Grill phase missing from PM tracks, `verification-enforcer` audit rows, invalid `git diff` exclude syntax in `tdd-enforcer`.
+- Next.js 16 is the baseline: Cache Components (`use cache`, `cacheLife`, `cacheTag`, `updateTag`, two-argument `revalidateTag`) and Tailwind v4 CSS-first setup added to the `nextjs-frontend` reference.
+- `/social` points to the hook, persuasion, and repurposing owners instead of copying their tables (179 → 147 lines).
+- Claims checked against primary sources: Product Hunt limits, Gmail / Yahoo / Outlook.com bulk-sender rules, ACF block bindings (ACF PRO 6.8.1+, SCF unconfirmed), WP 7.0 (PHP 7.4+), Riverpod 3, the Xcode 26 upload requirement, Stripe API versioning and `current_period_end`, Lemon Squeezy and Stripe Managed Payments. Claims without a primary source are labelled as heuristics or "verify".
+- `/pm` dispatches `dashboard-generator` (Haiku) for dashboards instead of carrying a second copy of the templates (182 → 80 lines).
+- `verification-enforcer` writes command output to `mktemp` files, not fixed `/tmp/ve-*.out` paths.
+- `agents/references/` moved to `forgebee/references/`. Claude Code loaded the 19 files as `forgebee:references:*` agents with all tools.
+- `install-openclaw.js` reads the version from `plugin.json` and lists the real agents.
+
+### Removed
+
+- `forgebee/sync.js` (duplicate of `scripts/sync-local-install.js`), `scripts/inject-*.js` (one-time migrations), and `instinct-cli.js promote-pending` (unused, and it marked the wrong rows).
+
 ## [6.1.0] — 2026-10-18
 
 ### Added

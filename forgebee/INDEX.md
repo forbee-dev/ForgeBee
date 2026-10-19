@@ -4,10 +4,10 @@
 > Source of truth: frontmatter in `forgebee/skills/*`, `forgebee/agents/*`, `forgebee/commands/*`.
 > Regenerate with: `node scripts/build-index.js`
 
-> Loaded on SessionStart so Claude routes user intent to the right surface in one read instead of scanning 120 frontmatter blocks.
+> Loaded on SessionStart so Claude routes user intent to the right surface in one read instead of scanning 122 frontmatter blocks.
 
 
-**Stats:** 35 skills · 46 agents · 39 commands
+**Stats:** 35 skills · 48 agents · 39 commands
 
 ---
 
@@ -49,7 +49,7 @@
 
 ### Focused Reviews
 
-- `review-accessibility` — Use when auditing UI changes for WCAG 2.1 AA compliance — keyboard nav, ARIA, color contrast, focus management, screen reader support, se...
+- `review-accessibility` — Use when auditing UI changes for WCAG 2.2 AA compliance — keyboard nav, ARIA, color contrast, focus management, screen reader support, se...
 - `review-all` — Use when about to push, open a PR, or asking for a thorough pre-ship review — covers code quality, security, performance, accessibility, ...
 - `review-api` — Use when reviewing route handlers, REST/GraphQL endpoints, or API contracts — covers design, input validation, error shapes, auth, rate l...
 - `review-best-practices` — Use when reviewing code for SOLID violations, design pattern misuse, leaky abstractions, separation of concerns, or architecture-level sm...
@@ -93,7 +93,7 @@
 
 ---
 
-## Agents (46)
+## Agents (48)
 
 ### Code Core
 
@@ -175,6 +175,8 @@
 
 ### Other
 
+- `direct` — Opt-out main-thread agent. Run `claude --agent forgebee:direct`, or set "agent" to "forgebee:direct" in your settings, to turn off orches...
+- `orchestrator` — Main-thread agent that ForgeBee sets by default (plugin settings.json). Never dispatch it as a subagent. The empty body keeps Claude Code...
 - `wp-design-system` — Use for WordPress block design systems — theme.json tokens, Figma-variables-to-presets pipeline, patterns/variations as components, Code ...
 
 ---

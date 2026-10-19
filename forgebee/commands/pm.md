@@ -12,7 +12,7 @@ Read state.yaml and produce actionable status reports. Keep dashboards and TASKS
 
 ## Never
 
-- Never modify state.yaml data — only read and report
+- Never modify state.yaml unless the user asks for a mutation (see State Mutations)
 - Never hide blocked or stale items — they must surface prominently
 - Never regenerate dashboards without reading fresh state first
 
@@ -36,109 +36,7 @@ Every time /pm is called, you do ALL of the following automatically — no user 
 4. Write updated TASKS.md
 
 ### Step 3: Regenerate Dashboards
-Regenerate all markdown views from state.yaml:
-
-**`docs/pm/index.md`** — Project-wide overview:
-```markdown
-# Project Dashboard
-
-> Auto-generated from state.yaml — do not edit manually
-
-## Active Features
-
-| Feature | Phase | Stories | Progress | Blocked |
-|---------|-------|---------|----------|---------|
-| [name] | [phase] | [done/total] | [██████░░░░] | [count] |
-
-## Summary
-
-| Phase | Count |
-|-------|-------|
-| Total features | [n] |
-| In progress | [n] |
-| Done | [n] |
-| Blocked | [n] |
-
-## Recent Decisions (last 10)
-
-| Date | Feature | Type | Ruling | Summary |
-|------|---------|------|--------|---------|
-| [date] | [feature] | [type] | [ruling] | [summary] |
-
-## Open Risks
-
-| Feature | Risk | Severity | Source |
-|---------|------|----------|--------|
-| [feature] | [description] | [severity] | [source] |
-
-*Last updated: [timestamp]*
-```
-
-**`docs/pm/features/[feature-name].md`** — Per-feature detail:
-```markdown
-# Feature: [Name]
-
-**ID:** [id]
-**Phase:** [phase]
-**Created:** [date]
-**Origin:** [workflow | idea | plan]
-
-## Status
-[Visual phase tracker showing current position in pipeline — render the track that matches the feature's Origin]
-
-- **workflow** origin: plan → req-debate → arch → work-breakdown(optional) → exec → spec-compliance → checkpoint → code-debate → delivery → done
-- **idea** origin: idea → idea-debate → mvp → planning → exec → delivery → done
-- **plan** origin: brief → requirements → arch → stories → done
-
-                                                          ▲ YOU ARE HERE
-
-## Stories
-
-| # | Title | Status | Agent | Notes |
-|---|-------|--------|-------|-------|
-| [id] | [title] | [status] | [agent] | [blocked_by if blocked] |
-
-**Progress:** [done]/[total] stories complete
-
-## Decision History
-
-| Date | Type | Ruling | Summary |
-|------|------|--------|---------|
-| [date] | [type] | [ruling] | [summary] |
-
-[Link to full debate reports if available]
-
-## Risks
-
-| Risk | Severity | Status |
-|------|----------|--------|
-| [description] | [severity] | [open/mitigated/accepted] |
-
-## Blockers
-
-| Blocker | Since | Waiting On |
-|---------|-------|------------|
-| [description] | [date] | [resolution needed] |
-
-*Last updated: [timestamp]*
-```
-
-**`docs/pm/decisions.md`** — Append-only decision log:
-```markdown
-# Decision Log
-
-> Newest first. Auto-generated from state.yaml.
-
----
-
-## [date] — [Feature Name]: [Decision Type]
-
-**Ruling:** [ruling]
-**Summary:** [summary]
-**Details:** [reference to full report]
-
----
-```
+Dispatch `forgebee:dashboard-generator` (Agent tool). It owns the templates and writes `docs/pm/index.md`, `docs/pm/features/*.md`, and `docs/pm/decisions.md` from state.yaml. Do not write these files yourself. Use its file list in the report.
 
 ### Step 4: Surface What Needs Attention
 

@@ -84,6 +84,8 @@ function main() {
       '## ForgeBee Routing Index (digest of forgebee/INDEX.md)',
       '',
       'Route user intent to a skill/agent/command before starting work.',
+      'Dispatch ForgeBee agents as `forgebee:<name>`; only the prefixed agent carries its `model:` setting. Use the bare name only if no `forgebee:` entry exists. Never substitute a different agent.',
+      'Fable is opt-in: only when the user asks for it (or passes `--fable`), dispatch `model: opus` agents with `model: "fable"`. If Fable is unavailable or rejected, re-dispatch once with `model: "opus"` and say so.',
       `Full index (all skills, agents, commands): read \`${path.relative(getProjectDir(), indexFile)}\`.`,
       '',
     ];

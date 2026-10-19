@@ -19,7 +19,7 @@ const path = require('path');
 const { execFileSync } = require('child_process');
 const common = require('./_common.js');
 
-const PATTERNS = common.SECRET_PATTERNS.filter(p => !p.redactOnly);
+const PATTERNS = common.SECRET_PATTERNS.filter(p => !p.redactOnly || p.block).map(p => ({ kind: p.kind, re: p.block || p.re }));
 
 // execSync's 1 MB default would throw on a big diff and silently skip the scan.
 const GIT_OPTS = { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024, stdio: ['pipe', 'pipe', 'pipe'] };
@@ -240,8 +240,9 @@ function warnUnscanned(why) {
   process.exit(0);
 }
 
-// Skip lines that are clearly placeholders / examples / test fixtures.
-const PLACEHOLDER = /\b(example|placeholder|your[_-]?(api[_-]?)?key|xxxx+|changeme|dummy|sample|redacted|fake|test[_-]?key|<[^>]+>)\b/i;
+// Skip matches that are clearly placeholders / examples / test fixtures. Tested on
+// the matched token only, so a trailing `// example` cannot hide a real key.
+const PLACEHOLDER = /example|placeholder|your[_-]?(api[_-]?)?key|xxxx+|changeme|dummy|sample|redacted|fake|test[_-]?key|<[^<>\s][^<>]*>/i;
 
 function scanAddedLines(diff) {
   const hits = [];
@@ -249,10 +250,9 @@ function scanAddedLines(diff) {
     // Only added content; an added line may itself start with `++`.
     if (!line.startsWith('+') || /^\+\+\+ (?:"?[ab]\/|\/dev\/null)/.test(line)) continue;
     const body = line.slice(1);
-    if (PLACEHOLDER.test(body)) continue;
     for (const p of PATTERNS) {
       const m = body.match(p.re);
-      if (m) {
+      if (m && !PLACEHOLDER.test(m[0])) {
         const tok = m[0];
         const preview = tok.length > 14 ? `${tok.slice(0, 7)}…${tok.slice(-3)}` : tok;
         hits.push({ kind: p.kind, preview });
@@ -336,8 +336,12 @@ async function main() {
     if (seen.size >= 10) break;
   }
   console.error('Move the secret to an env var / secret manager and remove it from the diff.');
-  console.error('If this is a false positive, re-run with FORGEBEE_ALLOW_SECRET=1.');
+  // The hook reads Claude Code's environment, not the Bash command's: an inline prefix
+  // cannot override it, so the decision stays with the user.
+  console.error('If this is a false positive, ask the user: they can commit from their own terminal, or restart Claude Code with FORGEBEE_ALLOW_SECRET=1. An inline FORGEBEE_ALLOW_SECRET=1 prefix on the command has no effect.');
   process.exit(2);
 }
 
-main().catch(() => process.exit(0));
+module.exports = { scanAddedLines };
+
+if (require.main === module) main().catch(() => process.exit(0));

@@ -24,6 +24,8 @@ require $_tests_dir . '/includes/bootstrap.php';
 
 Load ACF in the same `muplugins_loaded` callback when tests call `get_field()`.
 
+The WP test suite needs `yoast/phpunit-polyfills`. Point `WP_TESTS_PHPUNIT_POLYFILLS_PATH` at it in `wp-tests-config.php` or `phpunit.xml.dist`. `wp-env` setting it is unverified. Check the PHPUnit versions that the current core suite supports in the make.wordpress.org PHPUnit handbook.
+
 ## Unit Test
 
 ```php
@@ -177,4 +179,4 @@ composer test -- --filter=Test_ACF_Fields
 </phpunit>
 ```
 
-PHPUnit 9 (the WP test suite default) also accepts `convertErrorsToExceptions`/`convertNoticesToExceptions`/`convertWarningsToExceptions="true"`. PHPUnit 10+ removed them.
+PHPUnit 9 (the newest version the WP core suite supported when last verified) also accepts `convertErrorsToExceptions`/`convertNoticesToExceptions`/`convertWarningsToExceptions="true"`. PHPUnit 10+ removed them.

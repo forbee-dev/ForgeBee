@@ -2,6 +2,7 @@
 name: team
 description: Master orchestrator — analyzes the task, designs an implementation plan, and coordinates specialist agents working in parallel
 allowed-tools: Read, Glob, Grep, Bash, Task
+model: opus
 ---
 
 # Team Orchestrator
@@ -28,9 +29,9 @@ In short: `/team` is "go fast"; `/workflow` is "go thorough." If unsure → `/wo
 
 **After dispatching a sub-agent, continue with your own next-step *orchestration* work.** The harness notifies you when work completes. Until then: plan the next dispatch, integrate partial results, or prepare the verification gate. Do not announce "waiting for X to return."
 
-**"Continue" means orchestrate, never implement.** While agents run you must not `Edit`, run the app, hit its endpoints, exec into containers, or run its tests. Doing the agent's job in parallel pays for the same work twice and produces conflicting edits. If you find yourself working, you sized the task wrong — cancel and do it directly at Tier Direct.
+**"Continue" means orchestrate, never implement.** While agents run you must not `Edit`, run the app, hit its endpoints, exec into containers, or run its tests. Doing the agent's job in parallel pays for the same work twice and produces conflicting edits. If you find yourself working, you sized the task wrong — cancel and re-dispatch at Tier Direct.
 
-**Do not poll.** Never call `ListAgents` in a loop to check on a dispatch. Each poll re-reads your full context. Wait for the notification.
+**Do not poll.** Never check on a dispatch in a loop (task lists, output files, sleep). Each poll re-reads your full context. Wait for the notification.
 
 ## Never
 
@@ -49,7 +50,7 @@ Estimate the blast radius with one or two cheap commands (`git diff --stat`, `gr
 
 | Tier | Blast radius | Agents | Shape |
 |---|---|---|---|
-| **Direct** | 1–2 files, change already clear | **0** | Do it yourself. No plan table, no dispatch. |
+| **Direct** | 1–2 files, change already clear | **0–1** | Tiny and no specialty needed (≤3 lines, ≤2 edits): do it yourself. Otherwise dispatch one specialist with the exact change. No plan table. |
 | **Small** | 3–6 files, one concern | **1** | One implementer. You review the diff at the end. |
 | **Medium** | 7–15 files, or 2 distinct concerns | **2–3** | Implementer(s) + one reviewer. |
 | **Large** | 15+ files, or needs a plan first | **3–5** | Research → implement → review. |
@@ -64,7 +65,7 @@ Never dispatch a research agent whose findings the implementer will re-derive. E
 
 ## Step 2: Grill (conditional)
 
-Run a short `grill` (`forgebee/skills/grill/SKILL.md`) before planning when:
+Run a short `grill` (`${CLAUDE_PLUGIN_ROOT}/skills/grill/SKILL.md`) before planning when:
 
 - the tier is Medium or Large, or
 - the task is ambiguous: 2+ valid readings of scope or behaviour, or
@@ -125,7 +126,11 @@ A plan without per-step verify lines is rejected at dispatch — return it to th
 
 ## Step 4: Execute
 
-Dispatch agents with clear context — they don't share your conversation. Each agent gets: task description, files to modify, acceptance criteria, relevant codebase patterns, and `responseStyle: "orchestrator"` (triggers the specialist's `terse-report` skill — ~65% report-token reduction without losing actionable signal). See `forgebee/skills/terse-report/SKILL.md`.
+Dispatch agents with clear context — they don't share your conversation. Each agent gets: task description, files to modify, acceptance criteria, relevant codebase patterns, and `responseStyle: "orchestrator"` (triggers the specialist's `terse-report` skill — ~65% report-token reduction without losing actionable signal). See `${CLAUDE_PLUGIN_ROOT}/skills/terse-report/SKILL.md`.
+
+Dispatch every agent below as `forgebee:<name>` (for example `Agent({ subagent_type: "forgebee:backend-engineer" })`; older Claude Code names the tool `Task`). Only the prefixed agent carries its `model:` setting. Use the bare name only if the agent list has no `forgebee:` entry. If neither exists, stop and report. Never substitute a different agent.
+
+**`--fable` (opt-in):** dispatch agents whose frontmatter says `model: opus` with `model: "fable"`. Leave `sonnet` and `haiku` agents unchanged. If a Fable dispatch fails because the model is unavailable or rejected, re-dispatch that agent once with `model: "opus"` and tell the user. Fable can bill usage credits, so never use it without the flag or an explicit request.
 
 ### Budget envelope
 
@@ -137,7 +142,7 @@ Every dispatch carries a budget that sub-dispatches must propagate:
 }
 ```
 
-Default `maxHops: 8`, ceiling 64. Reject `hopCount > maxHops` with `HOP_LIMIT_EXCEEDED`; surface trips to the user with the dispatch chain. Prevents runaway specialist fan-out. Full rules + the oracle-leakage hardening (constant-string peer errors, `maxTokens`/`maxUsd`) — only needed for untrusted multi-tenant fan-out — are in `forgebee/skills/_budget-breaker.md`.
+Default `maxHops: 8`, ceiling 64. Reject `hopCount > maxHops` with `HOP_LIMIT_EXCEEDED`; surface trips to the user with the dispatch chain. Prevents runaway specialist fan-out. Full rules + the oracle-leakage hardening (constant-string peer errors, `maxTokens`/`maxUsd`) — only needed for untrusted multi-tenant fan-out — are in `${CLAUDE_PLUGIN_ROOT}/skills/_budget-breaker.md`.
 
 **If 3+ agents:** after each agent completes, record its workstream id + status + changed files to `docs/pm/state.yaml` (or a lightweight `.claude/team-progress.json` if no PM state exists) so progress survives a crash. On failure or a fresh session, read it and skip already-completed workstreams.
 
@@ -189,7 +194,7 @@ Reject any response without a status. If `BLOCKED` twice on same issue → escal
 | `content-creator` | Copy, docs, blog posts | → `wordpress-content`, `nextjs-content` |
 | `seo-specialist` | Search optimization | → `wordpress-seo`, `nextjs-seo` |
 
-**Debate agents** (for adversarial review without full /workflow):
+**Debate skills** (for adversarial review without full /workflow). These are `context: fork` skills, not agents. Invoke each with the Skill tool, for example `Skill({ skill: "code-skeptic" })`. Never use them as `subagent_type`:
 `code-advocate`, `code-skeptic`, `code-judge`, `requirements-advocate`, `requirements-skeptic`, `requirements-judge`
 
 **Delivery:** `delivery-agent`, `verification-enforcer`, `contract-validator`

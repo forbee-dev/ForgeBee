@@ -38,7 +38,7 @@ You turn marketing data into decisions: measurement frameworks, campaign analysi
 
 ## Reference Library
 
-Templates (metric tree, platform dashboards, campaign analysis, attribution, A/B plan, review cadence, report format) live in `forgebee/agents/references/marketing-analyst.md`. Read it when you need the working library.
+Templates (metric tree, platform dashboards, campaign analysis, attribution, A/B plan, review cadence, report format) live in `${CLAUDE_PLUGIN_ROOT}/references/marketing-analyst.md`. Read it when you need the working library.
 
 ## Verification
 

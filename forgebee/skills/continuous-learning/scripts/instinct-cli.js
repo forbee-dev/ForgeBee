@@ -67,8 +67,9 @@ function parseInstinctFile(content) {
   for (const line of content.split('\n')) {
     if (line.trim() === '---') {
       if (inFrontmatter) {
-        // End of frontmatter
+        // End of frontmatter; a block with no id is a stray `---` inside the previous body
         inFrontmatter = false;
+        if (!current.id && instincts.length) instincts[instincts.length - 1].tainted = true;
       } else {
         // Start of frontmatter
         inFrontmatter = true;
@@ -98,6 +99,8 @@ function parseInstinctFile(content) {
   if (current.id) {
     current.content = contentLines.join('\n').trim();
     instincts.push(current);
+  } else if (inFrontmatter && instincts.length) {
+    instincts[instincts.length - 1].tainted = true;
   }
 
   return instincts.filter(i => i.id);
@@ -296,7 +299,17 @@ function cmdImport(source, options = {}) {
     return 1;
   }
 
-  const newInstincts = parseInstinctFile(content);
+  const newInstincts = parseInstinctFile(content).filter(inst => {
+    if (!validateInstinctId(inst.id)) {
+      console.warn(`Skipping instinct with invalid id: ${JSON.stringify(inst.id)}`);
+      return false;
+    }
+    if (inst.tainted) {
+      console.warn(`Skipping ${inst.id}: body contains a '---' line`);
+      return false;
+    }
+    return true;
+  });
   if (!newInstincts.length) {
     console.log('No valid instincts found in source.');
     return 1;
@@ -844,6 +857,17 @@ function cmdProjects() {
 // Generate Evolved Structures
 // ─────────────────────────────────────────────
 
+// Never overwrite: users edit evolved files, and truncated names can collide.
+function writeNew(filePath, content, generated) {
+  try {
+    fs.writeFileSync(filePath, content, { flag: 'wx' });
+    generated.push(filePath);
+  } catch (e) {
+    if (e.code !== 'EEXIST') throw e;
+    console.log(`  Skipped (already exists): ${filePath}`);
+  }
+}
+
 function generateEvolved(skillCandidates, workflowInstincts, agentCandidates, evolvedDir) {
   const generated = [];
 
@@ -868,9 +892,7 @@ function generateEvolved(skillCandidates, workflowInstincts, agentCandidates, ev
       content += `- ${action}\n`;
     }
 
-    const filePath = path.join(skillDir, 'SKILL.md');
-    fs.writeFileSync(filePath, content);
-    generated.push(filePath);
+    writeNew(path.join(skillDir, 'SKILL.md'), content, generated);
   }
 
   // Generate commands
@@ -886,8 +908,7 @@ function generateEvolved(skillCandidates, workflowInstincts, agentCandidates, ev
     content += `Confidence: ${Math.round((inst.confidence || 0.5) * 100)}%\n\n`;
     content += inst.content || '';
 
-    fs.writeFileSync(filePath, content);
-    generated.push(filePath);
+    writeNew(filePath, content, generated);
   }
 
   // Generate agents
@@ -907,8 +928,7 @@ function generateEvolved(skillCandidates, workflowInstincts, agentCandidates, ev
       content += `- ${inst.id}\n`;
     }
 
-    fs.writeFileSync(filePath, content);
-    generated.push(filePath);
+    writeNew(filePath, content, generated);
   }
 
   return generated;
@@ -960,102 +980,6 @@ function parseArgs() {
   }
 
   return { command, options, positional };
-}
-
-// ─────────────────────────────────────────────
-// S-009: Promote Pending Candidates to Instincts
-// ─────────────────────────────────────────────
-
-function cmdPromotePending(options) {
-  const projectDir = process.env.CLAUDE_PROJECT_DIR || process.cwd();
-  const pendingFile = path.join(projectDir, '.claude/learnings/pending-instincts.jsonl');
-
-  if (!fs.existsSync(pendingFile)) {
-    console.log('No pending candidates found.');
-    return 0;
-  }
-
-  const lines = fs.readFileSync(pendingFile, 'utf8').split('\n').filter(l => l.trim());
-  const candidates = [];
-  for (const l of lines) {
-    try { candidates.push(JSON.parse(l)); } catch { /* skip */ }
-  }
-
-  const THRESHOLD_CONFIDENCE = 0.6;
-  const THRESHOLD_SESSIONS = 2;
-
-  const ready = candidates.filter(c =>
-    c.status === 'pending' &&
-    c.confidence >= THRESHOLD_CONFIDENCE &&
-    (c.sessions_seen || 1) >= THRESHOLD_SESSIONS
-  );
-
-  if (ready.length === 0) {
-    console.log(`No candidates meet promotion threshold (confidence >= ${THRESHOLD_CONFIDENCE}, sessions >= ${THRESHOLD_SESSIONS}).`);
-    return 0;
-  }
-
-  // Detect project for instinct storage
-  const project = detectProject();
-  const instinctDir = path.join(PROJECTS_DIR, project.id, 'instincts', 'personal');
-  ensureDir(instinctDir);
-
-  let promoted = 0;
-  for (const candidate of ready) {
-    const instinctId = candidate.id || `auto-${Date.now()}`;
-    if (!validateInstinctId(instinctId)) continue;
-
-    const instinctPath = path.join(instinctDir, `${instinctId}.yaml`);
-
-    // Don't overwrite active instincts
-    if (fs.existsSync(instinctPath)) {
-      const existing = fs.readFileSync(instinctPath, 'utf8');
-      if (existing.includes('status: active')) continue;
-    }
-
-    const content = `---
-id: ${instinctId}
-trigger: "${candidate.signal}"
-confidence: ${candidate.confidence}
-domain: workflow
-source: auto-heuristic
-scope: project
-status: pending
-created_at: ${candidate.created_at || new Date().toISOString()}
-sessions_seen: ${candidate.sessions_seen || 1}
----
-
-# ${instinctId}
-
-## Signal
-${candidate.signal}
-
-## Type
-${candidate.type}
-
-## Evidence
-- Auto-detected from ${candidate.sessions_seen || 1} session(s)
-- Confidence: ${candidate.confidence}
-`;
-
-    fs.writeFileSync(instinctPath, content);
-    promoted++;
-    console.log(`  Promoted: ${instinctId} (confidence: ${candidate.confidence})`);
-  }
-
-  // Mark promoted candidates in pending-instincts.jsonl so they don't re-promote
-  if (promoted > 0) {
-    const promotedIds = new Set(ready.filter((_, i) => i < promoted).map(c => c.id));
-    const updatedLines = candidates.map(c => {
-      if (promotedIds.has(c.id)) c.status = 'promoted';
-      return JSON.stringify(c);
-    });
-    fs.writeFileSync(pendingFile, updatedLines.join('\n') + '\n');
-  }
-
-  console.log(`\n${promoted} instinct(s) promoted to pending state.`);
-  console.log('Run `/learn` to review and activate them.');
-  return 0;
 }
 
 // ─────────────────────────────────────────────
@@ -1444,9 +1368,6 @@ function main() {
     case 'projects':
       exitCode = cmdProjects();
       break;
-    case 'promote-pending':
-      exitCode = cmdPromotePending(options);
-      break;
     case 'review':
       exitCode = cmdReview(positional[0], options);
       break;
@@ -1461,7 +1382,6 @@ function main() {
       console.log('  export            Export instincts to file');
       console.log('  evolve            Cluster instincts into skills/commands/agents');
       console.log('  promote [id]      Promote project instincts to global scope');
-      console.log('  promote-pending   Promote high-confidence candidates to pending instincts');
       console.log('  review <action>   Review pending instincts (--activate <id> | --reject <id> | --auto | --list)');
       console.log('  add               Save an instinct: --id --trigger --confidence --domain [--scope], body on stdin');
       console.log('  projects          List known projects and instinct counts');

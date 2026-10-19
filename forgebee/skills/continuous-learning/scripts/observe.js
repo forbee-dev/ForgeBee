@@ -20,7 +20,19 @@ try {
   process.exit(0); // no redactor — record nothing rather than raw secrets
 }
 
-const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024; // 10 MB
+const MAX_ARCHIVES = 5;
+
+// Missing/invalid config falls back to enabled with a 10 MB cap.
+function loadObserverConfig() {
+  try {
+    const cfg = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'config.json'), 'utf8')).observer || {};
+    const mb = Number(cfg.max_observations_file_mb);
+    return { enabled: cfg.enabled !== false, maxBytes: (mb > 0 ? mb : 10) * 1024 * 1024 };
+  } catch (e) {
+    return { enabled: true, maxBytes: 10 * 1024 * 1024 };
+  }
+}
+const OBSERVER = loadObserverConfig();
 const MAX_FIELD_LENGTH = 5000;
 
 // Same 5000-char bound as before, but objects stay objects so self-improve can
@@ -85,13 +97,18 @@ async function readStdin(timeoutMs = 3000) {
 function archiveIfLarge(obsFile) {
   try {
     const stats = fs.statSync(obsFile);
-    if (stats.size >= MAX_FILE_SIZE_BYTES) {
+    if (stats.size >= OBSERVER.maxBytes) {
       const archiveDir = path.join(path.dirname(obsFile), 'observations.archive');
       ensureDir(archiveDir, 0o700);
       const now = new Date();
       const ts = now.toISOString().replace(/[:.]/g, '-').replace('T', '-').slice(0, 19);
       const archivePath = path.join(archiveDir, `observations-${ts}-${process.pid}.jsonl`);
       fs.renameSync(obsFile, archivePath);
+      // Timestamped names sort oldest-first; keep only the newest MAX_ARCHIVES.
+      const old = fs.readdirSync(archiveDir).filter(f => f.endsWith('.jsonl')).sort().slice(0, -MAX_ARCHIVES);
+      for (const f of old) {
+        try { fs.unlinkSync(path.join(archiveDir, f)); } catch (e) { /* best-effort */ }
+      }
     }
   } catch (e) {
     // File doesn't exist yet or other error — fine
@@ -102,7 +119,7 @@ async function main() {
   try {
     // Check if disabled
     const disabledFile = path.join(LEARNING_DIR, 'disabled');
-    if (fs.existsSync(disabledFile)) {
+    if (fs.existsSync(disabledFile) || !OBSERVER.enabled) {
       process.exit(0);
     }
 

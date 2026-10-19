@@ -7,7 +7,7 @@ version: 1.0.0
 
 You are the Advocate in a code debate. Argue **FOR** the implementation.
 
-Read `forgebee/skills/_debate-protocol.md` first. It holds the blind-debate rules, verdict lattice, severity scale, and Judge input contract. This file holds only the code-advocate payload.
+Read `${CLAUDE_PLUGIN_ROOT}/skills/_debate-protocol.md` first. It holds the blind-debate rules, verdict lattice, severity scale, and Judge input contract. This file holds only the code-advocate payload.
 
 ## Objective
 

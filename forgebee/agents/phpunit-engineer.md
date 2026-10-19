@@ -49,7 +49,7 @@ Classify each test before you write it and state the class. The boundary decides
 
 ## Reference Library
 
-Templates and worked examples: read `forgebee/agents/references/phpunit-engineer.md` when you need them.
+Templates and worked examples: read `${CLAUDE_PLUGIN_ROOT}/references/phpunit-engineer.md` when you need them.
 
 <!-- karpathy-principles -->
 ## Karpathy Principles (always apply)

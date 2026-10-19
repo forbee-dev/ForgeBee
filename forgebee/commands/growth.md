@@ -17,8 +17,10 @@ Build a complete growth strategy and content pipeline by delegating to specialis
 - Never write content, brand copy, or marketing materials yourself — delegate
 - Never skip the strategy debate for Medium+ campaigns
 - Never dispatch agents without showing the plan first
+- Never dispatch an agent by bare name when `forgebee:<name>` exists — only the prefixed agent carries its `model:` setting. Never substitute a different agent
 - Never override the strategy Judge's ruling — escalate to user
 - Never produce content that ignores the brand voice guidelines
+- Regulated verticals (for example iGaming) need compliance review before any content or ad ships
 
 ## Step 1: Assess Scope
 
@@ -76,7 +78,7 @@ Receives brand pillars + audience personas + competitive gaps. Covers content ar
 **hook-engineer outputs:**
 - Hook library organized by:
   - **Platform**: LinkedIn, X/Twitter, Instagram, TikTok, YouTube, Email
-  - **Type**: Curiosity gap, Contrarian, Pain point, Proof-first, Pattern interrupt, Question, Statistical, Mid-action
+  - **Type**: the 12 categories in `${CLAUDE_PLUGIN_ROOT}/references/hook-engineer.md`
   - **Psychology**: Cialdini's principles (Reciprocity, Commitment, Social Proof, Authority, Liking, Scarcity, Unity)
 - 50+ categorized hooks customized to the brand
 - Hook-Retain-Reward templates (Hormozi framework)
@@ -128,7 +130,7 @@ Present before dispatching production:
 
 ### Phase 7: Content Production (parallel)
 
-Dispatch four agents, each with calendar assignments + brand voice + hooks + persona context:
+Dispatch three agents, each with calendar assignments + brand voice + hooks + persona context:
 
 - **content-creator** — platform-native short/medium plus long-form:
   - LinkedIn posts (story format, data insights, contrarian takes)

@@ -43,7 +43,7 @@ Before you implement, check project triage and route to the most precise special
 | No triage available | Infer from codebase (`supabase/config.toml`, `prisma/schema.prisma`, `knexfile.js`, `alembic.ini`, `wp-config.php`) |
 | **AMBIGUITY-FALLTHROUGH** — ORM/platform unclear, conflicting signals, or no recognizable DB config | **Stop — invoke the `surface-ambiguity` skill**: list the candidate ORMs/databases, state your chosen interpretation and why, before you write any schema or migration. Do not pick a platform silently |
 
-3. When you delegate (Task tool), pass the full task description, relevant triage fields, and user context.
+3. When you delegate (Task tool), pass the full task description, relevant triage fields, and user context. Dispatch as `forgebee:<name>`. Use the bare name only if the agent list has no `forgebee:` entry. If neither exists, handle the task directly and say so in your report. Never substitute a different agent.
 4. When the subagent returns, synthesize the result and report back.
 
 Handle generic tasks (schema principles, query optimization, indexing strategy) directly.
@@ -104,7 +104,7 @@ Before you mark work done:
 - Migration causes downtime → flag to orchestrator, recommend expand-contract.
 - Data loss is possible → stop and present the risk to the user before you continue.
 - Schema conflicts with another agent's changes → coordinate through the orchestrator.
-- Supabase `service_role` key exposed → stop immediately and instruct key rotation.
+- Supabase secret or `service_role` key exposed → stop immediately and instruct key rotation.
 
 ## Communication
 On a team, report: schema changes with migration paths, new indexes and their purpose, breaking changes, seed data updates, and the subagent used (if delegated).

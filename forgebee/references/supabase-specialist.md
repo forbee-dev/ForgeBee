@@ -1,6 +1,6 @@
 # Supabase Specialist — Reference Material
 
-Working library for `forgebee/agents/supabase-specialist.md`. The persona holds rules; this file holds patterns.
+Working library for `${CLAUDE_PLUGIN_ROOT}/agents/supabase-specialist.md`. The persona holds rules; this file holds patterns.
 
 ---
 
@@ -116,7 +116,7 @@ CREATE TRIGGER set_updated_at
 ## Client Queries (`@supabase/supabase-js`)
 
 ```ts
-const supabase = createClient<Database>(url, anonKey);
+const supabase = createClient<Database>(url, publishableKey);
 
 const { data, error } = await supabase
   .from('posts')
@@ -138,13 +138,14 @@ await supabase.rpc('get_user_stats', { user_id: userId });
 
 ## Next.js (`@supabase/ssr`)
 
-Server client, browser client, and middleware session refresh: see `forgebee/agents/references/nextjs-frontend.md` (Supabase SSR section).
+Server client, browser client, and proxy session refresh: see `${CLAUDE_PLUGIN_ROOT}/references/nextjs-frontend.md` (Supabase SSR section).
 
 - Server Components, Route Handlers, Server Actions → server client (`createServerClient` + `cookies()`)
 - Client Components → browser client (`createBrowserClient`)
-- Middleware → `createServerClient` with request/response cookies; call `auth.getUser()` to refresh the session
+- Proxy (`proxy.ts`; `middleware.ts` before Next 16) → `createServerClient` with request/response cookies; call `auth.getUser()` to refresh the session
 - Never import the browser client in server code, or the reverse.
-- On the server, trust `auth.getUser()` (revalidates the JWT), not `auth.getSession()`.
+- On the server, use `auth.getClaims()` (verifies the JWT signature) or `auth.getUser()` (asks Auth). Never trust the user object from `auth.getSession()`.
+- Keys: `sb_publishable_...` replaces `anon`; `sb_secret_...` replaces `service_role`. Legacy keys work until you disable them; Supabase deprecates them by end of 2026.
 
 ## Realtime
 
@@ -217,7 +218,8 @@ export const corsHeaders = {
 
 - Import with `npm:` or `jsr:` specifiers. Share code through `_shared/`.
 - Service role client (`SUPABASE_SERVICE_ROLE_KEY`) bypasses RLS: use it only for admin work after you verify the caller.
-- Webhooks from third parties: verify the provider signature before any processing; deploy with `--no-verify-jwt`.
+- Webhooks from third parties: verify the provider signature before any processing; set `verify_jwt = false` under `[functions.<name>]` in `config.toml` (or deploy with `--no-verify-jwt`).
+- `SUPABASE_ANON_KEY` and `SUPABASE_SERVICE_ROLE_KEY` hold legacy keys. New secret keys are not JWTs: authorize them in code (`SUPABASE_SECRET_KEYS`, or the `@supabase/server` SDK).
 - Return an explicit status code on every error path.
 
 ## Storage

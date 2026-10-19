@@ -7,18 +7,16 @@
  * auto-loads. They had drifted to a pre-5.x snapshot (e.g. debate/review/strategy
  * skills duplicated as AGENTS), causing duplicate registration + stale behavior.
  * The source of truth is forgebee/. This makes .claude/ exactly mirror it —
- * overwriting changed files and pruning stale ones. That is safe because .claude/
- * is a gitignored, regenerable mirror.
+ * overwriting changed files. Stale files (not in forgebee/) are only listed;
+ * pass --prune to delete them, since .claude/ can hold a user's custom agents.
  *
- * CANONICAL local-mirror sync. Do NOT also run forgebee/sync.js against
- * .claude/{agents,commands}: it uses preserve-newer (skip-if-target-newer)
- * semantics for a different manifest-based workflow, so running both yields
- * conflicting results. Pick one tool per task. Neither is wired into CI.
+ * Not wired into CI.
  *
  * Syncs agents + commands only (skills are provided by the installed plugin under
  * the forgebee: namespace; adding them to .claude/skills would add duplication).
  *
- * Usage: node scripts/sync-local-install.js          (apply)
+ * Usage: node scripts/sync-local-install.js          (apply; lists stale files)
+ *        node scripts/sync-local-install.js --prune   (apply and delete stale files)
  *        node scripts/sync-local-install.js --check   (report drift, exit 1 if any)
  */
 
@@ -27,6 +25,7 @@ const path = require('path');
 
 const ROOT = path.resolve(__dirname, '..');
 const CHECK = process.argv.includes('--check');
+const PRUNE = process.argv.includes('--prune');
 const DIRS = ['agents', 'commands'];
 
 function listMd(dir) {
@@ -58,12 +57,13 @@ for (const sub of DIRS) {
     if (!CHECK) fs.copyFileSync(sp, dp);
   }
   for (const f of stale) {
-    if (!CHECK) fs.unlinkSync(path.join(dstDir, f));
+    if (PRUNE && !CHECK) fs.unlinkSync(path.join(dstDir, f));
+    else console.log(`  stale (kept; use --prune to delete): .claude/${sub}/${f}`);
   }
 
   const subDrift = stale.length + missing.length + changed;
   drift += subDrift;
-  summary.push(`  ${sub}: ${src.length} source · ${stale.length} stale removed · ${missing.length} added · ${changed} updated`);
+  summary.push(`  ${sub}: ${src.length} source · ${stale.length} stale ${PRUNE && !CHECK ? 'removed' : 'kept'} · ${missing.length} added · ${changed} updated`);
 }
 
 console.log(CHECK ? 'sync-local-install --check' : 'sync-local-install: applied');

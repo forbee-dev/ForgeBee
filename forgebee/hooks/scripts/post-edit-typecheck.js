@@ -9,7 +9,7 @@
 const fs = require('fs');
 const path = require('path');
 const { execFileSync } = require('child_process');
-const { log } = require('./_common.js');
+const { output } = require('./_common.js');
 
 async function main() {
   let input = '';
@@ -39,13 +39,24 @@ async function main() {
 
   const ext = path.extname(filePath).toLowerCase();
 
+  let report = [];
   if (['.ts', '.tsx'].includes(ext)) {
-    typecheckTs(filePath);
+    report = typecheckTs(filePath);
   } else if (ext === '.php') {
-    typecheckPhp(filePath);
+    report = typecheckPhp(filePath);
   }
 
-  process.stdout.write(input);
+  // stderr with exit 0 never reaches Claude; additionalContext does.
+  if (report.length > 0) {
+    output({
+      hookSpecificOutput: {
+        hookEventName: 'PostToolUse',
+        additionalContext: report.join('\n'),
+      },
+    });
+  } else {
+    process.stdout.write(input);
+  }
   process.exit(0);
 }
 
@@ -77,14 +88,14 @@ function typecheckTs(file) {
 
   const tsconfigDir = findConfigDir(dir, 'tsconfig.json');
   if (!tsconfigDir) {
-    return;
+    return [];
   }
 
   // Use the project's local tsc; do NOT fall back to `npx` (a missing package
   // would trigger a network install and blow the hook timeout). Skip if absent.
   const tscBin = path.join(tsconfigDir, 'node_modules', '.bin', 'tsc');
   if (!fs.existsSync(tscBin)) {
-    return;
+    return [];
   }
 
   let tscOutput = '';
@@ -93,7 +104,8 @@ function typecheckTs(file) {
       encoding: 'utf8',
       stdio: ['pipe', 'pipe', 'pipe'],
       cwd: tsconfigDir,
-      timeout: 30000,
+      // Below the 30s hook timeout so tsc is cut off here and still reports.
+      timeout: 25000,
     });
   } catch (e) {
     // tsc exits non-zero when there are type errors — capture stdout
@@ -101,7 +113,7 @@ function typecheckTs(file) {
   }
 
   if (!tscOutput) {
-    return;
+    return [];
   }
 
   const result = { output: tscOutput.trim() };
@@ -124,9 +136,9 @@ function typecheckTs(file) {
   }
 
   if (relevantLines.length > 0) {
-    log(`[Hook] TypeScript errors in ${basename}:`);
-    relevantLines.slice(0, 10).forEach((line) => log(line));
+    return [`[Hook] TypeScript errors in ${basename}:`, ...relevantLines.slice(0, 10)];
   }
+  return [];
 }
 
 function typecheckPhp(file) {
@@ -143,12 +155,12 @@ function typecheckPhp(file) {
   }
 
   if (!phpstanDir) {
-    return;
+    return [];
   }
 
   const phpstanBin = path.join(phpstanDir, 'vendor', 'bin', 'phpstan');
   if (!fs.existsSync(phpstanBin)) {
-    return;
+    return [];
   }
 
   let phpstanOutput = '';
@@ -163,11 +175,12 @@ function typecheckPhp(file) {
   }
 
   if (phpstanOutput && !phpstanOutput.includes('No errors')) {
-    log(`[Hook] PHPStan errors in ${path.basename(file)}:`);
-    phpstanOutput.split('\n').slice(0, 10).forEach((line) => {
-      if (line.trim()) log(line);
-    });
+    return [
+      `[Hook] PHPStan errors in ${path.basename(file)}:`,
+      ...phpstanOutput.split('\n').filter((line) => line.trim()).slice(0, 10),
+    ];
   }
+  return [];
 }
 
 main().catch(() => {

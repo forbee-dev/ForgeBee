@@ -1,6 +1,6 @@
 # saas-cro — Reference Material
 
-Working library for `forgebee/agents/saas-cro.md`. The persona holds rules; this file holds patterns.
+Working library for `${CLAUDE_PLUGIN_ROOT}/agents/saas-cro.md`. The persona holds rules; this file holds patterns.
 
 ---
 
@@ -97,13 +97,13 @@ Feed it real, specific numbers from data ("12,418 teams", not "10,000+"). Real c
 
 ## A/B Test — Server-Side Assignment
 
-Assign in middleware so the variant is known before first paint (no flash, no hydration mismatch).
+Assign in the proxy so the variant is known before first paint (no flash, no hydration mismatch).
 
 ```ts
-// middleware.ts
+// proxy.ts (Next 15: middleware.ts, export middleware)
 import { NextResponse, type NextRequest } from 'next/server';
 
-export function middleware(req: NextRequest) {
+export function proxy(req: NextRequest) {
   const res = NextResponse.next();
   if (!req.cookies.has('ab_hero_v2')) {
     res.cookies.set('ab_hero_v2', Math.random() < 0.5 ? 'control' : 'variant', {

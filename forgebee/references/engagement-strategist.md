@@ -28,7 +28,7 @@ Worked templates for `forgebee/agents/engagement-strategist.md`. The persona hol
 2. Receive naturally: [comments, shares, DMs, referrals]
 3. Compound: [deeper trust, more visibility]
 
-### Cadence
+### Cadence (heuristics, not platform rules)
 - Daily: comment on 10 posts, answer 5 questions, share 3 resources
 - Weekly: feature someone, create a free resource, host a space/AMA
 - Monthly: publish a case study, build a tool, host an event
@@ -41,7 +41,7 @@ Worked templates for `forgebee/agents/engagement-strategist.md`. The persona hol
 
 ## 3. Comment Strategy
 
-**Proactive (others' content):** 10-20 target accounts. Comment within the first 30 minutes of their post. Every comment adds value — no "Great post!".
+**Proactive (others' content, heuristics):** 10-20 target accounts. Comment within the first 30 minutes of their post. Every comment adds value — no "Great post!".
 
 | Formula | Pattern |
 |---------|---------|
@@ -56,6 +56,8 @@ Worked templates for `forgebee/agents/engagement-strategist.md`. The persona hol
 **Velocity tactics:** end posts with a specific question (not "thoughts?"); use polls and opinions; tag people only when relevant; reply to replies; engage on your commenters' posts.
 
 ## 4. DM Sequences
+
+Send by hand or with platform-native tools. LinkedIn, Instagram, and X ban third-party automation and bulk DMs. The timings below are starting heuristics.
 
 | Sequence | Trigger | Timing | Message | Goal |
 |----------|---------|--------|---------|------|

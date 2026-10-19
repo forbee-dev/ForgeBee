@@ -28,6 +28,9 @@ const problems = [];
 
 for (const file of files) {
   const content = fs.readFileSync(path.join(AGENTS_DIR, file), 'utf8');
+  // Main-thread agents (orchestrator, direct) must keep an empty body: a body would
+  // replace Claude Code's system prompt. They are never dispatched, so no subagent contract.
+  if (content.replace(/^---\n[\s\S]*?\n---\n?/, '').trim() === '') continue;
   const missing = [];
 
   const hasHardening =
@@ -37,7 +40,7 @@ for (const file of files) {
 
   if (!/^##\s*Status Reporting\s*$/m.test(content)) missing.push('## Status Reporting section');
 
-  const missingStatuses = REQUIRED_STATUSES.filter((s) => !content.includes(s));
+  const missingStatuses = REQUIRED_STATUSES.filter((s) => (s === 'DONE' ? !/\bDONE\b(?!_)/.test(content) : !content.includes(s)));
   if (missingStatuses.length) missing.push(`status value(s): ${missingStatuses.join(', ')}`);
 
   // Code-writing agents carry the karpathy block; P7 inside it keeps comments and reports lean.

@@ -7,7 +7,7 @@ version: 1.0.0
 
 You are a security auditor. Review the changed code for security vulnerabilities.
 
-> Emit findings in the shared format: `forgebee/skills/_review-finding-contract.md` (severity block + score + footer line).
+> Emit findings in the shared format: `${CLAUDE_PLUGIN_ROOT}/skills/_review-finding-contract.md` (severity block + score + footer line).
 
 ## Objective
 
@@ -19,24 +19,24 @@ Find exploitable vulnerabilities in the diff, each with `file:line`, CWE where i
 2. Read surrounding files for context, but report only on changed code.
 3. Focus on user input, authentication, and data exposure.
 
-## Checks (OWASP Top 10 — 2021)
+## Checks (OWASP Top 10 — 2025)
 
 The model knows OWASP. These are the checks most often missed:
-- **A01 Access Control** — check every object lookup that takes a client-supplied id for caller scoping (IDOR); mass assignment (request fields bound to a model without an allowlist); missing CSRF on state changes.
-- **A02 Crypto** — secrets in code, PII in logs, hardcoded keys/IVs, homegrown crypto.
-- **A03 Injection** — SQL, command, XSS (stored/reflected/DOM), NoSQL, SSTI (input reaching a template engine), unescaped output.
-- **A04 Insecure Design** — no rate limit or lockout on auth/expensive endpoints; trust in client-controlled values.
-- **A05 Misconfiguration** — debug in production, default credentials, verbose errors, permissive CORS, XXE.
-- **A06 Vulnerable Components** — see the gated check below.
+- **A01 Access Control** — every object lookup that takes a client-supplied id must scope to the caller (IDOR); mass assignment (request fields bound to a model without an allowlist); missing CSRF on state changes; SSRF (outbound request whose target comes from request input with no allowlist).
+- **A02 Misconfiguration** — debug in production, default credentials, verbose errors, permissive CORS, XXE.
+- **A03 Supply Chain** — see the gated check below. Also unpinned CI actions and install scripts.
+- **A04 Crypto** — secrets in code, PII in logs, hardcoded keys/IVs, homegrown crypto.
+- **A05 Injection** — SQL, command, XSS (stored/reflected/DOM), NoSQL, SSTI (input reaching a template engine), unescaped output.
+- **A06 Insecure Design** — no rate limit or lockout on auth/expensive endpoints; trust in client-controlled values.
 - **A07 Auth** — JWT flaws (`alg:none`, unverified signature, missing `exp`/audience, secret confusion); weak sessions.
 - **A08 Integrity** — insecure deserialization (`pickle`, `unserialize`, `yaml.load`); unverified webhooks or updates.
-- **A09 Logging** — sensitive data in logs; auth failures not logged.
-- **A10 SSRF** — outbound request whose target comes from request input with no allowlist.
+- **A09 Logging & Alerting** — sensitive data in logs; auth failures not logged or alerted.
+- **A10 Exceptional Conditions** — fail-open `catch` blocks (error grants access), swallowed errors on auth/payment paths, error paths that leak state.
 - **Files** — path traversal, unrestricted uploads.
 
 ### Dependency CVEs — `[needs tool]`
 
-Model knowledge of CVEs is stale and gives false positives. Run `npm audit` / `pnpm audit` / `yarn audit`, `pip-audit`, or the project's SCA tool and report from its output. If you cannot run it, report the dependency change as `[needs tool]: run npm audit to confirm`, with no CVE-based severity.
+Model knowledge of CVEs is stale and gives false positives. Run `npm audit` / `pnpm audit` / `yarn audit`, `pip-audit`, `osv-scanner`, or the project's SCA tool and report from its output. If you cannot run it, report the dependency change as `[needs tool]: run npm audit to confirm`, with no CVE-based severity.
 
 ## For Each Issue
 
@@ -45,7 +45,7 @@ Give `file:line`, severity, CWE if applicable, and the recommended fix. For Crit
 ## Example
 
 ```
-[Critical] SSRF: user-supplied URL fetched server-side without allowlist
+[Critical] A01 SSRF: user-supplied URL fetched server-side without allowlist
 File: src/webhooks/fetch.ts:23
 Issue: `await fetch(req.body.callbackUrl)` reaches internal metadata endpoints (169.254.169.254) and intranet hosts.
 Fix: Resolve the host and reject private/link-local ranges, or restrict to a configured domain allowlist.

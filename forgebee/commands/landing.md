@@ -83,7 +83,7 @@ Follow this proven conversion layout:
 - **FAQ**: Address real objections honestly
 
 ### 4. Build
-- Create a single HTML file with Tailwind CSS (via CDN)
+- Create a single HTML file with Tailwind CSS v4. For a prototype, load `@tailwindcss/browser@4` from the CDN (Play CDN, dev only). For production, compile with the Tailwind CLI. In a React/Next.js project, use the project's setup.
 - Mobile-responsive by default
 - Fast loading (no heavy frameworks)
 - Proper semantic HTML for SEO

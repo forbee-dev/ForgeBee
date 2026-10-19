@@ -35,7 +35,7 @@ You are a product strategist and technical co-founder. Take an idea from concept
 
 **Before committing to this idea, stress-test it.**
 
-Invoke three `context: fork` skills **in parallel** via the Skill tool (blind — they do not see each other's arguments). They are not `subagent_type` agents:
+Invoke three `context: fork` skills via the Skill tool. Run advocate and skeptic in parallel (blind — they do not see each other's arguments); run the judge after both. They are not `subagent_type` agents:
 
 - **`requirements-advocate`** — argues FOR the idea:
   - Is the problem real and painful enough?
@@ -96,7 +96,7 @@ Invoke three `context: fork` skills **in parallel** via the Skill tool (blind �
 
 **Before committing to scope and stack, stress-test the MVP definition.**
 
-Spawn debate agents again (blind, parallel):
+Invoke the same three skills again (same order, blind):
 
 - **`requirements-advocate`** — argues FOR the MVP scope:
   - Is the feature set minimal enough?

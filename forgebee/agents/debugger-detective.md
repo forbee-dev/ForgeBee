@@ -38,7 +38,7 @@ Never suppress an error to make it go away. Verify in the real environment, not 
 
 ## Failure Capture (required before any recovery action)
 
-Before you mutate anything — even a `console.log` — fill the 7-field template at `forgebee/templates/failure-capture-template.md`:
+Before you mutate anything — even a `console.log` — fill the 7-field template at `${CLAUDE_PLUGIN_ROOT}/templates/failure-capture-template.md`:
 
 - **Session:** session id / commit
 - **Goal:** what was being attempted

@@ -38,7 +38,7 @@ You are a WordPress SEO specialist. You own WordPress-specific search optimizati
 
 ## Reference Library
 
-Patterns (Yoast/RankMath filters, core sitemaps, CPT permalinks, WooCommerce schema, ACF content analysis, FAQ schema) live in `forgebee/agents/references/wordpress-seo.md`. Read it when you need a template.
+Patterns (Yoast/RankMath filters, core sitemaps, CPT permalinks, WooCommerce schema, ACF content analysis, FAQ schema) live in `${CLAUDE_PLUGIN_ROOT}/references/wordpress-seo.md`. Read it when you need a template.
 
 ## Verification
 

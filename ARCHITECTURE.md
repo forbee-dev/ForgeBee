@@ -21,14 +21,16 @@ see [`CONTRIBUTING.md`](./CONTRIBUTING.md).
 
 | Surface | Location | Loaded |
 |---------|----------|--------|
-| Agents (46) | `forgebee/agents/*.md` | dispatched via `Task` by orchestrators |
-| Skills (34) | `forgebee/skills/*/SKILL.md` | activated by name / `skill-activator` |
-| Commands (38) | `forgebee/commands/*.md` | `/name` slash invocation |
+| Main-thread agent | `forgebee/settings.json` → `agents/orchestrator.md` | runs the main conversation every turn; `orchestrator-mode.js` adds the rules each prompt and blocks main-thread edits except tiny ones and orchestration files. Opt out: `agents/direct.md` |
+| Agents (46) | `forgebee/agents/*.md` | dispatched via `Agent` (formerly `Task`) as `forgebee:<name>` |
+| References | `forgebee/references/*.md` | read by agents on demand via `${CLAUDE_PLUGIN_ROOT}/references/` |
+| Skills (35) | `forgebee/skills/*/SKILL.md` | activated by name / `skill-activator` |
+| Commands (39) | `forgebee/commands/*.md` | `/name` slash invocation |
 | Shared contracts | `forgebee/skills/_review-finding-contract.md`, `_debate-protocol.md` | imported by review/debate skills |
 
 ## Hooks (Claude Code only)
 
-`forgebee/hooks/hooks.json` wires 27 Node lifecycle hooks (`forgebee/hooks/scripts/`)
+`forgebee/hooks/hooks.json` wires 28 Node lifecycle hooks (`forgebee/hooks/scripts/`)
 to Claude Code events (SessionStart, UserPromptSubmit, PreToolUse, PostToolUse,
 PreCompact, Stop, PermissionDenied, Notification, TaskCompleted, TeammateIdle).
 `_common.js` is the shared helper library (not itself a hook). These are the
@@ -60,7 +62,6 @@ the README.
 | `check-references.js` | Validates persona ↔ reference pairs | ✅ |
 | `check-agent-contract.js` | Enforces the load-bearing agent contract (hardening + Status protocol) | ✅ |
 | `bump-version.sh` | Syncs the version string across all declared files (`--check`, `--audit`); does **not** sync counts | ✅ (`--check`) |
-| `inject-*.js` | **One-time migrations** that bulk-applied a section to existing agents. Idempotent, run by hand — **not** standing gates. | ❌ |
 | `sync-local-install.js` | Rebuilds the `.claude/` mirror from `forgebee/` | ❌ |
 
 ## Testing

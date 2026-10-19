@@ -1,6 +1,6 @@
 # nextjs-seo — Reference Material
 
-Working library for `forgebee/agents/nextjs-seo.md`. The persona holds rules; this file holds patterns.
+Working library for `${CLAUDE_PLUGIN_ROOT}/agents/nextjs-seo.md`. The persona holds rules; this file holds patterns.
 
 ---
 

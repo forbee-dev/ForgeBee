@@ -8,11 +8,11 @@ Snippets extracted from `forgebee/agents/wordpress-backend.md`. The persona hold
 
 ```php
 $has_acf = class_exists( 'ACF' );
-$is_pro  = $has_acf && function_exists( 'acf_get_pro_version' );
-$is_scf  = $has_acf && defined( 'SCF_VERSION' );
+$is_pro  = $has_acf && defined( 'ACF_PRO' ) && ACF_PRO; // True for ACF PRO and SCF.
+$is_scf  = $has_acf && defined( 'ACF_BASENAME' ) && false !== strpos( ACF_BASENAME, 'secure-custom-fields' );
 
-if ( ! acf_get_field_type( 'repeater' ) ) {
-	// SCF and ACF free have no Repeater: fall back to a CPT or a serialized meta array.
+if ( $has_acf && ! acf_get_field_type( 'repeater' ) ) {
+	// ACF free has no Repeater: fall back to a CPT.
 }
 ```
 

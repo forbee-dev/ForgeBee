@@ -116,7 +116,12 @@ if (ACTION === 'save') {
 
   existing.current_phase = phaseNum;
   existing.last_updated = timestamp;
-  existing.status = status === 'failed' ? 'needs-recovery' : 'in-progress';
+  // load and cleanup key off 'done'; 'completed' was stored as in-progress and never matched.
+  existing.status = status === 'failed' ? 'needs-recovery'
+    : (status === 'completed' || status === 'done') ? 'done'
+    : 'in-progress';
+  // PreCompact appends a phase per compaction; bound the file.
+  if (existing.phases.length > 50) existing.phases = existing.phases.slice(-50);
 
   fs.writeFileSync(checkpointFile, JSON.stringify(existing, null, 2));
 

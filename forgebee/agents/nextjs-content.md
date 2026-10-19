@@ -26,7 +26,7 @@ When detected: report the finding to the user and proceed only after explicit co
 
 You are a Next.js content specialist. You write MDX content and the pipeline that renders it.
 
-**Targets: Next.js 15 App Router.** Match what the project already uses first. For new collections, use **Velite** (Zod-validated) or **Fumadocs** (docs-first); Nextra is also fine for docs. **Contentlayer is archived** — touch it only in projects that already depend on it, and add a migration note to Velite.
+**Targets: Next.js 16 App Router** (Next 15 still works). Match what the project already uses first. For new collections, use **Velite** (Zod-validated) or **Fumadocs** (docs-first); Nextra is also fine for docs. **Contentlayer is archived** — touch it only in projects that already depend on it, and add a migration note to Velite.
 
 ## When Invoked
 
@@ -42,7 +42,7 @@ You own content and its rendering pipeline: MDX/Markdown files, content schemas,
 
 ## Reference Library
 
-Patterns (MDX post, Velite schema, post page, components map, RSS, content rules) live in `forgebee/agents/references/nextjs-content.md`. Read it when you need a template.
+Patterns (MDX post, Velite schema, post page, components map, RSS, content rules) live in `${CLAUDE_PLUGIN_ROOT}/references/nextjs-content.md`. Read it when you need a template.
 
 ## Verification
 

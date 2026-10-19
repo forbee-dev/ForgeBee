@@ -65,6 +65,10 @@ try {
     return { fields, body };
   }
 
+  const VERSION = JSON.parse(
+    fs.readFileSync(path.join(FORGEBEE_DIR, 'forgebee', '.claude-plugin', 'plugin.json'), 'utf-8')
+  ).version;
+
   // ── Convert agents to OpenClaw skills ────────────────────────────────
   console.log('📦 Converting agents...');
   const agentsDir = path.join(FORGEBEE_DIR, 'forgebee', 'agents');
@@ -83,23 +87,13 @@ try {
       fs.mkdirSync(skillDir, { recursive: true });
 
       // Extract frontmatter fields
-      const name = fields.name || agentName;
       const desc = fields.description || 'ForgeBee agent';
-      let model = fields.model || 'sonnet';
-
-      // Map Claude Code model names to OpenClaw-compatible names
-      const modelMap = {
-        opus: 'claude-opus-4-5-20250501',
-        haiku: 'claude-haiku-4-5-20251001',
-        sonnet: 'claude-sonnet-4-5-20250929',
-      };
-      const ocModel = modelMap[model] || 'claude-sonnet-4-5-20250929';
 
       // Write OpenClaw SKILL.md
       const skillContent = `---
 name: forgebee-${agentName}
 description: "[ForgeBee] ${desc}"
-version: 5.2.0
+version: ${VERSION}
 metadata:
   openclaw:
     emoji: "🐝"
@@ -135,14 +129,13 @@ ${body}
       fs.mkdirSync(skillDir, { recursive: true });
 
       // Extract frontmatter fields
-      const name = fields.name || cmdName;
       const desc = fields.description || 'ForgeBee command';
 
       // Write OpenClaw SKILL.md
       const skillContent = `---
 name: forgebee-cmd-${cmdName}
 description: "[ForgeBee] ${desc}"
-version: 5.2.0
+version: ${VERSION}
 user-invocable: true
 metadata:
   openclaw:
@@ -169,18 +162,13 @@ ${body}
     const agentsMdContent = fs.readFileSync(agentsMdPath, 'utf-8');
 
     if (!agentsMdContent.includes('ForgeBee')) {
+      const agentNames = fs.readdirSync(agentsDir).filter(f => f.endsWith('.md')).map(f => path.basename(f, '.md'));
       const forgebeeSection = `
 ## ForgeBee Specialist Agents
 
-ForgeBee provides 44 specialist agents organized by function. Each agent is available as an OpenClaw skill prefixed with \`forgebee-\`.
+ForgeBee provides ${agentNames.length} specialist agents. Each agent is available as an OpenClaw skill prefixed with \`forgebee-\`.
 
-**Development:** forgebee-frontend-specialist, forgebee-backend-engineer, forgebee-database-specialist, forgebee-security-auditor, forgebee-test-engineer, forgebee-devops-engineer, forgebee-performance-optimizer, forgebee-debugger-detective
-
-**Quality Gates:** forgebee-verification-enforcer, forgebee-tdd-enforcer, forgebee-delivery-agent
-
-**Debate System:** forgebee-requirements-advocate, forgebee-requirements-skeptic, forgebee-requirements-judge, forgebee-code-advocate, forgebee-code-skeptic, forgebee-code-judge, forgebee-strategy-advocate, forgebee-strategy-skeptic, forgebee-strategy-judge
-
-**Growth OS:** forgebee-brand-strategist, forgebee-market-intel, forgebee-audience-architect, forgebee-content-architect, forgebee-hook-engineer, forgebee-idea-machine, forgebee-engagement-strategist, forgebee-content-creator, forgebee-growth-hacker, forgebee-calendar-builder, forgebee-performance-analyst, forgebee-conversion-optimizer, forgebee-email-strategist
+${agentNames.map(n => `forgebee-${n}`).join(', ')}
 
 **Commands (user-invocable):** forgebee-cmd-workflow, forgebee-cmd-team, forgebee-cmd-plan, forgebee-cmd-growth, forgebee-cmd-review, forgebee-cmd-debug, forgebee-cmd-test, forgebee-cmd-security, forgebee-cmd-perf, and more.
 `;

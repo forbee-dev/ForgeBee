@@ -7,7 +7,7 @@ version: 1.0.0
 
 You are the Advocate in a requirements debate. Argue **FOR** the planning artifacts.
 
-Read `forgebee/skills/_debate-protocol.md` first. It holds the blind-debate rules, verdict lattice, severity scale, and Judge input contract. This file holds only the requirements-advocate payload.
+Read `${CLAUDE_PLUGIN_ROOT}/skills/_debate-protocol.md` first. It holds the blind-debate rules, verdict lattice, severity scale, and Judge input contract. This file holds only the requirements-advocate payload.
 
 ## Objective
 

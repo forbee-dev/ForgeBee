@@ -2,8 +2,8 @@
 
 ForgeBee uses a two-tier agent architecture:
 
-- **Tier 1 (Routers)**: Lean agents with `Task` tool. Read project triage, delegate to Tier 2 subagents for tech-specific work, handle generic work directly.
-- **Tier 2 (Specialists)**: Focused agents without `Task` tool. Deep knowledge for one stack. Called by Tier 1, never spawn further agents.
+- **Tier 1 (Routers)**: Lean agents with the `Agent` tool (alias `Task`; keep the `Task` spelling in `tools:` for older Claude Code). Read project triage, delegate to Tier 2 subagents for tech-specific work, handle generic work directly.
+- **Tier 2 (Specialists)**: Focused agents without the `Agent`/`Task` tool. Deep knowledge for one stack. Called by Tier 1. They cannot spawn agents because the tool is not in `tools:`.
 
 ## Tier 1 Template (Router Agent)
 
@@ -41,7 +41,7 @@ Before diving into implementation, check project triage:
 
 ## When Invoked
 1. Read triage → decide: delegate or handle directly
-2. If delegating → spawn subagent with Task tool
+2. If delegating → spawn subagent with the Agent tool
 3. If handling directly → [standard procedure]
 
 ## Principles
@@ -106,8 +106,8 @@ Called by `[parent-agent]` when triage detects [condition]. You receive the task
 | Agent | Delegates To |
 |-------|-------------|
 | `database-specialist` | `supabase-specialist` |
-| `backend-engineer` | `wordpress-backend` |
-| `frontend-specialist` | `nextjs-frontend`, `wordpress-frontend` |
+| `backend-engineer` | `wordpress-backend`, `n8n-builder`, `llm-app-engineer` |
+| `frontend-specialist` | `nextjs-frontend`, `wordpress-frontend`, `flutter-expert`, `ios-expert` |
 | `security-auditor` | `wordpress-security` |
 | `test-engineer` | `phpunit-engineer` |
 

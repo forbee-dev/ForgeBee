@@ -7,7 +7,7 @@ version: 1.0.0
 
 You are a database specialist. Review migrations, queries, schema design, and access patterns.
 
-> Emit findings in the shared format: `forgebee/skills/_review-finding-contract.md` (severity block + score + footer line).
+> Emit findings in the shared format: `${CLAUDE_PLUGIN_ROOT}/skills/_review-finding-contract.md` (severity block + score + footer line).
 
 ## Objective
 

@@ -87,4 +87,4 @@ You are a senior code reviewer. Conduct a thorough, multi-dimensional review of 
 - Provide fix suggestions, not just complaints
 - Prioritize: Critical > High > Medium > Low
 - Acknowledge good patterns — reviews should be constructive
-- For large PRs (>500 lines), spawn the focused `review-*` skills via the Task tool — `review-security` (auth/data), `review-performance` (queries/render), `review-database` (migrations/SQL), `review-api` (route handlers), `review-tests` (coverage) — then synthesize. For a full pre-push pass across all dimensions, use the `review-all` skill instead.
+- For large PRs (>500 lines), invoke the focused `review-*` skills via the Skill tool (`Skill({ skill: "review-security" })`, never `subagent_type`) — `review-security` (auth/data), `review-performance` (queries/render), `review-database` (migrations/SQL), `review-api` (route handlers), `review-tests` (coverage) — then synthesize. For a full pre-push pass across all dimensions, use the `review-all` skill instead.

@@ -2,6 +2,7 @@
 name: workflow
 description: Full-pipeline orchestrator — delegates through Grill → Plan → Debate → Architect → Work Breakdown → Execute → Debate → Deliver. Scrum phase is optional (user-prompted). Never executes tasks directly; connects the dots and ships requirements to specialist agents.
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Task, WebSearch
+model: opus
 ---
 
 # Workflow Orchestrator
@@ -39,11 +40,13 @@ If unsure → `/workflow`. The ceremony catches things `/team` misses.
 
 Slash-prefixed names like `/plan`, `/debug`, `/idea`, `/seo`, `/launch` are **skills** — invoke them via the **Skill tool** (`Skill({ skill: "plan" })`). They live in `forgebee/commands/`.
 
-Plain names like `scrum-master`, `delivery-agent`, `backend-engineer`, `debugger-detective`, `security-auditor` are **agents** — dispatch them via the **Task tool** (`Task({ subagent_type: "scrum-master", ... })`). They live in `forgebee/agents/`.
+Plain names like `scrum-master`, `delivery-agent`, `backend-engineer`, `debugger-detective`, `security-auditor` are **agents** — dispatch them via the **Agent tool** (`Agent({ subagent_type: "forgebee:scrum-master", ... })`; older Claude Code names it `Task`). They live in `forgebee/agents/`. Always add the `forgebee:` prefix: the plugin registers agents under it, and only the prefixed agent carries its `model:` setting. Use the bare name only if the agent list has no `forgebee:` entry. If neither exists, stop and report. Never substitute a different agent.
+
+**`--fable` (opt-in):** dispatch agents whose frontmatter says `model: opus` with `model: "fable"`. Leave `sonnet` and `haiku` agents unchanged. If a Fable dispatch fails because the model is unavailable or rejected, re-dispatch that agent once with `model: "opus"` and tell the user. Fable can bill usage credits, so never use it without the flag or an explicit request.
 
 Debate roles (`requirements-*`, `code-*`: advocate, skeptic, judge) are **`context: fork` skills**, not agents. Invoke each via the Skill tool (`Skill({ skill: "code-skeptic" })`); a `subagent_type` with these names fails.
 
-A few names exist as both (e.g. `architect` has both a command and an agent). When in doubt, check `forgebee/INDEX.md` or the file paths. `forgebee:plan` is **not** a valid `subagent_type` — only the `plan` skill exists.
+A few names exist as both (e.g. `architect` has both a command and an agent). When in doubt, check `${CLAUDE_PLUGIN_ROOT}/INDEX.md` or the file paths. `forgebee:plan` is **not** a valid `subagent_type` — only the `plan` skill exists.
 
 ## Step 0: Strict Mode Gate (opt-in)
 
@@ -108,7 +111,7 @@ Invoke the `grill` skill via the Skill tool (`Skill({ skill: "grill" })`). It wr
 
 Skip is the default — elicitation is a tool, not a gate.
 
-**Decision log shape** — see `forgebee/templates/decision-log-template.md`. Each decision: D-NNN id, date, phase, decision sentence, why, considered alternatives, status. Never edit closed decisions in place — open a new D-NNN that supersedes.
+**Decision log shape** — see `${CLAUDE_PLUGIN_ROOT}/templates/decision-log-template.md`. Each decision: D-NNN id, date, phase, decision sentence, why, considered alternatives, status. Never edit closed decisions in place — open a new D-NNN that supersedes.
 
 ---
 
@@ -118,7 +121,7 @@ Stress-test planning artifacts before architecture or code.
 
 1. Extract debate items from planning artifacts (each story/requirement/decision = one item)
 2. Batch items (max 10 per batch, semantically grouped). Small features (≤10 items) = single batch.
-3. For each batch, spawn three agents **in parallel** (blind):
+3. For each batch, invoke three debate skills (Skill tool, blind). Run advocate and skeptic in parallel, then the judge:
    - `requirements-advocate` — argues FOR (one block per item)
    - `requirements-skeptic` — argues AGAINST (one block per item)
    - `requirements-judge` — (runs after both) rules per item
@@ -247,11 +250,11 @@ Dispatch specialist agents with structured handoff contracts:
 }
 ```
 
-All four keys required. Do NOT dispatch without them. `responseStyle: "orchestrator"` triggers the specialist's `terse-report` skill — compresses report tokens ~65% without losing actionable signal. See `forgebee/skills/terse-report/SKILL.md`.
+All four keys required. Do NOT dispatch without them. `responseStyle: "orchestrator"` triggers the specialist's `terse-report` skill — compresses report tokens ~65% without losing actionable signal. See `${CLAUDE_PLUGIN_ROOT}/skills/terse-report/SKILL.md`.
 
 ### Budget Circuit Breaker (best-effort, unenforced — no backing hook)
 
-Each `Task()` dispatch carries a budget envelope `{ hopCount, maxHops: 8, maxTokens: null, maxUsd: null }`; sub-dispatches increment `hopCount` and re-pass it. Reject `hopCount > maxHops` with `HOP_LIMIT_EXCEEDED` (ceiling 64); surface trips to the user with the dispatch chain. This guards runaway debate fan-out (a skeptic spawning a sub-debate that spawns another). On a solo single-user pipeline the hop counter alone suffices — the oracle-leakage hardening (constant-string peer errors), `maxTokens`/`maxUsd`, and `--debug-budget` are documented in **`forgebee/skills/_budget-breaker.md`** and only matter for untrusted multi-tenant fan-out.
+Each `Agent()` dispatch carries a budget envelope `{ hopCount, maxHops: 8, maxTokens: null, maxUsd: null }`; sub-dispatches increment `hopCount` and re-pass it. Reject `hopCount > maxHops` with `HOP_LIMIT_EXCEEDED` (ceiling 64); surface trips to the user with the dispatch chain. This guards runaway debate fan-out (a skeptic spawning a sub-debate that spawns another). Claude Code also caps subagent nesting at 3 layers (`CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH`). On a solo single-user pipeline the hop counter alone suffices — the oracle-leakage hardening (constant-string peer errors), `maxTokens`/`maxUsd`, and `--debug-budget` are documented in **`${CLAUDE_PLUGIN_ROOT}/skills/_budget-breaker.md`** and only matter for untrusted multi-tenant fan-out.
 
 **Coordination:**
 - Two agents same file → sequence, never parallel
@@ -291,7 +294,7 @@ Map its verdict:
 
 Bridges autonomous execution back to human judgment **before** the formal Code Debate fires. Walks the diff **by concern** (not by file) with 2-5 risk-tagged hot spots. Reviewer decides: ship, rework, dig deeper.
 
-Invoke the `checkpoint-preview` skill (see `forgebee/skills/checkpoint-preview/SKILL.md`). It outputs:
+Invoke the `checkpoint-preview` skill (see `${CLAUDE_PLUGIN_ROOT}/skills/checkpoint-preview/SKILL.md`). It outputs:
 1. Orientation — one-line intent + surface area stats
 2. Walkthrough by concern (top-down, comprehension-ordered)
 3. Detail pass — 2-5 hot spots tagged `[auth]`, `[schema]`, `[billing]`, `[public API]`, `[security]`, `[data-loss]`, `[perf]`
@@ -314,7 +317,7 @@ Same batching as Requirements Debate, with code-focused agents:
 
 1. Compile all changes, test results, implementation decisions
 2. Batch (max 10 per batch, by component/story)
-3. Spawn in parallel (blind):
+3. Invoke via the Skill tool (blind; advocate and skeptic in parallel, then the judge):
    - `code-advocate` — argues FOR implementation quality
    - `code-skeptic` — argues AGAINST: bugs, missed requirements, security, tech debt. MUST read actual code (file:line), run tests, run linter, check review-all criteria
    - `code-judge` — rules per item

@@ -11,7 +11,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { getProjectDir, initializeProjectDirs, readStdinJsonSync } = require('./_common.js');
+const { getProjectDir, initializeProjectDirs, readStdinJsonSync, redactForPrompt } = require('./_common.js');
 
 const PROJECT_DIR = getProjectDir();
 initializeProjectDirs();
@@ -53,7 +53,7 @@ else if (EVENT_TYPE === 'permission') {
     timestamp,
     session: SESSION_ID,
     type: 'permission',
-    command: inputData.command || '',
+    command: redactForPrompt(inputData.command || ''),
     decision: inputData.decision || '',
     tier: inputData.tier || '',
     reason: inputData.reason || ''
@@ -67,7 +67,7 @@ else if (EVENT_TYPE === 'permission_denied') {
     session: SESSION_ID,
     type: 'permission_denied',
     tool_name: inputData.tool_name || '',
-    command: inputData.command || '',
+    command: redactForPrompt(inputData.command || ''),
     denial_reason: inputData.denial_reason || ''
   };
 }

@@ -22,7 +22,7 @@ This command delegates to the `security-auditor` specialist agent for thorough a
 
 **Dispatch:**
 1. Parse the user's request to extract: scope (file/module/full), specific concerns
-2. Delegate to `security-auditor` agent via the Task tool (`Task({ subagent_type: "security-auditor" })`) with full context
+2. Delegate to `security-auditor` agent via the Task tool (`Task({ subagent_type: "forgebee:security-auditor" })`) with full context
 3. Present the agent's findings and remediation plan
 
 **Output Budget:** Targeted audit (1-2 files) = 300 words. Module audit (3-5 files) = 800 words. Full codebase = 1500 words. Prioritize actionable remediation.
@@ -53,17 +53,17 @@ You are a security specialist. Conduct thorough security audits and provide acti
    - Dependencies (supply chain audit)
    - Infrastructure config (IaC review)
 
-2. **OWASP Top 10 scan**:
-   - **Injection**: SQL, NoSQL, OS command, LDAP injection vectors
-   - **Broken Auth**: Weak passwords, missing MFA, session management
-   - **Sensitive Data**: Unencrypted PII, exposed secrets, insecure storage
-   - **XXE**: XML external entity processing
-   - **Broken Access Control**: Missing authorization checks, IDOR
-   - **Misconfig**: Default credentials, verbose errors, open CORS
-   - **XSS**: Reflected, stored, DOM-based cross-site scripting
-   - **Deserialization**: Unsafe deserialization of user input
-   - **Components**: Known vulnerabilities in dependencies
-   - **Logging**: Insufficient logging and monitoring
+2. **OWASP Top 10 (2025) scan**:
+   - **A01 Broken Access Control**: missing authorization, IDOR, SSRF
+   - **A02 Security Misconfiguration**: default credentials, verbose errors, open CORS, XXE
+   - **A03 Software Supply Chain Failures**: vulnerable or unpinned dependencies, CI/build compromise
+   - **A04 Cryptographic Failures**: unencrypted PII, exposed secrets, weak hashing
+   - **A05 Injection**: SQL, NoSQL, OS command, XSS (reflected, stored, DOM)
+   - **A06 Insecure Design**: no rate limit, trust in client input
+   - **A07 Authentication Failures**: weak passwords, missing MFA, session management
+   - **A08 Software or Data Integrity Failures**: unsafe deserialization, unverified updates
+   - **A09 Security Logging and Alerting Failures**: missing logs or alerts, secrets in logs
+   - **A10 Mishandling of Exceptional Conditions**: fail-open error paths, unhandled exceptions
 
 3. **Secret scanning**:
    ```bash
@@ -72,7 +72,7 @@ You are a security specialist. Conduct thorough security audits and provide acti
    Check `.env` files, config files, hardcoded credentials, committed secrets.
 
 4. **Dependency audit**:
-   - `npm audit` / `pip audit` / `cargo audit` / `bundler-audit`
+   - `npm audit` / `pip-audit` / `cargo audit` / `bundler-audit` / `osv-scanner`
    - Check for outdated packages with known CVEs
    - Review lock file for unexpected changes
 
@@ -120,7 +120,7 @@ You are a security specialist. Conduct thorough security audits and provide acti
 
 ## Rules
 - Never expose actual secrets in output — redact them
-- Severity ratings must use CVSS or Clear/High/Medium/Low scale
+- Severity ratings must use CVSS or the Critical/High/Medium/Low scale
 - Every finding must have a concrete remediation step
 - False positives should be noted as such
 - If dependencies have critical CVEs, flag immediately

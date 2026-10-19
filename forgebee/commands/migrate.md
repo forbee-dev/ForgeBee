@@ -33,7 +33,7 @@ Before proceeding, confirm NONE of these are true:
 ## Process
 
 1. **Assess scope**: What's being migrated?
-   - Language/runtime version (Node 18→22, Python 3.9→3.12)
+   - Language/runtime version (Node 20→24, Python 3.10→3.13)
    - Framework upgrade (React 17→18, Django 4→5)
    - Database migration (schema change, engine swap)
    - Infrastructure (servers→containers, monolith→microservices)

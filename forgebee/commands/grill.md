@@ -19,7 +19,7 @@ Settle every decision in a plan before work starts. Output: a resolved decision 
 
 ## Delegation
 
-This command invokes the `grill` skill (`forgebee/skills/grill/SKILL.md`).
+This command invokes the `grill` skill (`${CLAUDE_PLUGIN_ROOT}/skills/grill/SKILL.md`).
 
 - `/grill <topic>` → grill that topic
 - `/grill <path>` → read the plan or spec at that path, then grill it
@@ -27,7 +27,7 @@ This command invokes the `grill` skill (`forgebee/skills/grill/SKILL.md`).
 
 ## Output
 
-Decision log at `docs/planning/requirements/YYYY-MM-DD-<feature>.decision-log.md`, in the shape of `forgebee/templates/decision-log-template.md`. Confirmed = settled. Tentative = accepted open risk.
+Decision log at `docs/planning/requirements/YYYY-MM-DD-<feature>.decision-log.md`, in the shape of `${CLAUDE_PLUGIN_ROOT}/templates/decision-log-template.md`. Confirmed = settled. Tentative = accepted open risk.
 
 ## Pairs with
 

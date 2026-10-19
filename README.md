@@ -3,7 +3,7 @@
   <img src="https://img.shields.io/badge/Codex-Compatible-10B981?style=for-the-badge&logoColor=white" alt="Codex" />
   <img src="https://img.shields.io/badge/Cursor-Compatible-1F2937?style=for-the-badge&logoColor=white" alt="Cursor" />
   <img src="https://img.shields.io/badge/Gemini-Compatible-4285F4?style=for-the-badge&logoColor=white" alt="Gemini" />
-  <img src="https://img.shields.io/badge/version-6.1.0-blue?style=for-the-badge" alt="Version" />
+  <img src="https://img.shields.io/badge/version-7.0.0-blue?style=for-the-badge" alt="Version" />
   <img src="https://img.shields.io/badge/license-MIT-green?style=for-the-badge" alt="License" />
 </p>
 
@@ -22,7 +22,7 @@
 
 <p align="center">
   <strong>A colony of AI agents forging your product</strong><br/>
-  46 specialist agents. 35 skills. 39 slash commands. 27 lifecycle hooks.<br/>
+  46 specialist agents. 35 skills. 39 slash commands. 28 lifecycle hooks.<br/>
   Three execution modes: inline skills, context:fork, subagents.<br/>
   Adaptive pipeline. Karpathy principles. Adversarial debate. Continuous learning.<br/>
   <em>Works with Claude Code, Codex, Cursor, Gemini, and OpenClaw.</em>
@@ -94,6 +94,10 @@ Claude Code and OpenClaw are powerful out of the box. ForgeBee makes them **opin
 
 Then edit `CLAUDE.md` with your project details and start working. Hooks activate automatically, commands are available immediately.
 
+**Orchestrator mode (default).** The main conversation runs as `forgebee:orchestrator` for the whole session. It plans, routes each request to a `forgebee:` specialist, and reviews their reports. Tiny changes that need no specialty (up to 3 lines, up to 2 edits per request) it makes itself, because a subagent would cost more than the change. Bigger edits by the main thread are blocked, except for orchestration files (`docs/pm`, `docs/planning`, `docs/learnings`, `TASKS.md`, `CLAUDE.md`, `.claude/`). Subagents edit as usual.
+
+To work without orchestration, start with `claude --agent forgebee:direct`, or set `"agent": "forgebee:direct"` in your own `settings.json` (your setting overrides the plugin default).
+
 <details>
 <summary><strong>Install from local directory</strong></summary>
 
@@ -107,7 +111,7 @@ claude --plugin-dir ./ClaudeDevKit/forgebee
 <details>
 <summary><strong>Requirements</strong></summary>
 
-- Claude Code 1.0.33+
+- Claude Code 2.1.281+ (orchestrator mode needs an empty-prompt main-thread agent; `--fable` needs 2.1.257+)
 - Node.js 18+ (all hooks are pure Node.js — no bash, no python, no jq)
 - Agent Teams: set `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`
 
@@ -172,7 +176,7 @@ Invoke with a slash: `/review`, `/debug`, `/workflow`, etc.
 
 | Command | Description |
 |:--------|:------------|
-| `/workflow` | **Full pipeline**: Grill (when the spec is ambiguous or touches auth/payments/data; `--grill` / `--no-grill`) &rarr; Plan &rarr; Debate &rarr; Architect &rarr; **Implementation Plan** (lightweight default, `--scrum` for full sprint stories) &rarr; Execute &rarr; **Spec Compliance** &rarr; **Checkpoint Preview** (default, `--skip-checkpoint` to opt out) &rarr; Code Debate &rarr; Deliver. Pass `--strict` to require a design spec via `brainstorming` before any code. Auto-offers `/elicit` methods at phase boundaries |
+| `/workflow` | **Full pipeline**: Grill (when the spec is ambiguous or touches auth/payments/data; `--grill` / `--no-grill`) &rarr; Plan &rarr; Debate &rarr; Architect &rarr; **Implementation Plan** (lightweight default, `--scrum` for full sprint stories) &rarr; Execute &rarr; **Spec Compliance** &rarr; **Checkpoint Preview** (default, `--skip-checkpoint` to opt out) &rarr; Code Debate &rarr; Deliver. Pass `--strict` to require a design spec via `brainstorming` before any code. Pass `--fable` (also on `/team`) to run Opus-tier agents on Fable, with a fallback to Opus when Fable is unavailable. Auto-offers `/elicit` methods at phase boundaries |
 | `/investigate` | Forensic diagnosis — produces a case file with Confirmed / Deduced / Hypothesized grading. Hand off to `debugger-detective` for the fix. Different from `/debug` (which fixes directly) |
 | `/grill` | Interview the user on a plan in rounds, one recommended answer per question, until every decision is settled or accepted as a risk. Output feeds `/plan`. Before the plan, not after |
 | `/elicit` | Stress-test the most recent plan or design with one of 18 named reasoning methods (`pre-mortem`, `red-team`, `inversion`, `stakeholder-round-table`, `tree-of-thoughts`, …). Applied to OUTPUT, not requirements |
@@ -188,6 +192,8 @@ Invoke with a slash: `/review`, `/debug`, `/workflow`, etc.
 
 46 specialist agents + 35 skills for Claude Code's Agent Teams. Use them directly or let `/team` and `/workflow` orchestrate automatically.
 
+> **v7.0 highlights — orchestrator by default.** The main conversation runs as `forgebee:orchestrator` for the whole session: it routes work to `forgebee:` specialists and reviews their reports, makes only tiny edits itself, and keeps that role after the first turn. Opt out with `claude --agent forgebee:direct`. Subagents now run on their own `model:` (dispatch uses `forgebee:<name>`), and agents, skills, and commands find their files in any project (`${CLAUDE_PLUGIN_ROOT}` paths). `--fable` runs Opus-tier agents on Fable with an Opus fallback. Safety: `permission-guard` and `secret-scan` gaps closed. Content reviewed against October 2026 docs (OWASP 2025, WCAG 2.2, WP 7.0, Next.js 16, n8n 2). Requires Claude Code 2.1.281+.
+>
 > **v5.4 highlights — routing actually fires.** Five defects were keeping the 117 surfaces unreachable: the SessionStart index was dropped for exceeding the `additionalContext` size limit (everything past ~2KB, including the whole WordPress roster, never arrived), `skill-activator.js` emitted a top-level `additionalContext` that the harness discards, and it scanned neither agents nor commands — so no agent or slash command could ever be recommended. Now all three surface types are scored together, stack-boosted from `project-triage.json`, capped at 5 candidates, and acronym-aware (ACF, SCF, SEO, API, RLS were silently below the word-length floor). New **Routing Discipline R1–R4** in `CLAUDE.md`: name the route before the first edit, prefer the stack-specific agent. New design-system trio: **`figma-code-sync`** skill (code-first Figma reconciliation, 12 defect priors, ~18 Plugin API traps), **`wp-design-system`** agent (`theme.json`-versus-SCSS layer ownership, token pipeline, patterns/variations), **`/design-system`** command. `wordpress-backend` gains full ACF/SCF field architecture — field-group registration, JSON sync, immutable field keys, repeater meta storage and why it cannot be `meta_query`'d, and ACF-PRO-to-SCF migration risk.
 >
 > **v5.1 highlights:** Karpathy P1–P6 principles baked into every code-producing agent (trace test, senior-engineer check, YAGNI timing, orphan rule, anti-stop rule, severity standard). Seven new skills: `brainstorming` (opt-in via `--strict`), `surface-ambiguity`, `terse-report`, `checkpoint-preview`, `investigate`, `elicitation` (18 methods), `audit-self`. Three new commands: `/investigate`, `/elicit`, `/audit-self`. Adversarial Input Hardening preamble on all 44 agents. Budget circuit breaker on dispatch (maxHops/maxTokens/maxUsd). Decision logs, failure-capture templates, learnings compression. Bloat trim: 6 over-budget agents trimmed to ≤200 lines via references/. **Auto-generated `forgebee/INDEX.md`** — Claude reads one indexed routing map on SessionStart instead of scanning every skill description. See [`CHANGELOG.md`](./CHANGELOG.md) for full release notes.
@@ -332,7 +338,7 @@ Invoke with a slash: `/review`, `/debug`, `/workflow`, etc.
 | `review-code-style` | context:fork | Convention adherence, imports, naming, file org |
 | `review-security` | context:fork | OWASP Top 10, injection, auth, secrets |
 | `review-performance` | context:fork | N+1 queries, memory leaks, missing caching |
-| `review-accessibility` | context:fork | WCAG 2.1 AA compliance |
+| `review-accessibility` | context:fork | WCAG 2.2 AA compliance |
 | `review-api` | context:fork | API design, validation, rate limiting, REST consistency |
 | `review-database` | context:fork | Migrations, RLS, schema, query patterns |
 | `review-tests` | context:fork | Coverage, test quality, mocking, structure |
@@ -348,7 +354,7 @@ Invoke with a slash: `/review`, `/debug`, `/workflow`, etc.
 
 ## Hooks
 
-25 hooks run automatically on Claude Code lifecycle events across 10 event types. No invocation needed.
+28 hooks run automatically on Claude Code lifecycle events across 10 event types. No invocation needed.
 
 **Session & state management:**
 
@@ -389,7 +395,8 @@ Invoke with a slash: `/review`, `/debug`, `/workflow`, etc.
 
 | Hook | Event | What it does |
 |:-----|:------|:------------|
-| `skill-activator` | `UserPromptSubmit` | Intent detection + skill recommendations |
+| `orchestrator-mode` | `UserPromptSubmit`, `PreToolUse` | When the main thread is `forgebee:orchestrator`: re-sends the orchestrator rules each prompt; blocks main-thread edits and Bash file writes except tiny ones (≤3 lines, ≤2 per request) and orchestration files |
+| `skill-activator` | `UserPromptSubmit` | Intent detection + up to 3 `forgebee:` routing candidates; short follow-ups keep the last routing |
 | `self-improve` | `Stop` | Captures patterns + runs heuristic engine to flag pending instincts |
 | `checkpoint` | `PreCompact` | Saves the active pipeline phase (derived from `state.yaml`) before context compaction, for crash recovery |
 | `audit-trail` | All governance events | Append-only JSONL log of permissions, debates, verifications |
@@ -409,7 +416,7 @@ The **skills, agents, and commands** are portable — they ship to Claude Code, 
 | Capability | Claude Code | Codex / Cursor / Gemini |
 |:-----------|:-----------:|:-----------------------:|
 | Skills, agents, commands | ✅ | ✅ (via manifest) |
-| 27 lifecycle hooks (permission-guard, secret-scan, audit-trail, …) | ✅ | ❌ |
+| 28 lifecycle hooks (permission-guard, secret-scan, audit-trail, …) | ✅ | ❌ |
 | Governance / audit trail | ✅ | ❌ |
 | Continuous learning (observe → instincts) | ✅ | ❌ |
 | Auto project-triage routing | ✅ | ❌ |

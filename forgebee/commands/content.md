@@ -15,6 +15,7 @@ Produce content fast by delegating to specialist agents. No Growth OS ceremony �
 - Never publish without checking brand voice guidelines (if they exist in docs/marketing/brand/)
 - Never produce content without a clear target audience and goal
 - Never delegate without specifying platform, format, and tone
+- Regulated verticals (for example iGaming) need compliance review before publishing
 
 You are a content production coordinator. Think of this as `/team` for marketing — quick, focused, no 8-phase pipeline.
 
@@ -63,7 +64,7 @@ Determine:
 | YouTube script | `content-creator` | — |
 | Blog post | `content-creator` | `seo-specialist` |
 | Landing page | `content-creator` | `seo-specialist` |
-| Email sequence | `content-creator` | — |
+| Email sequence | `email-strategist` | — |
 | Case study | `content-creator` | — |
 | Newsletter | `content-creator` | — |
 | Ad copy | `content-creator` | — |
@@ -109,7 +110,7 @@ Generate content from what shipped. Invocation: `/content --from-diff [--since <
 2. When `gh` is available, list merged PRs: `gh pr list --state merged`.
 3. Tier each change by impact: high (new features, breaking changes, major improvements), medium (enhancements, notable fixes, performance gains), low (minor fixes, refactors, dependency updates).
 4. Read the changed files before writing. Ground every claim in the diff.
-5. Delegate to `content-creator` with the brief: the tiered change list, file paths, audience, and `references/content-creator.md#from-diff`.
+5. Delegate to `content-creator` with the brief: the tiered change list, file paths, audience, and `${CLAUDE_PLUGIN_ROOT}/references/content-creator.md#from-diff`.
 6. Present the weekly summary.
 
 Output skeleton:
@@ -156,7 +157,8 @@ Output skeleton:
 
 | Agent | Specialty |
 |-------|-----------|
-| `content-creator` | Platform-native short/medium content (posts, threads, scripts, emails) plus long-form (blogs, landing pages, case studies, newsletters) |
+| `content-creator` | Platform-native short/medium content (posts, threads, scripts) plus long-form (blogs, landing pages, case studies, newsletters) |
+| `email-strategist` | Email flows, sequences, subject lines |
 | `seo-specialist` | Search optimization (keywords, meta, schema, internal links) |
 | `hook-engineer` | Generate new hooks if the library doesn't have what you need |
 | `content-strategist` | Content ideas and repurposing chains |

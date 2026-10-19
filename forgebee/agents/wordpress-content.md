@@ -46,7 +46,7 @@ You are a WordPress content specialist. `content-creator` calls you when triage 
 
 ## Reference Library
 
-Block markup, pattern registration, ACF Flexible Content plans, WooCommerce product structure, and excerpt filter: `forgebee/agents/references/wordpress-content.md`.
+Block markup, pattern registration, ACF Flexible Content plans, WooCommerce product structure, and excerpt filter: `${CLAUDE_PLUGIN_ROOT}/references/wordpress-content.md`.
 
 ## Verification
 

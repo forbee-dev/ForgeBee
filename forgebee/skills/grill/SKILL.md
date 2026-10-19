@@ -60,7 +60,7 @@ The user can answer "Q1 yes, Q3 B" or "accept all recommendations".
 
 ## Decision log
 
-Record each answer as a D-NNN entry in the shape of `forgebee/templates/decision-log-template.md`, phase `grill`:
+Record each answer as a D-NNN entry in the shape of `${CLAUDE_PLUGIN_ROOT}/templates/decision-log-template.md`, phase `grill`:
 
 - Settled → `Status: Confirmed`.
 - Accepted open risk → `Status: Tentative`, and put the risk in `Why:`.

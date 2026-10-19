@@ -7,7 +7,7 @@ version: 1.1.0
 
 Review changed code for consistency with the project's own conventions. Focus on patterns that affect maintainability.
 
-> Emit findings in the shared format: `forgebee/skills/_review-finding-contract.md` (severity block + score + footer line).
+> Emit findings in the shared format: `${CLAUDE_PLUGIN_ROOT}/skills/_review-finding-contract.md` (severity block + score + footer line).
 
 ## Use When
 - Changed code needs a convention check: import order, naming, type patterns, comments.

@@ -35,11 +35,11 @@ Read these before auditing. They are the canonical rubric:
 Apply the matching scorecard to each item. Most items are FINE; put detail on problem items. Use the Y/N + concrete-finding format of the manual audits.
 
 ### Step 3: Cross-cutting checks
-- Status protocol in all agents (Bucket X1)
-- Karpathy principles in code-producing agents (W9)
-- Severity vocabulary standardized in review skills (W9 P6)
-- Prompt defense baseline in all agents (W13)
-- "Use when..." descriptions across skills (5.0 audit)
+- Status protocol in all agents
+- Karpathy principles in code-producing agents
+- Severity vocabulary standardized in review skills (P6)
+- Prompt defense baseline in all agents
+- "Use when..." descriptions across skills
 - Persona ↔ references/ symmetry (`node scripts/check-references.js`)
 - `--skip-checkpoint` rate from `.claude/audit/skip-checkpoint.jsonl`: flag if >50% across the last 10 `/workflow` runs (sticky-alias drift)
 

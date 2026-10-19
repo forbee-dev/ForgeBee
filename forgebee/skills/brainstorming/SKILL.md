@@ -42,7 +42,7 @@ Track as tasks, in order:
 
 1. **Explore context** — relevant files, recent commits, existing patterns.
 2. **Decompose** — if the request spans independent subsystems (chat + billing + analytics), say so first. Help the user pick one; each gets its own spec → plan → execute cycle.
-3. **Ask clarifying questions, one at a time** — purpose, constraints, success criteria, edge cases, non-goals. Prefer multiple choice.
+3. **Ask clarifying questions, one at a time** — purpose, constraints, success criteria, edge cases, non-goals. Prefer multiple choice (use `AskUserQuestion` when available).
 4. **Propose 2–3 approaches** with trade-offs and a recommendation.
 5. **Present the design section by section** and get approval per section.
 6. **Write the spec** to `docs/planning/specs/YYYY-MM-DD-<topic>-design.md`.

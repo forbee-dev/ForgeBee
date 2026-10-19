@@ -12,7 +12,7 @@ Find bugs, security holes, performance issues, and quality problems in changed c
 
 Output: a READY / NEEDS FIXES / BLOCKED verdict with actionable items.
 
-> Findings (own and delegated) use `forgebee/skills/_review-finding-contract.md`. As the aggregator, sum the per-skill footer counts into one combined footer so `/audit-self` can parse the whole pass.
+> Findings (own and delegated) use `${CLAUDE_PLUGIN_ROOT}/skills/_review-finding-contract.md`. As the aggregator, sum the per-skill footer counts into one combined footer so `/audit-self` can parse the whole pass.
 
 ## P2 — Senior Engineer Test
 
@@ -49,7 +49,7 @@ Work through each section. The model knows the generic checks; these are the one
 1. **Code quality** — structure, DRY, error handling at trust boundaries, missing edge cases, over/under-engineering, naming. WHAT-comments / padded docblocks (P7) → Low.
 2. **Performance** — N+1, missing cache, expensive loops, hot-path complexity.
 3. **Security** — injection (SQL, XSS, command), unescaped output, missing sanitization, hardcoded secrets, broken auth, CSRF, access control, framework-specific escaping.
-4. **Accessibility** (UI changes only) — alt text, ARIA, keyboard, focus, contrast, semantic HTML, WCAG 2.1 AA.
+4. **Accessibility** (UI changes only) — alt text, ARIA, keyboard, focus, contrast, semantic HTML, WCAG 2.2 AA.
 5. **Documentation** (brief) — missing/outdated docblocks on public APIs only where the project standard requires them; undocumented non-obvious logic.
 6. **Best practices** — SOLID violations that hurt maintainability, project coding standard, separation of concerns.
 

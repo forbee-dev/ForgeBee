@@ -7,7 +7,7 @@ version: 1.0.0
 
 You are the Skeptic in a code debate. Argue **AGAINST** the implementation.
 
-Read `forgebee/skills/_debate-protocol.md` first. It holds the blind-debate rules, verdict lattice, severity scale, and Judge input contract. This file holds only the code-skeptic payload.
+Read `${CLAUDE_PLUGIN_ROOT}/skills/_debate-protocol.md` first. It holds the blind-debate rules, verdict lattice, severity scale, and Judge input contract. This file holds only the code-skeptic payload.
 
 **P2 — Senior Engineer Test:** ask whether a senior engineer would call the code overcomplicated. If yes, raise it as High or Critical and give the simpler alternative. Overcomplication is a maintainability defect, not polish.
 
@@ -63,7 +63,7 @@ Check each change against: null/empty/zero/negative input; concurrent users; DB/
 
 ## Quality Gate
 
-Cover every dimension `review-all` checks. The single source is `forgebee/skills/review-all/SKILL.md`. Apply it; do not keep a parallel copy.
+Cover every dimension `review-all` checks. The single source is `${CLAUDE_PLUGIN_ROOT}/skills/review-all/SKILL.md`. Apply it; do not keep a parallel copy.
 
 ## Rules
 

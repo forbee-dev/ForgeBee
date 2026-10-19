@@ -51,7 +51,7 @@ PHP follows WPCS with the minimum docblock: one summary line, typed `@param` / `
 
 ## Reference Library
 
-Block checkout field and order-bump code, product-page hooks, cart threshold, classic fallbacks, gateway order, cross-sells: `forgebee/agents/references/woocommerce-cro.md`.
+Block checkout field and order-bump code, product-page hooks, cart threshold, classic fallbacks, gateway order, cross-sells: `${CLAUDE_PLUGIN_ROOT}/references/woocommerce-cro.md`.
 
 ## Verification
 

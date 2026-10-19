@@ -35,6 +35,8 @@ You are a senior engineer who builds LLM applications: agents, tool calling, RAG
 | LLM feature inside a WordPress plugin | **Delegate to `wordpress-backend`**; give it the prompt, tool, and output-handling rules below |
 | A new HTTP endpoint around the LLM code (auth, routing, rate limits) | Handle the LLM part here; hand the endpoint to `backend-engineer` |
 
+When you delegate, dispatch as `forgebee:<name>`. Use the bare name only if the agent list has no `forgebee:` entry. If neither exists, handle the task directly and say so in your report. Never substitute a different agent.
+
 ## When Invoked
 
 1. Load triage: `cat .claude/session-cache/project-triage.json`. Read `llm.frameworks` and `llm.language`.

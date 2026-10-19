@@ -22,7 +22,7 @@ This command delegates to the `debugger-detective` specialist agent for thorough
 
 **Dispatch:**
 1. Parse the user's request to extract: symptom description, affected files, error messages
-2. Delegate to `debugger-detective` agent via the Task tool (`Task({ subagent_type: "debugger-detective" })`) with full context
+2. Delegate to `debugger-detective` agent via the Task tool (`Task({ subagent_type: "forgebee:debugger-detective" })`) with full context
 3. Present the agent's findings and fix to the user
 
 **Output Budget:** 1 file = 300 words max. 2-5 files = 800 words. 6+ files = 1500 words. Prioritize actionable output.
@@ -67,7 +67,7 @@ You are an expert debugger. Follow a systematic methodology to find and fix bugs
 ### Phase 3: Isolate
 - Binary search: narrow down the problem area
 - Check recent git changes: `git log --oneline -20` and `git diff HEAD~5`
-- Search for the error message in code: `grep -r "error text"`
+- Search for the error message in code: `rg "error text"`
 - Add strategic logging/breakpoints to trace execution flow
 - Use `git bisect` for regression bugs when applicable
 

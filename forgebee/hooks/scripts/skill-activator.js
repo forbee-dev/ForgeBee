@@ -17,8 +17,17 @@ const PROJECT_DIR = common.getProjectDir();
 const CACHE_FILE = path.join(PROJECT_DIR, '.claude/session-cache/routing-manifest.json');
 const TRIAGE_CACHE = path.join(PROJECT_DIR, '.claude/session-cache/project-triage.json');
 const CACHE_TTL = 300; // 5 minutes
-const MAX_RECOMMENDATIONS = 5;
+const MAX_RECOMMENDATIONS = 3;
 const MIN_SCORE = 3;
+// "yes, do it", "fix the recommendations", "close the open issues" — longer prompts are new topics.
+const FOLLOW_UP_MAX_WORDS = 6;
+const GENERIC_NAME_TOKENS = new Set([
+  'content', 'hook', 'session', 'review', 'code', 'test', 'data', 'design', 'engineer',
+  'specialist', 'expert', 'creator', 'strategist', 'builder', 'generator', 'enforcer',
+  'validator', 'analyst', 'agent', 'all', 'self',
+]);
+// Main-thread agents are set by settings, never dispatched.
+const MAIN_THREAD_AGENTS = new Set(['orchestrator', 'direct']);
 
 // Name prefixes that belong to a detected stack. A prompt about the project's own
 // stack should route to these before any generic surface.
@@ -242,8 +251,11 @@ function getNameTokens(name) {
 }
 
 // ── Helper: Score one surface against the prompt ──────────────────────
+// Returns { score, strong }. Only a trigger, name-token, or acronym hit is "strong";
+// description overlap alone ("content", "review") matched nearly every prompt.
 function scoreEntry(entry, prompt, promptWords, stacks) {
   let score = 0;
+  let strong = false;
 
   // Explicit triggers are an exact-intent signal — treat as decisive.
   // Match against the raw prompt, not the token set: a trigger is often a
@@ -252,14 +264,18 @@ function scoreEntry(entry, prompt, promptWords, stacks) {
     const clean = trigger.trim().toLowerCase();
     if (clean && prompt.includes(clean)) {
       score += 6;
+      strong = true;
       break;
     }
   }
 
   // A name token in the prompt ("wordpress", "security", "seo") is a strong hint.
+  // Generic tokens score but are not strong: "contents of a file" is not content
+  // marketing, and a Claude Code hook is not a social-media hook.
   for (const token of getNameTokens(entry.name)) {
     if (promptWords.has(token)) {
       score += 3;
+      if (!GENERIC_NAME_TOKENS.has(token)) strong = true;
     }
   }
 
@@ -267,6 +283,7 @@ function scoreEntry(entry, prompt, promptWords, stacks) {
   for (const acronym of getAcronyms(entry.description)) {
     if (promptWords.has(acronym)) {
       score += 2;
+      strong = true;
     }
   }
 
@@ -287,7 +304,7 @@ function scoreEntry(entry, prompt, promptWords, stacks) {
     }
   }
 
-  return score;
+  return { score, strong };
 }
 
 // ── Main script ───────────────────────────────────────────────────────
@@ -363,11 +380,9 @@ async function main() {
   const emitted = new Set();
 
   const ranked = getRoutingManifest()
-    .map(entry => ({
-      entry,
-      score: scoreEntry(entry, PROMPT_LOWER, promptWords, STACKS),
-    }))
-    .filter(r => r.score >= MIN_SCORE)
+    .filter(entry => !(entry.kind === 'agent' && MAIN_THREAD_AGENTS.has(entry.name)))
+    .map(entry => ({ entry, ...scoreEntry(entry, PROMPT_LOWER, promptWords, STACKS) }))
+    .filter(r => r.strong && r.score >= MIN_SCORE)
     .sort(
       (a, b) =>
         b.score - a.score ||
@@ -385,16 +400,28 @@ async function main() {
 
   let MATCHED = '';
 
+  // Plugin installs register every surface as `forgebee:<name>`; a bare name only
+  // resolves inside this repo's local mirror.
   for (const { entry } of ranked) {
     let how;
     if (entry.kind === 'agent') {
-      how = `dispatch the **${entry.name}** agent`;
+      how = `dispatch the **forgebee:${entry.name}** agent`;
     } else if (entry.kind === 'command') {
-      how = `run **/${entry.name}**`;
+      how = `run **/forgebee:${entry.name}**`;
     } else {
-      how = `use the **${entry.name}** skill`;
+      how = `use the **forgebee:${entry.name}** skill`;
     }
     MATCHED += `- ${how} — ${entry.description}\n`;
+  }
+
+  // A short follow-up ("yes do it", "fix the recommendations") has no domain words.
+  // Carry the last strong routing for this session so the specialist is not lost.
+  const lastFile = path.join(PROJECT_DIR, '.claude/session-cache', `routing-last-${String(input.session_id || 'unknown').replace(/[^A-Za-z0-9_-]/g, '_').slice(0, 64)}.txt`);
+  let CONTINUED = '';
+  if (MATCHED) {
+    try { common.ensureDir(path.dirname(lastFile)); fs.writeFileSync(lastFile, MATCHED); } catch (e) { /* best-effort */ }
+  } else if (!PROMPT.startsWith('/') && PROMPT.trim().split(/\s+/).length <= FOLLOW_UP_MAX_WORDS) {
+    try { CONTINUED = fs.readFileSync(lastFile, 'utf8'); } catch (e) { /* no earlier routing */ }
   }
 
   // ── Inject project triage context ─────────────────────────────────────
@@ -471,6 +498,8 @@ async function main() {
 
   if (MATCHED) {
     CONTEXT += `📌 Routing candidates (state your route before you start work):\n${MATCHED}`;
+  } else if (CONTINUED) {
+    CONTEXT += `📌 Follow-up — earlier routing for this task still applies:\n${CONTINUED}`;
   }
 
   if (CONTEXT) {

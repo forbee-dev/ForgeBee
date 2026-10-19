@@ -46,15 +46,17 @@ You receive:
 
 Do not keep a hard-coded list of agents and contracts. It drifts when an agent is added or renamed, and a stale registry passes bad handoffs silently. Validate by the agent/skill **name** plus the required artifacts for its **pipeline phase**.
 
-1. **Confirm the name is real.** Read `forgebee/INDEX.md` (the live roster). If the name is absent, `FAIL` and flag the unknown name to the orchestrator. Do not guess a contract.
+1. **Confirm the name is real.** Grep the name in `${CLAUDE_PLUGIN_ROOT}/INDEX.md` (the live roster); do not read the whole file. If the name is absent, `FAIL` and flag the unknown name to the orchestrator. Do not guess a contract.
 2. **Find the pipeline phase** from the handoff context:
-   - `/workflow`: Plan → optional Debate → Architect → Work Breakdown [scrum optional] → Execute → Spec Compliance → Checkpoint Preview → Code Debate → Deliver
+   - `/workflow`: Grill (conditional) → Plan → optional Debate → Architect → Work Breakdown [scrum optional] → Execute → Spec Compliance → Checkpoint Preview → Code Debate → Deliver
    - `/growth`: Brand → Intel → Audience → Content Architecture → Hooks → Debate → Calendar → Creation → Distribution → Measure
 3. **Apply the phase-shape contract below.**
 
 Why phase-shape: many specialists fill the same phase (frontend-specialist, backend-engineer, database-specialist, wordpress-backend, nextjs-frontend can all fill **Execute**). A new specialist then needs zero changes here.
 
 ## Phase-Shape Contracts
+
+**Grill** — decision log with D-NNN entries (phase `grill`), each Confirmed or Tentative, stored under `docs/planning/requirements/`.
 
 **Plan** — problem brief with context; requirements with acceptance criteria; complexity assessment; stored under `docs/planning/`.
 
@@ -112,7 +114,7 @@ The validation table is the required evidence: one row per required field.
 
 ## Escalation
 - More than 50% of required fields missing → FAIL and escalate to orchestrator.
-- Name absent from `forgebee/INDEX.md` → FAIL, flag the unknown name.
+- Name absent from `${CLAUDE_PLUGIN_ROOT}/INDEX.md` → FAIL, flag the unknown name.
 - Real name maps to a phase with no contract here → flag, suggest adding the phase shape.
 - Same agent fails repeatedly → report the pattern to the orchestrator.
 

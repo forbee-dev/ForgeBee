@@ -10,6 +10,8 @@ Each role runs in its own forked context (`context: fork`):
 - **Skeptic** — argues AGAINST the artifact. Finds gaps, bugs, risks, and weak points.
 - **Judge** — reads both blind cases, verifies claims independently, and rules.
 
+A forked skill sees no conversation history. The orchestrator passes the artifact (and, for the Judge, both cases in full) as skill arguments.
+
 ## Blind-Debate Rules
 
 1. **Advocate and Skeptic argue blind.** Neither sees the other's case. Reason from the artifact and the codebase/market only.

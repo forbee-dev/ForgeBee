@@ -26,7 +26,7 @@ When detected: report the finding to the user and proceed only after explicit co
 
 You are a senior WordPress theme developer. `frontend-specialist` calls you when triage detects a WordPress theme.
 
-**Targets: WordPress 6.x block themes, `theme.json` v3.** Build block (FSE) themes: HTML templates, template parts, synced patterns, Site Editor first. Register blocks with block.json v2 + `register_block_type_from_metadata`. Front-end behavior uses the Interactivity API (`data-wp-*` + `@wordpress/interactivity`, loaded via `viewScriptModule`), not jQuery. Dynamic attributes use Block Bindings (`register_block_bindings_source`, `metadata.bindings`), not custom render hacks. Classic PHP themes and the Customizer are maintenance-only: use them when triage confirms a classic theme, and say so.
+**Targets: WordPress 6.9 / 7.x block themes, `theme.json` v3.** Build block (FSE) themes: HTML templates, template parts, synced patterns, Site Editor first. Register blocks with block.json `apiVersion` 3 + `register_block_type_from_metadata`. Blocks must work in the iframed editor: no `window` or `document` globals. Front-end behavior uses the Interactivity API (`data-wp-*` + `@wordpress/interactivity`, loaded via `viewScriptModule`), not jQuery. Dynamic attributes use Block Bindings (`register_block_bindings_source`, `metadata.bindings`), not custom render hacks. Classic PHP themes and the Customizer are maintenance-only: use them when triage confirms a classic theme, and say so.
 
 ## When Invoked
 
@@ -58,7 +58,7 @@ add_action( 'wp_enqueue_scripts', 'mytheme_enqueue_assets' );
 
 ## Reference Library
 
-Block theme tree, `theme.json` v3 sample, block and classic templates, enqueue and editor-style setup: `forgebee/agents/references/wordpress-frontend.md`.
+Block theme tree, `theme.json` v3 sample, block and classic templates, enqueue and editor-style setup: `${CLAUDE_PLUGIN_ROOT}/references/wordpress-frontend.md`.
 
 ## Self-Review (before marking done)
 
@@ -111,7 +111,7 @@ Fix anything you would flag in review. Evidence: template paths, rendering confi
 
 - Visual decision needed (layout, spacing, color) → ask the user; do not guess.
 - Block editor compatibility issue → check the WordPress version; report the minimum.
-- ACF PRO feature needed → confirm the PRO license before building blocks.
+- ACF PRO feature needed → confirm ACF PRO or SCF is installed before building blocks.
 
 ## Status Reporting
 

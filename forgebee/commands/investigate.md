@@ -19,7 +19,7 @@ Take an unexplained symptom (crash log, stack trace, "this used to work"), produ
 
 ## Delegation
 
-This command invokes the `investigate` skill (`forgebee/skills/investigate/SKILL.md`). The skill enforces the discipline (stronghold first, evidence grading, never-erase hypotheses) and produces a case file at `docs/planning/investigations/YYYY-MM-DD-<topic>.md`.
+This command invokes the `investigate` skill (`${CLAUDE_PLUGIN_ROOT}/skills/investigate/SKILL.md`). The skill enforces the discipline (stronghold first, evidence grading, never-erase hypotheses) and produces a case file at `docs/planning/investigations/YYYY-MM-DD-<topic>.md`.
 
 **Dispatch:**
 1. Parse the user's symptom description and any provided artifacts (logs, stack frames, error text)

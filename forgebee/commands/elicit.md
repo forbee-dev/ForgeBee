@@ -18,7 +18,7 @@ Apply one of 18 named reasoning methods to challenge your own most recent output
 
 ## Delegation
 
-This command invokes the `elicitation` skill (`forgebee/skills/elicitation/SKILL.md`) which catalogues 18 methods in `methods.csv`.
+This command invokes the `elicitation` skill (`${CLAUDE_PLUGIN_ROOT}/skills/elicitation/SKILL.md`) which catalogues 18 methods in `methods.csv`.
 
 **Dispatch:**
 

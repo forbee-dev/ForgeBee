@@ -70,7 +70,7 @@ Working library for `forgebee/agents/marketing-analyst.md`. The persona holds wo
 | Conversion | What triggered action | % | CTA click, demo booked |
 | Retention | What keeps them | % | Product usage, email engagement |
 
-Models: first-touch (credit the entry channel) · last-touch (credit the closer) · linear (equal) · time decay (recent touches weigh more). State which model fits and why.
+Models: first-touch (credit the entry channel) · last-touch (credit the closer) · linear (equal) · time decay (recent touches weigh more). State which model fits and why. GA4 reports only data-driven and last-click models; compute the others from exported data. Consent denial loses data, so label modeled numbers.
 
 ## 5. A/B Test Plan
 

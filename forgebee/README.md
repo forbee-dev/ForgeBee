@@ -7,13 +7,14 @@ forgebee/
 ├── .claude-plugin/
 │   └── plugin.json              # Plugin metadata (name, version, hooks)
 ├── INDEX.md                     # Auto-generated routing index — loaded on SessionStart
+├── settings.json                # Plugin default: main thread runs as forgebee:orchestrator
 ├── hooks/
 │   ├── hooks.json               # Hook event wiring
-│   └── scripts/                 # 27 wired lifecycle hooks (+ _common.js shared helper)
+│   └── scripts/                 # 28 wired lifecycle hooks (+ _common.js shared helper)
 ├── agents/
-│   ├── *.md                     # 46 specialist agent personas
-│   └── references/              # Reference material extracted from agents (W16 bloat trim)
-├── commands/                    # 38 slash commands
+│   ├── *.md                     # 46 specialist agent personas + orchestrator, direct (main-thread)
+├── references/                  # Reference material extracted from agents (outside agents/ so it is not loaded as agents)
+├── commands/                    # 39 slash commands
 ├── contexts/                    # Session modes (dev, research, review)
 ├── rules/                       # Language-specific conventions (common, TS, PHP, Python)
 ├── skills/
@@ -37,7 +38,7 @@ forgebee/
 └── eval/                        # Eval scenarios
 ```
 
-## Key Features (v6.1.0)
+## Key Features (v7.0.0)
 
 ### Behavioral discipline (Karpathy principles)
 - **P1 Trace test** — every changed line traces to the user's request; no drive-by edits
@@ -67,13 +68,14 @@ forgebee/
 - **Sensitive-path refusal** in compression (`.env`, credentials, `.ssh/`, `.aws/`, private keys)
 
 ### Counts
-- **38 slash commands** — orchestration, diagnosis, quality, growth, learning, meta
+- **39 slash commands** — orchestration, diagnosis, quality, growth, learning, meta
 - **46 specialist agents** — code, growth, debate, WordPress, Next.js, mobile, CRO, tool
-- **34 skills** — 13 inline + 21 context:fork
-- **27 lifecycle hooks** across 10 events
+- **35 skills** — 14 inline + 21 context:fork
+- **28 lifecycle hooks** across 10 events
 - **6 templates** — decision log, addendum, failure-capture, investigation case file, prompt-defense baseline, brainstorming/spec
 
 ### Other capabilities
+- **Orchestrator by default** — the main thread runs as `forgebee:orchestrator`, delegates real work, keeps tiny edits inline; opt out with `claude --agent forgebee:direct`
 - **Multi-platform** — works with Claude Code, Codex, Cursor, Gemini, OpenClaw (separate manifests)
 - **Adaptive pipeline** — `/workflow` scrum phase is promptable (full sprint planning OR direct delegation)
 - **Decision logs + addenda** — `/workflow` and `/plan` persist decisions across runs

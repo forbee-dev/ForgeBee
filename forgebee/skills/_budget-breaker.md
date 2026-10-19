@@ -4,7 +4,7 @@
 
 ## Envelope
 
-Every `Task()` dispatch carries a budget. Sub-dispatches increment `hopCount` and pass the same envelope on:
+Every `Agent()` dispatch (formerly `Task()`) carries a budget. Sub-dispatches increment `hopCount` and pass the same envelope on:
 
 ```json
 { "budget": { "hopCount": 1, "maxHops": 8, "maxTokens": null, "maxUsd": null } }

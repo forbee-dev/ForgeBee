@@ -62,6 +62,7 @@ const BLOCKLIST_PATTERNS = [
   // Repetition is bounded ({0,N}) throughout: an unbounded `.*` after a repeated
   // prefix is quadratic and can outrun the 5 s hook timeout on large input.
   /dd if=.{0,500}\/dev\//i,
+  /\bdd\s(?:\S{1,500}\s){0,20}?of=\/dev\/(?!(?:null|zero|stdout|stderr)(?:\s|$))/i,
   /pip install.{0,500}--break-system/i,
   // Environment hijacking
   /^export\s+(PATH|LD_PRELOAD|LD_LIBRARY_PATH|PYTHONPATH|NODE_PATH|RUBYLIB)=/i,
@@ -502,6 +503,19 @@ function findRisk(w) {
   return 'ask';
 }
 
+// rsync --delete into, or chmod/chown -R on, HOME or `/` wipes or re-owns a whole tree.
+function isBulkTreeRisk(w) {
+  const h = w[0] || '';
+  const root = t => {
+    const n = normalizePath(t.replace(/^\$\{HOME[^}]*\}/, '$HOME'));
+    return n === '/' || (HOME_DIR.length > 1 && n === HOME_DIR);
+  };
+  const operands = w.slice(1).filter(t => !t.startsWith('-'));
+  if (h === 'rsync') return w.some(t => /^--del(ete)?(-|$)/.test(t)) && operands.length > 1 && root(operands[operands.length - 1]);
+  if (h === 'chmod' || h === 'chown') return w.some(t => /^-[a-zA-Z]*R/.test(t) || t === '--recursive') && operands.slice(1).some(root);
+  return false;
+}
+
 const isPrivileged = w => w.wrappers.some(x => x === 'sudo' || x === 'doas');
 
 // sudo/doas reaching rm, chmod, or chown (also `rmdir`).
@@ -659,7 +673,7 @@ function isDangerousRmTarget(t) {
   if (seg[0] === 'Users' || seg[0] === 'home') return seg.length <= 3;
   if (seg[0] === 'opt') return seg.length <= 2;
   if (seg[0] === 'var' && (seg[1] === 'folders' || seg[1] === 'tmp')) return seg.length <= 2;
-  return /^(etc|usr|var|lib|bin|sbin|boot|sys|dev|proc|root|System|Library)$/i.test(seg[0]);
+  return /^(etc|usr|var|lib|bin|sbin|boot|sys|dev|proc|root|System|Library|Applications|Volumes)$/i.test(seg[0]);
 }
 
 // `{a,b}` expands before `~` and paths do, so `{~,x}` and `~{,}` name `~`.
@@ -848,7 +862,7 @@ function isBlocklisted(cmd, a = analyze(cmd)) {
   if (a.sql.some(t => SQL_BLOCKLIST_PATTERNS.some(pattern => pattern.test(t)))) return true;
   if (hasPersistenceWrite(cmd, a) || a.pipelines.some(pipesIntoShell) || a.byView.some(downloadThenRun)) return true;
   const commands = a.pipelines.flat();
-  if (commands.some(w => skipsHooks(w) || isPrivilegedDestroy(w) || isPublish(w) || /^mkfs\./.test(w[0] || '') || findRisk(w) === 'deny')) return true;
+  if (commands.some(w => skipsHooks(w) || isPrivilegedDestroy(w) || isPublish(w) || isBulkTreeRisk(w) || /^mkfs\./.test(w[0] || '') || findRisk(w) === 'deny')) return true;
   return pushRiskOf(commands) === 'deny' || rmRiskOf(commands) === 'deny';
 }
 
@@ -859,6 +873,7 @@ function askReason(cmd, a) {
   if (rmRiskOf(commands) === 'ask') return 'rm -rf target is a variable, substitution, or xargs input';
   if (commands.some(w => isPrivileged(w) && chownsToUser(w))) return 'sudo chown gives files under HOME to the current user';
   if (commands.some(hasInlineExec)) return 'Interpreter runs inline code';
+  if (commands.some(w => /^\$[\w{]/.test(w[0] || ''))) return 'Command name comes from a variable';
   if (commands.some(w => findRisk(w) === 'ask')) return 'find deletes or runs a command on each match';
   if (commands.some(isForcedClean)) return 'git clean deletes untracked files';
   if (a.views.some(v => EVAL_SUBST_RE.test(v))) return 'eval runs the output of a command substitution';
@@ -957,7 +972,7 @@ function readStdin() {
 async function main() {
   const raw = await readStdin();
   if (raw.error) deny(`${raw.error} — command not checked (fail closed)`);
-  if (!raw.data) process.exit(0);
+  if (!raw.data) deny('hook input is empty — command not checked (fail closed)');
 
   let input;
   try {

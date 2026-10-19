@@ -57,7 +57,12 @@ function updateRegistry(pid, pname, proot, premote) {
   let registry = {};
   try {
     registry = JSON.parse(fs.readFileSync(REGISTRY_FILE, 'utf8'));
-  } catch (e) { /* new registry */ }
+  } catch (e) {
+    // Missing file = new registry; unparseable file is kept aside, not overwritten
+    if (e.code !== 'ENOENT') {
+      try { fs.renameSync(REGISTRY_FILE, `${REGISTRY_FILE}.corrupt-${Date.now()}`); } catch (_) { /* best effort */ }
+    }
+  }
 
   registry[pid] = {
     name: pname,

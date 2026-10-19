@@ -8,7 +8,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { getProjectDir, ensureDir, log } = require('./_common.js');
+const { getProjectDir, ensureDir, output } = require('./_common.js');
 
 async function main() {
   let input = '';
@@ -31,43 +31,21 @@ async function main() {
 
   // Extract session ID from the parsed input
   const currentSessionId = toolInput.session_id || '';
+  const safeId = currentSessionId.replace(/[^A-Za-z0-9_-]/g, '_').slice(0, 64);
 
   const projectDir = getProjectDir();
   const counterDir = path.join(projectDir, '.claude', 'session-cache');
-  const counterFile = path.join(counterDir, 'tool-call-count');
-  const sessionFile = path.join(counterDir, 'tool-call-session');
+  // Per-session file: one shared counter reset to 1 whenever sessions alternated.
+  const counterFile = path.join(counterDir, `tool-call-count-${safeId || 'unknown'}`);
 
   ensureDir(counterDir);
 
   const threshold = parseInt(process.env.COMPACT_THRESHOLD || '50', 10);
   const interval = 25;
 
-  // Check if session changed — reset counter if so
-  let lastSessionId = '';
-  if (fs.existsSync(sessionFile)) {
-    try {
-      lastSessionId = fs.readFileSync(sessionFile, 'utf8').trim();
-    } catch (e) {
-      // Default to empty
-    }
-  }
-
-  const sessionChanged = currentSessionId && currentSessionId !== lastSessionId;
-
-  // Persist current session ID
-  if (currentSessionId) {
-    try {
-      fs.writeFileSync(sessionFile, currentSessionId, 'utf8');
-    } catch (e) {
-      // Silently fail
-    }
-  }
-
-  // Read and increment counter (reset if session changed)
+  // Read and increment counter
   let count = 1;
-  if (sessionChanged) {
-    count = 1;
-  } else if (fs.existsSync(counterFile)) {
+  if (fs.existsSync(counterFile)) {
     try {
       const stored = fs.readFileSync(counterFile, 'utf8').trim();
       const parsed = parseInt(stored, 10);
@@ -85,28 +63,19 @@ async function main() {
     // Silently fail to write
   }
 
-  // Suggest at threshold
+  let hint = '';
   if (count === threshold) {
-    log(
-      `[StrategicCompact] ${threshold} tool calls reached — consider /compact if transitioning phases`
-    );
-    log(
-      '[StrategicCompact] Good times to compact: after exploration, after completing a milestone, before starting next task'
-    );
+    hint =
+      `[StrategicCompact] ${threshold} tool calls reached — consider /compact if transitioning phases. ` +
+      'Good times to compact: after exploration, after completing a milestone, before starting next task';
+  } else if (count > threshold && (count - threshold) % interval === 0) {
+    hint = `[StrategicCompact] ${count} tool calls — good checkpoint for /compact if context is getting stale`;
   }
 
-  // Suggest at regular intervals after threshold
-  if (count > threshold) {
-    const pastThreshold = count - threshold;
-    if (pastThreshold % interval === 0) {
-      log(
-        `[StrategicCompact] ${count} tool calls — good checkpoint for /compact if context is getting stale`
-      );
-    }
+  // stderr on exit 0 never reaches the model; additionalContext does.
+  if (hint) {
+    output({ hookSpecificOutput: { hookEventName: 'PreToolUse', additionalContext: hint } });
   }
-
-  // Pass through (no blocking)
-  process.stdout.write(input);
   process.exit(0);
 }
 

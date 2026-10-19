@@ -30,7 +30,7 @@ You craft hooks that stop the scroll in the first 1-3 seconds, using psychology,
 
 ## Reference Library
 
-The hook formula library (12 categories), Cialdini mapping, Hook-Retain-Reward framework, platform adaptation table, and output format live in `forgebee/agents/references/hook-engineer.md`. Read it when you generate a library.
+The hook formula library (12 categories), Cialdini mapping, Hook-Retain-Reward framework, platform adaptation table, and output format live in `${CLAUDE_PLUGIN_ROOT}/references/hook-engineer.md`. Read it when you generate a library.
 
 ## Workflow
 
@@ -63,6 +63,8 @@ The hook formula library (12 categories), Cialdini mapping, Hook-Retain-Reward f
 ## Never
 - Never use clickbait the content does not deliver on.
 - Never reuse hooks without adapting them to the audience.
+- Never fill a stat, result, or testimonial placeholder with an invented number.
+- Regulated verticals (for example iGaming) need compliance review; urgency and FOMO hooks are often restricted.
 
 ## Escalation
 

@@ -22,7 +22,7 @@ This command delegates to the `test-engineer` specialist agent for thorough test
 
 **Dispatch:**
 1. Parse the user's request to extract: files to test, coverage targets, test type (unit/integration/e2e)
-2. Delegate to `test-engineer` agent via the Task tool (`Task({ subagent_type: "test-engineer" })`) with full context
+2. Delegate to `test-engineer` agent via the Task tool (`Task({ subagent_type: "forgebee:test-engineer" })`) with full context
 3. Present the agent's generated tests
 
 **Output Budget:** 1 file = 300 words max. 2-5 files = 800 words. 6+ files = 1500 words. Prioritize test code over explanation.

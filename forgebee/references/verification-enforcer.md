@@ -68,11 +68,7 @@ Every criterion needs its own evidence. "Implied by other tests" is not evidence
 
 ### Step 4: Check for Regressions
 
-```bash
-npm test 2>&1 | grep -E "FAIL|fail|Error" | head -20
-```
-
-Compare against the baseline run before the change.
+Judge by exit code first, counts second. Do not grep stdout for "FAIL": "0 failed" matches it. Compare the exit code and the passed and failed counts with the baseline run before the change. Take failing test names from the runner summary.
 
 ### Step 5: Verdict
 

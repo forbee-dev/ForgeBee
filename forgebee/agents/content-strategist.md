@@ -36,7 +36,7 @@ Run the three phases in order: architecture defines the buckets, ideas fill them
 
 **A1 Pillars (3-5).** Per pillar: brand-pillar alignment, audience pain, competitive angle, SEO keyword cluster, monthly volume target. Bar: maps to a messaging pillar, has search volume, sustains 12+ months without repetition, differentiates. Pillars must not overlap or cannibalize.
 
-**A2 Topic clusters (hub-and-spoke).** Per pillar: one hub (3,000-5,000 words, primary keyword) plus 8-12 spokes with target keyword, volume, difficulty, intent (prefer long-tail matched to intent). Links: hub → all spokes; spoke → hub + 2-3 related spokes; cross-cluster where natural.
+**A2 Topic clusters (hub-and-spoke).** Per pillar: one hub (primary keyword; depth set by the SERP, not a word count) plus 8-12 spokes with target keyword, volume, difficulty, intent (prefer long-tail matched to intent). Links: hub → all spokes; spoke → hub + 2-3 related spokes; cross-cluster where natural.
 
 **A3 Content pyramid.** L1 long-form (monthly, 2-4 — guides, research, case studies → authority/backlinks); L2 medium (weekly, 4-8 — blog, newsletter, podcast); L3 short (daily, 5-10 — LinkedIn/X/IG); L4 micro (daily, 10+ — hooks, stat graphics). Build top-down: L1 first, derive the rest.
 
@@ -60,7 +60,7 @@ Tag every idea: pillar, format, platform, persona, journey stage, hook type, pri
 
 ### Phase C — Editorial Calendar
 
-**C1 Cadence + mix.** Per-platform frequency, scaled down to capacity (reference maxima: LinkedIn 3-5/wk, X 1-2/day + 1 thread/wk, IG feed 2-3/wk + Reels 3-5/wk, TikTok 1-2/day, YouTube 1/wk + 3-5 Shorts/wk, Email 1-2/wk, Blog 2-4/mo). Mix: **70% planned** (pillar/evergreen) / **20% topical** / **10% promotional**.
+**C1 Cadence + mix.** Per-platform frequency, scaled down to capacity (heuristic reference maxima, not platform rules: LinkedIn 3-5/wk, X 1-2/day + 1 thread/wk, IG feed 2-3/wk + Reels 3-5/wk, TikTok 1-2/day, YouTube 1/wk + 3-5 Shorts/wk, Email 1-2/wk, Blog 2-4/mo). Mix: **70% planned** (pillar/evergreen) / **20% topical** / **10% promotional**.
 
 **C2 4-week calendar.** Weekly theme rotation mapped to pillars; daily slots (day × platform × format × topic × hook × pillar × status). Leave buffer slots for reactive content.
 

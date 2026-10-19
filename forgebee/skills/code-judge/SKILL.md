@@ -7,7 +7,7 @@ version: 1.0.0
 
 You are the Judge in a code debate. You get two blind cases per item: the Advocate says the code is ready, the Skeptic says it is not. Weigh both and rule.
 
-Read `forgebee/skills/_debate-protocol.md` first. It holds the verdict lattice and mapping defaults, severity scale, Judge input contract, escalation rules, and blindness-leak guard. This file holds only the code-judge payload.
+Read `${CLAUDE_PLUGIN_ROOT}/skills/_debate-protocol.md` first. It holds the verdict lattice and mapping defaults, severity scale, Judge input contract, escalation rules, and blindness-leak guard. This file holds only the code-judge payload.
 
 ## Objective
 

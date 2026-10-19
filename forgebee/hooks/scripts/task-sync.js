@@ -58,6 +58,13 @@ function getRecentWork() {
   }
 }
 
+// ── Helper: Write via temp file + rename so a crash cannot truncate TASKS.md ──
+function writeAtomic(filePath, content) {
+  const tmp = `${filePath}.${process.pid}.tmp`;
+  fs.writeFileSync(tmp, content, 'utf8');
+  fs.renameSync(tmp, filePath);
+}
+
 // ── Helper: Insert line after pattern in file ──────────────────────────
 function insertAfterPattern(filePath, pattern, newLine) {
   try {
@@ -69,7 +76,7 @@ function insertAfterPattern(filePath, pattern, newLine) {
     }
 
     content = content.replace(regex, (match) => match + '\n' + newLine);
-    fs.writeFileSync(filePath, content, 'utf8');
+    writeAtomic(filePath, content);
     return true;
   } catch (e) {
     return false;
@@ -127,7 +134,7 @@ function archiveOldTasks() {
       // still has a Done section — guards against a bad match mangling TASKS.md.
       const newContent = content.replace(doneMatch[0], () => `## Done\n${newDone}\n`);
       if (newContent.includes('## Done')) {
-        fs.writeFileSync(TASKS_FILE, newContent, 'utf8');
+        writeAtomic(TASKS_FILE, newContent);
       }
     }
   } catch (e) {
@@ -158,15 +165,16 @@ async function main() {
 
       console.log('=== Active Tasks ===');
 
+      // `$` would match at every line end under /m; `(?![\s\S])` is true end-of-string.
       // Extract active section
-      const activeMatch = content.match(/^## Active\n([\s\S]*?)(?=\n## |\Z)/m);
+      const activeMatch = content.match(/^## Active\n([\s\S]*?)(?=\n## |(?![\s\S]))/m);
       if (activeMatch) {
         const activeLines = activeMatch[1].split('\n').slice(0, 30).join('\n');
         console.log(activeLines);
       }
 
       // Extract waiting section
-      const waitingMatch = content.match(/^## Waiting\n([\s\S]*?)(?=\n## |\Z)/m);
+      const waitingMatch = content.match(/^## Waiting\n([\s\S]*?)(?=\n## |(?![\s\S]))/m);
       if (waitingMatch) {
         const waitingLines = waitingMatch[1]
           .split('\n')
@@ -211,6 +219,11 @@ async function main() {
   // If work was done, add a timestamped note to the Done section
   if (RECENT_WORK) {
     const firstCommit = RECENT_WORK.split('\n')[0];
+    // Stop fires every turn; the same commit must not add a second line.
+    if (fs.readFileSync(TASKS_FILE, 'utf8').includes(firstCommit)) {
+      archiveOldTasks();
+      process.exit(0);
+    }
     const DONE_ENTRY = `- [x] ~~Session work (${TIMESTAMP}${BRANCH ? ` on ${BRANCH}` : ''})~~ — ${firstCommit}`;
 
     if (/^## Done/m.test(fs.readFileSync(TASKS_FILE, 'utf8'))) {

@@ -98,7 +98,7 @@ Other commands (/workflow, /idea, /plan, /pm) call you at the end of their pipel
 
 ## Status
 
-idea → idea-debate → mvp → mvp-debate → plan → req-debate → arch → work-breakdown → exec → spec-compliance → checkpoint → code-debate → delivery → done
+idea → idea-debate → mvp → mvp-debate → grill → plan → req-debate → arch → work-breakdown → exec → spec-compliance → checkpoint → code-debate → delivery → done
                                                               ▲ YOU ARE HERE
 
 ## Stories

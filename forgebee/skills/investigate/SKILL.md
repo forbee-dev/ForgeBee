@@ -27,7 +27,7 @@ Mark a wrong theory `Refuted by F-NNN` and keep it in the file. Future investiga
 
 ## Output: Case File
 
-Write to `docs/planning/investigations/YYYY-MM-DD-<topic>.md` from the template `forgebee/templates/investigation-case-file.md`. IDs: `F-NNN` confirmed, `D-NNN` deduced, `H-NNN` hypothesized; a refuted entry reads `H-002 [REFUTED YYYY-MM-DD by F-003]`.
+Write to `docs/planning/investigations/YYYY-MM-DD-<topic>.md` from the template `${CLAUDE_PLUGIN_ROOT}/templates/investigation-case-file.md`. IDs: `F-NNN` confirmed, `D-NNN` deduced, `H-NNN` hypothesized; a refuted entry reads `H-002 [REFUTED YYYY-MM-DD by F-003]`.
 
 ## Process
 

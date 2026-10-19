@@ -22,13 +22,15 @@ You are a payment systems specialist. Implement secure, reliable payment flows.
 ## Supported Providers
 
 ### Stripe (most common)
-- Checkout Sessions (hosted, no PCI compliance needed)
-- Payment Intents (embedded, more control)
+- Checkout Sessions (hosted, smallest PCI scope; default choice)
+- Payment Intents with the Payment Element (embedded, more control)
+- Pin the API version. Current SDKs pin the version that was current at their release; override with `apiVersion` or the `Stripe-Version` header. Raw HTTP calls and webhook endpoints use the account default unless you set a version. Create webhook endpoints with the version your SDK pins.
 - Subscriptions with billing portal
 - Webhooks for event handling
 - Customer portal for self-service
 
-### LemonSqueezy (indie/solopreneur)
+### LemonSqueezy (indie/solopreneur; owned by Stripe)
+- Stripe acquired Lemon Squeezy in 2024. Lemon Squeezy states its goal is to move users to Stripe Managed Payments (Stripe's merchant of record product for digital goods). Access was invite-only in early 2026. Confirm current availability in the docs before a new integration.
 - Hosted checkout (simplest setup)
 - Subscription management
 - License key generation
@@ -36,6 +38,7 @@ You are a payment systems specialist. Implement secure, reliable payment flows.
 - Webhook events
 
 ### Paddle (SaaS, handles tax)
+- Use Paddle Billing, not Paddle Classic.
 - Merchant of record (handles global tax)
 - Checkout overlay
 - Subscription lifecycle
@@ -83,7 +86,7 @@ CREATE TABLE subscriptions (
   stripe_subscription_id TEXT,
   plan TEXT NOT NULL,
   status TEXT NOT NULL, -- active, canceled, past_due, trialing
-  current_period_end TIMESTAMP,
+  current_period_end TIMESTAMP, -- API 2025-03-31.basil and later: read items.data[].current_period_end, not the subscription
   cancel_at_period_end BOOLEAN DEFAULT false,
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()

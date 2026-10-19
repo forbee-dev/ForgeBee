@@ -33,15 +33,15 @@ Each mode delegates to `seo-specialist` with the mode name and the user's argume
 
 ### autopilot
 
-First run: setup. Then daily. Weekly when the last report is 7 or more days old. Monthly when the keyword map is 30 or more days old. Follows `references/seo-specialist.md#autopilot`. Run it on a schedule with `/loop` or `/schedule`.
+First run: setup. Then daily. Weekly when the last report is 7 or more days old. Monthly when the keyword map is 30 or more days old. Follows `${CLAUDE_PLUGIN_ROOT}/references/seo-specialist.md#autopilot`. Run it on a schedule with `/loop` or `/schedule`.
 
 ### refresh
 
-Audit the page, research the SERP, build the gap table, plan, stop for approval, then rewrite. Follows `references/seo-specialist.md#refresh`. Nothing is written before the user approves.
+Audit the page, research the SERP, build the gap table, plan, stop for approval, then rewrite. Follows `${CLAUDE_PLUGIN_ROOT}/references/seo-specialist.md#refresh`. Nothing is written before the user approves.
 
 ### titles
 
-Audit titles against the SERP and rewrite them. Follows `references/seo-specialist.md#titles`.
+Audit titles against the SERP and rewrite them. Follows `${CLAUDE_PLUGIN_ROOT}/references/seo-specialist.md#titles`.
 
 ## Delegation
 
@@ -49,7 +49,7 @@ This command delegates to the **`seo-specialist`** agent. Methodology, output sh
 
 **Dispatch:**
 1. Parse the mode and the user's request (target site/pages, focus area: technical / on-page / keyword / content gap)
-2. Delegate to `seo-specialist` via the Task tool (`Task({ subagent_type: "seo-specialist" })`) with the mode and full context
+2. Delegate to `seo-specialist` via the Task tool (`Task({ subagent_type: "forgebee:seo-specialist" })`) with the mode and full context
 3. Present the agent's findings to the user
 
 **Fallback:** If agent delegation fails, surface the failure to the user and ask whether to retry or escalate.

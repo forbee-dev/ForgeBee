@@ -28,7 +28,7 @@ Detect project type, stack, and conventions so every later agent uses the right 
 ### Step 0: Run Detection
 
 ```bash
-node ${CLAUDE_PLUGIN_ROOT}/skills/project-router/scripts/detect_project.js "$PROJECT_DIR"
+node ${CLAUDE_PLUGIN_ROOT}/skills/project-router/scripts/detect_project.js "${CLAUDE_PROJECT_DIR:-.}"
 ```
 
 The JSON output is the single source of truth for routing.

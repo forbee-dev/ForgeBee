@@ -68,9 +68,11 @@ Evidence needed per change type: code → tests; config → validation; docs →
 
 Run the resolved command per category. Capture the command's own exit code — redirect to a file first, because a pipe reports the exit code of its last stage:
 
-- **Tests:** `<resolved-test-command> > /tmp/ve-test.out 2>&1; echo "EXIT=$?"; tail -20 /tmp/ve-test.out` — pass/fail counts + exit 0
-- **Build:** `<resolved-build-command> > /tmp/ve-build.out 2>&1; echo "EXIT=$?"; tail -10 /tmp/ve-build.out` — exit 0
-- **Lint/Type:** `<resolved-lint-command> > /tmp/ve-lint.out 2>&1; echo "EXIT=$?"; tail -10 /tmp/ve-lint.out` — no errors
+- **Tests:** `out=$(mktemp); <resolved-test-command> > "$out" 2>&1; echo "EXIT=$?"; tail -20 "$out"` — pass/fail counts + exit 0
+- **Build:** `out=$(mktemp); <resolved-build-command> > "$out" 2>&1; echo "EXIT=$?"; tail -10 "$out"` — exit 0
+- **Lint/Type:** `out=$(mktemp); <resolved-lint-command> > "$out" 2>&1; echo "EXIT=$?"; tail -10 "$out"` — no errors
+
+`mktemp` gives each run its own file, so parallel verifications do not overwrite each other.
 - **API:** `curl -s -w "\nHTTP_STATUS: %{http_code}\n" http://localhost:PORT/endpoint` — expected body + status
 - **DB:** `<resolved-migrate-command> 2>&1; echo "EXIT=$?"` + schema check
 
@@ -121,14 +123,14 @@ Do not grep stdout for "PASS"/"FAIL" — runners differ, "0 failed" contains "fa
 - **PARTIALLY VERIFIED**: checks pass but some criteria lack evidence or have warnings.
 - **NOT VERIFIED**: any test failure, regression, criterion without evidence, or broken build.
 
-Full output samples and Python/Go variants: `forgebee/agents/references/verification-enforcer.md`.
+Full output samples and Python/Go variants: `${CLAUDE_PLUGIN_ROOT}/references/verification-enforcer.md`.
 
 ## Audit Trail
 
-After the verdict, log it for governance traceability:
+After the verdict, log it through the audit script. A direct append writes the wrong field name, and `/audit` cannot read it:
 
 ```bash
-echo '{"event_type":"verification","feature":"FEATURE_NAME","verdict":"VERIFIED|PARTIALLY_VERIFIED|NOT_VERIFIED","evidence":"brief summary of key evidence","agent":"verification-enforcer"}' >> .claude/audit/audit-$(date +%Y-%m).jsonl
+echo '{"event_type":"verification","feature":"FEATURE_NAME","verdict":"VERIFIED|PARTIALLY_VERIFIED|NOT_VERIFIED","evidence":"brief summary of key evidence","agent":"verification-enforcer"}' | node "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/audit-trail.js"
 ```
 
 ## Failure Modes

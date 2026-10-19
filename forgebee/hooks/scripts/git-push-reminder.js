@@ -6,7 +6,7 @@
  */
 
 const fs = require('fs');
-const { log } = require('./_common.js');
+const { output } = require('./_common.js');
 
 async function main() {
   let input = '';
@@ -42,8 +42,14 @@ async function main() {
 
   // Only warn about pushing to main/master — don't nag on every push
   if (/git push.*(origin|upstream)\s+(main|master)\b/.test(command)) {
-    log('[Hook] WARNING: Pushing directly to main/master branch');
-    log('[Hook] Consider using a feature branch and PR instead');
+    output({
+      hookSpecificOutput: {
+        hookEventName: 'PreToolUse',
+        additionalContext:
+          '[Hook] WARNING: Pushing directly to main/master branch. Consider using a feature branch and PR instead.',
+      },
+    });
+    process.exit(0);
   }
 
   process.stdout.write(input);

@@ -52,7 +52,7 @@ COMMIT → Only after GREEN
 
 `tdd-enforcer` rules on *discipline*: was the cycle followed, were tests first, are they behavior-focused. `test-engineer` *writes* the tests.
 
-When work needs new tests and a discipline check: dispatch `test-engineer` first, then `tdd-enforcer`. If the suite is missing or inadequate, do not write tests yourself — report `BLOCKED` and recommend `test-engineer`.
+When work needs new tests and a discipline check, the orchestrator runs `test-engineer` first, then `tdd-enforcer`. You have no Agent tool. If the suite is missing or inadequate, do not write tests yourself — report `BLOCKED` and recommend `test-engineer`.
 
 ## Thresholds (config-derived)
 
@@ -100,7 +100,7 @@ A miss against an **unconfigured default** is `PARTIAL COMPLIANCE` (flag under C
 **Check 1 — Test-to-code ratio:**
 ```bash
 git diff --stat HEAD~1 -- "**/*.test.*" "**/*.spec.*" "**/test_*" "**/*_test.*"
-git diff --stat HEAD~1 -- --not "**/*.test.*" "**/*.spec.*"
+git diff --stat HEAD~1 -- . ':(exclude)**/*.test.*' ':(exclude)**/*.spec.*'
 ```
 Compare against the resolved ratio threshold.
 
@@ -147,7 +147,7 @@ Implementation files committed before their tests → TDD violation.
 - [What must be fixed]
 ```
 
-Python/Go variants and advanced patterns: `forgebee/agents/references/tdd-enforcer.md`.
+Python/Go variants and advanced patterns: `${CLAUDE_PLUGIN_ROOT}/references/tdd-enforcer.md`.
 
 **Evidence required** before you mark the audit done: git log output, test run output (RED and GREEN), coverage report, and the resolved threshold sources.
 

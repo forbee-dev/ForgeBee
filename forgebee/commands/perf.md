@@ -22,7 +22,7 @@ This command delegates to the **`performance-optimizer`** agent. Methodology (pr
 
 **Dispatch:**
 1. Parse the user's request (target component, suspected bottleneck area, baseline data if any)
-2. Delegate to `performance-optimizer` via the Task tool (`Task({ subagent_type: "performance-optimizer" })`) with full context
+2. Delegate to `performance-optimizer` via the Task tool (`Task({ subagent_type: "forgebee:performance-optimizer" })`) with full context
 3. Present the agent's analysis to the user
 
 **Fallback:** If agent delegation fails, surface the failure to the user and ask whether to retry or escalate.

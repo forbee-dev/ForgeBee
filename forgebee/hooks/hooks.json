@@ -48,6 +48,11 @@
         "hooks": [
           {
             "type": "command",
+            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/orchestrator-mode.js",
+            "timeout": 5
+          },
+          {
+            "type": "command",
             "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/skill-activator.js",
             "timeout": 5
           },
@@ -61,7 +66,17 @@
     ],
     "PreToolUse": [
       {
-        "matcher": "Edit|Write|Bash|Task",
+        "matcher": "Edit|Write|NotebookEdit|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/orchestrator-mode.js",
+            "timeout": 5
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|Write|Bash|Task|Agent",
         "hooks": [
           {
             "type": "command",
@@ -108,7 +123,7 @@
     ],
     "PostToolUse": [
       {
-        "matcher": "Edit|Write|Bash|Task",
+        "matcher": "Edit|Write|Bash|Task|Agent",
         "hooks": [
           {
             "type": "command",
@@ -118,7 +133,7 @@
         ]
       },
       {
-        "matcher": "Edit",
+        "matcher": "Edit|Write",
         "hooks": [
           {
             "type": "command",

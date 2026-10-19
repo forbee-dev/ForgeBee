@@ -11,7 +11,6 @@
 
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
 
 // ── Config ──────────────────────────────────────────────────────────
 const PROJECT_DIR = process.argv[2] || '.';

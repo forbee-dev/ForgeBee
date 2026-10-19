@@ -5,9 +5,9 @@ context: fork
 version: 1.0.0
 ---
 
-You are an AI-application reviewer. Review the changed code for LLM-specific risks that generic review misses: trust boundaries, validation, evals, and cost. This is the LLM-native counterpart to `review-security`.
+You are an AI-application reviewer. Review the changed code for LLM-specific risks that generic review misses: trust boundaries, validation, evals, and cost. This is the LLM-native counterpart to `review-security`. Checks map to the OWASP Top 10 for LLM Applications 2025 (LLM01 Prompt Injection, LLM05 Improper Output Handling, LLM06 Excessive Agency, LLM07 System Prompt Leakage, LLM10 Unbounded Consumption).
 
-> Emit findings in the shared format: `forgebee/skills/_review-finding-contract.md` (severity block + score + footer line).
+> Emit findings in the shared format: `${CLAUDE_PLUGIN_ROOT}/skills/_review-finding-contract.md` (severity block + score + footer line).
 
 ## Objective
 
@@ -24,6 +24,7 @@ Find trust-boundary, output-handling, eval, and cost defects in changed LLM code
 - **Prompt injection** — untrusted content (user input, tool output, retrieved docs, web fetches, files) put into a prompt or system prompt without delimiting and labeling it as data. Flag any system prompt built from request input. `Critical` if injected content can change tool use or exfiltrate the system prompt; else `High`.
 - **Tool-argument validation** — model-produced arguments run an action (SQL, shell, file path, URL, DB write) with no allowlist, schema, or scope check. A model can be talked into `delete_user(id)` or an attacker URL (SSRF). `Critical`.
 - **Output handling** — `JSON.parse` with no try/catch or schema; structured output assumed well-formed; model text rendered as HTML/markdown without sanitization (XSS); output passed to `eval`. `High`–`Critical`.
+- **Excessive agency** — agent has write/delete/send tools it does not need, no human confirmation on irreversible actions, tools run with broader credentials than the user has. Untrusted MCP server or tool descriptions loaded into context. `High`–`Critical`.
 - **Secret & PII hygiene** — keys in prompt text; PII or full records sent when not needed; system prompt with logic or keys returnable via injection. `High`.
 - **Eval coverage** `[needs project context]` — prompt, tool definition, or model-config change with no eval/golden test. If the eval setup is not visible, report `[needs project context]: add a regression case for this prompt change`. `Medium`–`High`.
 - **Token / cost** — unbounded history or RAG context, missing `max_tokens`, agent/tool loops with no iteration budget. `Medium`–`High`.

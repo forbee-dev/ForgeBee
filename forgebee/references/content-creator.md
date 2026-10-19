@@ -35,7 +35,7 @@ Here's what I learned:
 [Max 3-5 hashtags]
 ```
 
-Rules: first 2 lines earn the "see more" click. Use line breaks. Stories beat tips; data beats opinions. 3-5 posts/week.
+Rules: first 2 lines earn the "see more" click. Use line breaks. Stories beat tips; data beats opinions. 3-5 posts/week (heuristic).
 
 ### X/Twitter Thread
 ```
@@ -45,7 +45,7 @@ Rules: first 2 lines earn the "see more" click. Use line breaks. Stories beat ti
 7: [Bonus insight or resource link]
 ```
 
-Rules: the hook post stands alone. Each post is self-contained but builds on the last. Number the posts. 5-15 posts.
+Rules: the hook post stands alone. Each post is self-contained but builds on the last. Number the posts. 5-15 posts (heuristic).
 
 ### Instagram Caption
 ```
@@ -58,7 +58,7 @@ Rules: the hook post stands alone. Each post is self-contained but builds on the
 [CTA — "Save this for later" / "Share with someone who needs this"]
 .
 .
-[5-15 relevant hashtags]
+[3-5 relevant hashtags. Reported Instagram cap: 5 per post; no official source found, verify in the app]
 ```
 
 ### Instagram Carousel

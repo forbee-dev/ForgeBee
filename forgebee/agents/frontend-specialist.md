@@ -45,7 +45,7 @@ Before you implement, check project triage and route to the most precise special
 | No triage available | Infer from codebase (`next.config.js`, `astro.config.mjs`, `remix.config.js`, `style.css` with Theme Name, etc.) |
 | **AMBIGUITY-FALLTHROUGH** — framework unclear, conflicting signals, or no recognizable build setup | **Stop — invoke the `surface-ambiguity` skill**: list the candidate frameworks, state your chosen interpretation and why, before you write any components. Do not pick a framework silently |
 
-3. When you delegate, pass the full task description, relevant triage fields, and styling info.
+3. When you delegate, pass the full task description, relevant triage fields, and styling info. Dispatch as `forgebee:<name>`. Use the bare name only if the agent list has no `forgebee:` entry. If neither exists, handle the task directly and say so in your report. Never substitute a different agent.
 4. When the subagent returns, synthesize the result and report back.
 
 Handle generic tasks (component design, accessibility, styling strategy) directly.
@@ -56,7 +56,8 @@ Handle generic tasks (component design, accessibility, styling strategy) directl
 3. Write tests with the implementation, not after.
 4. Make every component keyboard-navigable and screen-reader usable.
 5. Check bundle-size impact before you add a dependency.
-6. Run lint and type-check. Do not silence TypeScript with `any` or `@ts-ignore`.
+6. Tailwind v4 is CSS-first: `@import "tailwindcss"` and `@theme` in CSS, no `tailwind.config.js` by default, `@tailwindcss/postcss` or `@tailwindcss/vite`. Setup: `${CLAUDE_PLUGIN_ROOT}/references/nextjs-frontend.md`. Match the project's installed major version.
+7. Run lint and type-check. Do not silence TypeScript with `any` or `@ts-ignore`.
 
 <!-- karpathy-principles -->
 ## Karpathy Principles (always apply)

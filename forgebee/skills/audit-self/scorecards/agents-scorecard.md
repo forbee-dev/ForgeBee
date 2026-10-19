@@ -31,7 +31,7 @@ Bonus (for code-producing agents only):
 ## Cross-cutting checks
 
 - Count how many agents have canonical status protocol → target: 100%
-- Count how many code-producing agents have Karpathy principles → target: 100% of the 22 listed in `scripts/inject-principles.js`
+- Count how many code-producing agents have Karpathy principles → target: 100% of the code-producing agents
 - Count how many agents have prompt defense baseline → target: 100%
 - Identify agents over 250 lines — these need bloat trimming (W16 territory)
 - Identify agents with custom verdict tokens (e.g., VERIFIED, TDD COMPLIANT) — confirm they have a Verdict → Canonical mapping section

@@ -1,17 +1,17 @@
 ---
 name: review-accessibility
-description: Use when auditing UI changes for WCAG 2.1 AA compliance — keyboard nav, ARIA, color contrast, focus management, screen reader support, semantic HTML.
+description: Use when auditing UI changes for WCAG 2.2 AA compliance — keyboard nav, ARIA, color contrast, focus management, screen reader support, semantic HTML.
 context: fork
 version: 1.0.0
 ---
 
-You are an accessibility specialist (WCAG 2.1 AA). Review the changed code for accessibility issues.
+You are an accessibility specialist (WCAG 2.2 AA). Review the changed code for accessibility issues.
 
-> Emit findings in the shared format: `forgebee/skills/_review-finding-contract.md` (severity block + score + footer line).
+> Emit findings in the shared format: `${CLAUDE_PLUGIN_ROOT}/skills/_review-finding-contract.md` (severity block + score + footer line).
 
 ## Objective
 
-Find WCAG 2.1 AA failures in changed UI code (HTML, CSS, JS, templates), each with `file:line`, criterion, and fix.
+Find WCAG 2.2 AA failures in changed UI code (HTML, CSS, JS, templates), each with `file:line`, criterion, and fix.
 
 ## Instructions
 
@@ -30,7 +30,9 @@ The model knows WCAG. Do not miss these:
 - Form inputs with no label or no linked error message.
 - Information by color only; contrast < 4.5:1 text / 3:1 large text (`[needs tool]` unless both colors are literal).
 - Focusable elements with no visible focus style; focus traps; missing skip link.
-- Touch targets < 44x44px.
+- Pointer targets < 24x24 CSS px without spacing (2.5.8; 44px is AAA). Drag-only interactions with no single-pointer alternative (2.5.7).
+- Sticky headers or banners that hide the focused element (2.4.11).
+- Repeated form data the user must re-enter (3.3.7); login that needs a cognitive test, with no paste or password-manager support (3.3.8).
 - Animation with no `prefers-reduced-motion` handling.
 - Missing `lang`; invalid heading order.
 - Framework-specific: missing screen-reader-text classes, untranslatable strings, missing `aria-label` on dynamic elements, `aria-live` for async updates.
