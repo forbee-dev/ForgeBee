@@ -102,8 +102,8 @@ To work without orchestration, start with `claude --agent forgebee:direct`, or s
 <summary><strong>Install from local directory</strong></summary>
 
 ```bash
-git clone git@github.com:forbee-dev/ClaudeDevKit.git
-claude --plugin-dir ./ClaudeDevKit/forgebee
+git clone git@github.com:forbee-dev/ForgeBee.git
+claude --plugin-dir ./ForgeBee/forgebee
 ```
 
 </details>
@@ -594,10 +594,10 @@ ForgeBee is fully compatible with [OpenClaw](https://github.com/openclaw/opencla
 
 ```bash
 # Clone ForgeBee
-git clone git@github.com:forbee-dev/ClaudeDevKit.git
+git clone git@github.com:forbee-dev/ForgeBee.git
 
 # Install for OpenClaw
-node ClaudeDevKit/openclaw/install-openclaw.js
+node ForgeBee/openclaw/install-openclaw.js
 ```
 
 This converts every agent and command into `SKILL.md` files in `~/.openclaw/workspace/skills/forgebee-*`. Skills auto-trigger based on their descriptions — the same ones optimized from the [Superpowers trigger pattern](#why-forgebee).
