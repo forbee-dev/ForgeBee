@@ -125,12 +125,12 @@ try {
 
   test('audit-trail: Agent dispatch logs model, effort, and caller', () => {
     const p = newProject();
-    const ti = { subagent_type: 'forgebee:wordpress-frontend', description: 'Build card', prompt: 'x'.repeat(9000), model: 'sonnet', effort: 'medium' };
+    const ti = { subagent_type: 'forgebee:wordpress-frontend', description: 'Build card', prompt: 'x'.repeat(9000), model: 'sonnet', effort: 'medium', name: 'card' };
     run(H('audit-trail.js'), { hook_event_name: 'PreToolUse', session_id: 's1', tool_name: 'Agent', tool_input: ti }, p);
     run(H('audit-trail.js'), { hook_event_name: 'PreToolUse', session_id: 's1', tool_name: 'Agent', agent_id: 'a1', agent_type: 'forgebee:frontend-specialist', tool_input: { subagent_type: 'forgebee:wordpress-frontend' } }, p);
     const dir = path.join(p, '.claude/audit');
     const [main, nested] = fs.readFileSync(path.join(dir, fs.readdirSync(dir)[0]), 'utf8').trim().split('\n').map(JSON.parse);
-    assert.deepStrictEqual([main.type, main.model, main.effort, main.from], ['dispatch', 'sonnet', 'medium', 'main']);
+    assert.deepStrictEqual([main.type, main.model, main.effort, main.name, main.from], ['dispatch', 'sonnet', 'medium', 'card', 'main']);
     assert.ok(!('prompt' in main));
     assert.deepStrictEqual([nested.model, nested.from], ['', 'forgebee:frontend-specialist']);
     const q = run(H('audit-trail.js'), { event_type: 'query', filter_type: 'dispatch' }, p).stdout;

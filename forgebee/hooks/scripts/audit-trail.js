@@ -135,6 +135,7 @@ else if (EVENT_TYPE === 'PreToolUse') {
     session: SESSION_ID,
     type: 'dispatch',
     agent: ti.subagent_type || '',
+    name: ti.name || '',
     task: redactForPrompt(ti.description || ''),
     model: ti.model || '',
     effort: ti.effort || '',

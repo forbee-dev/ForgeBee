@@ -2,7 +2,7 @@
   "name": "forgebee",
   "displayName": "ForgeBee",
   "description": "Full-stack agent framework — 39 commands, 46 specialist agents, 35 skills, 28 hooks. Karpathy principles, adversarial debate, two-stage review, /investigate, /elicit, checkpoint-preview, budget circuit breaker, continuous learning, Growth OS, /audit-self.",
-  "version": "7.1.0",
+  "version": "7.1.1",
   "author": {
     "name": "Forbee Dev",
     "url": "https://github.com/forbee-dev"

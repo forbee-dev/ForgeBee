@@ -256,7 +256,7 @@ Dispatch specialist agents with structured handoff contracts:
 
 All four keys required. Do NOT dispatch without them. `model` and `effort` repeat the model tier below, so a router agent passes them on when it delegates. `responseStyle: "orchestrator"` triggers the specialist's `terse-report` skill — compresses report tokens ~65% without losing actionable signal. See `${CLAUDE_PLUGIN_ROOT}/skills/terse-report/SKILL.md`.
 
-**Model tier (per dispatch).** Pass the story's model tier as `model` and `effort` on the Agent call:
+**Model tier (per dispatch).** Pass the story's model tier as `model` and `effort` on the Agent call. Do not set `name`: Claude Code drops `effort` when `name` is set.
 
 | Model tier | When | `model` | `effort` |
 |---|---|---|---|

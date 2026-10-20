@@ -48,6 +48,7 @@ try {
     const ctx = JSON.parse(r.stdout).hookSpecificOutput.additionalContext;
     assert.ok(ctx.includes('orchestrator mode') && ctx.includes('forgebee:'), ctx);
     assert.ok(ctx.includes('`sonnet`/`medium`') && ctx.includes('`opus`/`high`'), 'model tiers missing');
+    assert.ok(ctx.includes('Do not set `name`'), 'name drops effort');
     assert.ok(ctx.includes('`.claude/agents/`'), 'project agents not routable');
     // Claude Code drops additionalContext over 2KB to a file, silently.
     assert.ok(Buffer.byteLength(ctx) < 2000, `rules are ${Buffer.byteLength(ctx)} bytes`);

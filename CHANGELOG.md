@@ -6,6 +6,19 @@ The format roughly follows [Keep a Changelog](https://keepachangelog.com/) and t
 
 ---
 
+## [7.1.1] — 2026-10-20
+
+### Fixed
+
+- **Dispatch `effort` was lost on named agents.** Claude Code drops `effort` when an Agent call also sets `name`: the subagent runs at the default effort, and its `.meta.json` records `effort: null`. The orchestrator rules, the routing digest, `/workflow`, and `/team` now say not to set `name` on a dispatch.
+
+### Changed
+
+- The dispatch log records the Agent call's `name`. A log entry that has both a `name` and an `effort` shows a dispatch that lost its effort.
+- `bump-version.sh --audit` skips `docs/learnings/`, because learnings mention old versions on purpose.
+
+---
+
 ## [7.1.0] — 2026-10-20
 
 ### Added

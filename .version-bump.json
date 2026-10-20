@@ -43,7 +43,8 @@
       "inject-status-protocol.js",
       "inject-principles.js",
       "inject-prompt-defense.js",
-      "sync-manifests.yml"
+      "sync-manifests.yml",
+      "docs/learnings"
     ]
   }
 }

@@ -140,7 +140,7 @@ Dispatch every agent below as `forgebee:<name>` (for example `Agent({ subagent_t
 
 Prefer the stack leaf agent (`forgebee:wordpress-frontend`, not `forgebee:frontend-specialist`) when the stack is known: a router dispatch loads two agent definitions. `security-auditor` always runs at `design`. A `BLOCKED` report below `design` → re-dispatch once at the next tier up, then escalate. The retry prompt carries the blocker text and the files the first attempt changed (`git diff --stat`), so the new agent does not build blind on partial edits.
 
-Also write `model` and `effort` in the dispatch prompt, so a router agent passes them on when it delegates.
+Also write `model` and `effort` in the dispatch prompt, so a router agent passes them on when it delegates. Do not set `name` on the Agent call: Claude Code drops `effort` when `name` is set.
 
 **`--fable` (opt-in):** dispatch with `model: "fable"` where the dispatch would run on Opus (the `design` model tier, or a `model: opus` agent with no tier). Leave `sonnet` and `haiku` dispatches unchanged. If a Fable dispatch fails because the model is unavailable or rejected, re-dispatch that agent once with `model: "opus"` and tell the user. Fable can bill usage credits, so never use it without the flag or an explicit request.
 
