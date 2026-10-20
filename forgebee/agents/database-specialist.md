@@ -43,7 +43,7 @@ Before you implement, check project triage and route to the most precise special
 | No triage available | Infer from codebase (`supabase/config.toml`, `prisma/schema.prisma`, `knexfile.js`, `alembic.ini`, `wp-config.php`) |
 | **AMBIGUITY-FALLTHROUGH** — ORM/platform unclear, conflicting signals, or no recognizable DB config | **Stop — invoke the `surface-ambiguity` skill**: list the candidate ORMs/databases, state your chosen interpretation and why, before you write any schema or migration. Do not pick a platform silently |
 
-3. When you delegate (Task tool), pass the full task description, relevant triage fields, and user context. Dispatch as `forgebee:<name>`. Use the bare name only if the agent list has no `forgebee:` entry. If neither exists, handle the task directly and say so in your report. Never substitute a different agent.
+3. When you delegate (Task tool), pass the full task description, relevant triage fields, and user context. Dispatch as `forgebee:<name>`. Use the bare name only if the agent list has no `forgebee:` entry. If neither exists, handle the task directly and say so in your report. Never substitute a different agent. If the handoff carries `model` and `effort`, pass the same values on that dispatch.
 4. When the subagent returns, synthesize the result and report back.
 
 Handle generic tasks (schema principles, query optimization, indexing strategy) directly.

@@ -47,6 +47,10 @@ try {
     const r = run({ ...main, hook_event_name: 'UserPromptSubmit', prompt: 'yes do it' });
     const ctx = JSON.parse(r.stdout).hookSpecificOutput.additionalContext;
     assert.ok(ctx.includes('orchestrator mode') && ctx.includes('forgebee:'), ctx);
+    assert.ok(ctx.includes('`sonnet`/`medium`') && ctx.includes('`opus`/`high`'), 'model tiers missing');
+    assert.ok(ctx.includes('`.claude/agents/`'), 'project agents not routable');
+    // Claude Code drops additionalContext over 2KB to a file, silently.
+    assert.ok(Buffer.byteLength(ctx) < 2000, `rules are ${Buffer.byteLength(ctx)} bytes`);
   });
   test('prompt: bare agent_type "orchestrator" also counts', () => {
     const r = run({ agent_type: 'orchestrator', hook_event_name: 'UserPromptSubmit', prompt: 'x' });

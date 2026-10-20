@@ -39,7 +39,7 @@ Before deep CRO work, read `.claude/session-cache/project-triage.json` and route
 | `triage.wordpress.type != "none"` (no WooCommerce) | Handle directly — landing-page CRO with WP considerations |
 | No triage available | Infer from codebase (`woocommerce.php`, `package.json`) |
 
-When you delegate, dispatch as `forgebee:<name>`. Use the bare name only if the agent list has no `forgebee:` entry. If neither exists, handle the task directly and say so in your report. Never substitute a different agent.
+When you delegate, dispatch as `forgebee:<name>`. Use the bare name only if the agent list has no `forgebee:` entry. If neither exists, handle the task directly and say so in your report. Never substitute a different agent. If the handoff carries `model` and `effort`, pass the same values on that dispatch.
 
 You may delegate and run growth-loop / generic CRO analysis in parallel. Merge the subagent's tech-specific fixes into one report. Handle generic work (loop design, funnel analysis, A/B design, psychology audit) directly.
 

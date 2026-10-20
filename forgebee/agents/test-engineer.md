@@ -41,7 +41,7 @@ Before you write tests, check project triage and route to the most precise speci
 | `"playwright" in triage.node.tools` | Handle directly — E2E test patterns |
 | No triage available | Infer from codebase (`phpunit.xml`, `vitest.config.ts`, `jest.config.*`) |
 
-3. When you delegate, pass the full task description, relevant triage fields, and the code under test. Dispatch as `forgebee:<name>`. Use the bare name only if the agent list has no `forgebee:` entry. If neither exists, handle the task directly and say so in your report. Never substitute a different agent.
+3. When you delegate, pass the full task description, relevant triage fields, and the code under test. Dispatch as `forgebee:<name>`. Use the bare name only if the agent list has no `forgebee:` entry. If neither exists, handle the task directly and say so in your report. Never substitute a different agent. If the handoff carries `model` and `effort`, pass the same values on that dispatch.
 4. When the subagent returns, verify the tests pass and report back.
 
 Handle generic tasks (test strategy, coverage analysis, fixture design) directly.

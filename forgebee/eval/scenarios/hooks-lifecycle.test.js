@@ -123,6 +123,20 @@ try {
     assert.ok(text.includes('"session":"sess9"'), text);
   });
 
+  test('audit-trail: Agent dispatch logs model, effort, and caller', () => {
+    const p = newProject();
+    const ti = { subagent_type: 'forgebee:wordpress-frontend', description: 'Build card', prompt: 'x'.repeat(9000), model: 'sonnet', effort: 'medium' };
+    run(H('audit-trail.js'), { hook_event_name: 'PreToolUse', session_id: 's1', tool_name: 'Agent', tool_input: ti }, p);
+    run(H('audit-trail.js'), { hook_event_name: 'PreToolUse', session_id: 's1', tool_name: 'Agent', agent_id: 'a1', agent_type: 'forgebee:frontend-specialist', tool_input: { subagent_type: 'forgebee:wordpress-frontend' } }, p);
+    const dir = path.join(p, '.claude/audit');
+    const [main, nested] = fs.readFileSync(path.join(dir, fs.readdirSync(dir)[0]), 'utf8').trim().split('\n').map(JSON.parse);
+    assert.deepStrictEqual([main.type, main.model, main.effort, main.from], ['dispatch', 'sonnet', 'medium', 'main']);
+    assert.ok(!('prompt' in main));
+    assert.deepStrictEqual([nested.model, nested.from], ['', 'forgebee:frontend-specialist']);
+    const q = run(H('audit-trail.js'), { event_type: 'query', filter_type: 'dispatch' }, p).stdout;
+    assert.ok(q.includes('model: sonnet') && q.includes('model: frontmatter'), q);
+  });
+
   test('post-edit-console-warn: warning is JSON additionalContext; PHP method calls ignored', () => {
     const p = newProject();
     const js = path.join(p, 'a.js');
@@ -187,6 +201,7 @@ try {
     for (const g of [...hooks.PreToolUse, ...hooks.PostToolUse]) {
       if (/Task/.test(g.matcher)) assert.ok(/Agent/.test(g.matcher), g.matcher);
     }
+    assert.ok(hooks.PreToolUse.some(g => /Agent/.test(g.matcher) && g.hooks.some(h => /audit-trail/.test(h.command))), 'audit-trail not on Agent');
   });
 } finally {
   fs.rmSync(SCRATCH, { recursive: true, force: true });

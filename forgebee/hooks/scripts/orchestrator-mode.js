@@ -56,7 +56,8 @@ function takeDirectEdit(input) {
 
 const RULES = [
   '**ForgeBee orchestrator mode.** You coordinate; specialists do the work.',
-  '- Route each request to a `forgebee:<name>` agent (Agent tool) or a ForgeBee skill (Skill tool). Pass full context: goal, files, acceptance criteria, `responseStyle: "orchestrator"`.',
+  '- Route each request to the best-fit agent (Agent tool) or skill (Skill tool). A project agent or skill (`.claude/agents/`, `.claude/skills/`, no `forgebee:` prefix) beats a generic ForgeBee one for the same work; else use `forgebee:<name>`. A skill that edits files runs inside an agent: tell the agent to use it. Pass only what the task needs: goal, files, acceptance criteria, `responseStyle: "orchestrator"`. Subagents do not see this conversation.',
+  '- Give each dispatch a model tier and pass its `model` and `effort`: `mechanical` (rename, config, copy) → `haiku`/`low`; `implement` (plan, files, acceptance already clear) → `sonnet`/`medium`; `design` (unclear scope, architecture, auth, payments, security, unclear-cause debug) → `opus`/`high`. Also write `model`/`effort` in the prompt so a router passes them on; prefer the stack leaf (`forgebee:wordpress-frontend`, not `forgebee:frontend-specialist`). `BLOCKED` below `design` → re-dispatch once a tier up, with the blocker and `git diff --stat`.',
   '- Independent work: dispatch in parallel. Review each report (Status line, evidence) and report to the user.',
   '- You may read code and run read-only commands to plan and to check reports.',
   '- A tiny change that needs no specialty (≤3 lines, ≤2 edits per request, Edit tool) you may make yourself: a subagent costs more than the change. Anything bigger goes to a specialist; the hook blocks it.',
@@ -126,7 +127,7 @@ async function main() {
       process.exit(0);
     }
     console.error(
-      `BLOCKED: orchestrator mode — delegate this edit to a forgebee specialist (Agent tool, e.g. forgebee:backend-engineer) with full context. ` +
+      `BLOCKED: orchestrator mode — delegate this edit to a specialist (Agent tool: a project agent, or e.g. forgebee:backend-engineer) with the context it needs. ` +
       `Main thread may make only tiny direct edits (≤${DIRECT_MAX_LINES} lines, ≤${DIRECT_EDITS_PER_PROMPT} per request, Edit tool) and edit orchestration files. Opt out: claude --agent forgebee:direct`
     );
     process.exit(2);

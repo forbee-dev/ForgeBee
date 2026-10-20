@@ -6,6 +6,24 @@ The format roughly follows [Keep a Changelog](https://keepachangelog.com/) and t
 
 ---
 
+## [7.1.0] — 2026-10-20
+
+### Added
+
+- **Model tier per dispatch.** The orchestrator rules, `/workflow`, and `/team` give each workstream a model tier and pass `model` and `effort` on the Agent call: `mechanical` → `haiku`/`low`, `implement` → `sonnet`/`medium`, `design` → `opus`/`high`. The SessionStart routing digest carries the same rule, so commands outside `/workflow` and `/team` use it too. The handoff carries `model` and `effort`, and the 8 router agents pass them on when they delegate. A `BLOCKED` report gets one re-dispatch at the next tier up, with the blocker text and `git diff --stat`. `--fable` now applies to every dispatch that would run on Opus.
+- **Project agents and skills are routable.** The orchestrator rules, the routing digest, `/workflow`, and `/team` said to route only to `forgebee:` agents and ForgeBee skills. Now a project agent or skill (`.claude/agents/`, `.claude/skills/`) beats a generic ForgeBee one for the same work. A project skill that edits files runs inside an agent, because main-thread edits are blocked.
+- **Dispatch log.** `audit-trail.js` runs on PreToolUse `Task|Agent` and logs each dispatch's agent, model, effort, and caller (`main` or the router) to `.claude/audit/`. Query with `/audit` (`filter_type: dispatch`).
+
+### Changed
+
+- The orchestrator rule says "pass only what the task needs" instead of "pass full context". Subagents never see the main conversation, so "full" only invited copying it into the prompt.
+
+### Fixed
+
+- `orchestrator-mode.js` Bash guard: heredoc bodies are data, not commands. Body lines that start with `rm`/`cp`/`mv` or contain `>` no longer read as product-file writes; the opening line (`<<EOF > file`) is still checked.
+
+---
+
 ## [7.0.0] — 2026-10-19
 
 ### Breaking

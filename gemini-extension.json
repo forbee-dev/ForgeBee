@@ -1,6 +1,6 @@
 {
   "name": "forgebee",
   "description": "Full-stack agent framework — dev, growth, debate, and PM in one plugin.",
-  "version": "7.0.0",
+  "version": "7.1.0",
   "contextFileName": "GEMINI.md"
 }

@@ -84,8 +84,9 @@ function main() {
       '## ForgeBee Routing Index (digest of forgebee/INDEX.md)',
       '',
       'Route user intent to a skill/agent/command before starting work.',
-      'Dispatch ForgeBee agents as `forgebee:<name>`; only the prefixed agent carries its `model:` setting. Use the bare name only if no `forgebee:` entry exists. Never substitute a different agent.',
-      'Fable is opt-in: only when the user asks for it (or passes `--fable`), dispatch `model: opus` agents with `model: "fable"`. If Fable is unavailable or rejected, re-dispatch once with `model: "opus"` and say so.',
+      'Dispatch ForgeBee agents as `forgebee:<name>`; only the prefixed agent carries its `model:` setting. Use the bare name only if no `forgebee:` entry exists. Never substitute a different agent. A project agent or skill (`.claude/agents/`, `.claude/skills/`) beats a generic ForgeBee one for the same work.',
+      'Fable is opt-in: only when the user asks for it (or passes `--fable`), dispatch with `model: "fable"` where the dispatch would run on Opus. If Fable is unavailable or rejected, re-dispatch once with `model: "opus"` and say so.',
+      'Model tier per dispatch: pass `model`/`effort` on the Agent call (and in the prompt, for routers): `haiku`/`low` for mechanical edits, `sonnet`/`medium` when plan, files, and acceptance are clear, `opus`/`high` for design, security, or an unclear-cause debug.',
       `Full index (all skills, agents, commands): read \`${path.relative(getProjectDir(), indexFile)}\`.`,
       '',
     ];

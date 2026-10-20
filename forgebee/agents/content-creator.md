@@ -39,7 +39,7 @@ For on-site content, read `.claude/session-cache/project-triage.json` and route:
 | No CMS / generic content | Handle directly — markdown, social-native, conversion copy, case studies, READMEs |
 | No triage available | Infer from codebase (`wp-config.php`, `next.config.js`, `.mdx` files) |
 
-When you delegate, pass the full brief, brand voice guidelines, and target audience. Dispatch as `forgebee:<name>`. Use the bare name only if the agent list has no `forgebee:` entry. If neither exists, handle the task directly and say so in your report. Never substitute a different agent. Review the result for quality, brand alignment, and conversion.
+When you delegate, pass the full brief, brand voice guidelines, and target audience. Dispatch as `forgebee:<name>`. Use the bare name only if the agent list has no `forgebee:` entry. If neither exists, handle the task directly and say so in your report. Never substitute a different agent. If the handoff carries `model` and `effort`, pass the same values on that dispatch. Review the result for quality, brand alignment, and conversion.
 
 **Email work → `email-strategist`** (single source of truth for welcome, nurture, cart recovery, win-back, lifecycle). Delegate; do not write sequences inline, so agents do not drift.
 
