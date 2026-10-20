@@ -75,7 +75,7 @@ Direct and Small tiers skip it unless `--grill` is set. Cap it at 2 rounds. Reco
 
 ## Step 3: Plan & Show
 
-Break work into independent workstreams. For each, define: agent, files it owns, deliverable, acceptance criteria.
+Break work into independent workstreams. For each, define: agent, model tier (Step 4), files it owns, deliverable, acceptance criteria.
 
 **Add `security-auditor` only when the change touches one of these:** authentication, authorization, sessions, or capability checks; payments, billing, or PII; untrusted input reaching output (escaping, `wp_kses`, SQL, shell); secrets, tokens, or credentials; file upload, deserialization, or a path built from user input.
 
@@ -96,13 +96,13 @@ security-auditor (parallel — reviews all changes after completion)
 Present execution plan table:
 
 ```markdown
-| Workstream | Agent | Files | Dependencies | Parallel Group |
-|-----------|-------|-------|-------------|----------------|
-| API endpoints | backend-engineer | src/api/ | None | A |
-| UI components | frontend-specialist | src/components/ | None | A |
-| Schema migration | database-specialist | migrations/ | backend-engineer | B |
-| Tests | test-engineer | tests/ | A + B | C |
-| Security review | security-auditor | all changed files | C | D |
+| Workstream | Agent | Model tier | Files | Dependencies | Parallel Group |
+|-----------|-------|------------|-------|-------------|----------------|
+| API endpoints | backend-engineer | design | src/api/ | None | A |
+| UI components | nextjs-frontend | implement | src/components/ | None | A |
+| Schema migration | database-specialist | implement | migrations/ | backend-engineer | B |
+| Tests | test-engineer | implement | tests/ | A + B | C |
+| Security review | security-auditor | design | all changed files | C | D |
 ```
 
 ### Step→Verify format (required for every dispatched plan)
@@ -130,7 +130,19 @@ Dispatch agents with clear context — they don't share your conversation. Each 
 
 Dispatch every agent below as `forgebee:<name>` (for example `Agent({ subagent_type: "forgebee:backend-engineer" })`; older Claude Code names the tool `Task`). Only the prefixed agent carries its `model:` setting. Use the bare name only if the agent list has no `forgebee:` entry. If neither exists, stop and report. Never substitute a different agent.
 
-**`--fable` (opt-in):** dispatch agents whose frontmatter says `model: opus` with `model: "fable"`. Leave `sonnet` and `haiku` agents unchanged. If a Fable dispatch fails because the model is unavailable or rejected, re-dispatch that agent once with `model: "opus"` and tell the user. Fable can bill usage credits, so never use it without the flag or an explicit request.
+**Model tier (per dispatch).** Pass the workstream's model tier as `model` and `effort` on the Agent call. The model tier is not the size tier from Step 1:
+
+| Model tier | When | `model` | `effort` |
+|---|---|---|---|
+| `mechanical` | Rename, config, copy, dashboard regeneration | `haiku` | `low` |
+| `implement` | Plan, files, and acceptance criteria already clear | `sonnet` | `medium` |
+| `design` | Unclear scope, architecture, auth, payments, security, debug with an unclear cause | `opus` | `high` |
+
+Prefer the stack leaf agent (`forgebee:wordpress-frontend`, not `forgebee:frontend-specialist`) when the stack is known: a router dispatch loads two agent definitions. `security-auditor` always runs at `design`. A `BLOCKED` report below `design` → re-dispatch once at the next tier up, then escalate. The retry prompt carries the blocker text and the files the first attempt changed (`git diff --stat`), so the new agent does not build blind on partial edits.
+
+Also write `model` and `effort` in the dispatch prompt, so a router agent passes them on when it delegates.
+
+**`--fable` (opt-in):** dispatch with `model: "fable"` where the dispatch would run on Opus (the `design` model tier, or a `model: opus` agent with no tier). Leave `sonnet` and `haiku` dispatches unchanged. If a Fable dispatch fails because the model is unavailable or rejected, re-dispatch that agent once with `model: "opus"` and tell the user. Fable can bill usage credits, so never use it without the flag or an explicit request.
 
 ### Budget envelope
 
@@ -176,6 +188,8 @@ Reject any response without a status. If `BLOCKED` twice on same issue → escal
 **Quality contract:** After /team completes, review-all should find zero critical or high issues.
 
 ## Available Agents
+
+**Project agents and skills first.** An agent in the project's `.claude/agents/` or a skill in `.claude/skills/` (listed without the `forgebee:` prefix) beats a generic ForgeBee agent for the same work. Dispatch it by its bare name. A project skill that edits files runs inside an agent: name the skill in that agent's prompt.
 
 **Tier 1 — auto-route to tech-specific subagents:**
 

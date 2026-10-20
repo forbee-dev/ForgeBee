@@ -126,6 +126,22 @@ else if (EVENT_TYPE === 'dispatch') {
   };
 }
 
+// ── AGENT TOOL CALL (PreToolUse hook on Task|Agent) ───────────────────
+// Records the model and effort each dispatch really asked for; empty = frontmatter default.
+else if (EVENT_TYPE === 'PreToolUse') {
+  const ti = inputData.tool_input || {};
+  auditEntry = {
+    timestamp,
+    session: SESSION_ID,
+    type: 'dispatch',
+    agent: ti.subagent_type || '',
+    task: redactForPrompt(ti.description || ''),
+    model: ti.model || '',
+    effort: ti.effort || '',
+    from: inputData.agent_id ? (inputData.agent_type || 'subagent') : 'main'
+  };
+}
+
 // ── QUERY (read audit log) ────────────────────────────────────────────
 else if (EVENT_TYPE === 'query') {
   const filterType = inputData.filter_type || '';
@@ -185,7 +201,9 @@ else if (EVENT_TYPE === 'query') {
       } else if (entry.type === 'escalation') {
         output += `${entry.severity}: ${entry.reason} (source: ${entry.source})`;
       } else if (entry.type === 'dispatch') {
-        output += `${entry.agent} → ${entry.task} (pipeline: ${entry.pipeline}, phase: ${entry.phase})`;
+        output += entry.from
+          ? `${entry.agent} → ${entry.task} (model: ${entry.model || 'frontmatter'}, effort: ${entry.effort || 'default'}, from: ${entry.from})`
+          : `${entry.agent} → ${entry.task} (pipeline: ${entry.pipeline}, phase: ${entry.phase})`;
       } else if (entry.type === 'session_end') {
         output += `session ended (cwd: ${entry.cwd}, mode: ${entry.permission_mode})`;
       } else {

@@ -42,7 +42,9 @@ Slash-prefixed names like `/plan`, `/debug`, `/idea`, `/seo`, `/launch` are **sk
 
 Plain names like `scrum-master`, `delivery-agent`, `backend-engineer`, `debugger-detective`, `security-auditor` are **agents** — dispatch them via the **Agent tool** (`Agent({ subagent_type: "forgebee:scrum-master", ... })`; older Claude Code names it `Task`). They live in `forgebee/agents/`. Always add the `forgebee:` prefix: the plugin registers agents under it, and only the prefixed agent carries its `model:` setting. Use the bare name only if the agent list has no `forgebee:` entry. If neither exists, stop and report. Never substitute a different agent.
 
-**`--fable` (opt-in):** dispatch agents whose frontmatter says `model: opus` with `model: "fable"`. Leave `sonnet` and `haiku` agents unchanged. If a Fable dispatch fails because the model is unavailable or rejected, re-dispatch that agent once with `model: "opus"` and tell the user. Fable can bill usage credits, so never use it without the flag or an explicit request.
+**Project agents and skills first.** An agent in the project's `.claude/agents/` or a skill in `.claude/skills/` (listed without the `forgebee:` prefix) beats a generic ForgeBee agent for the same work. Assign it by its bare name in the Execution Plan. A project skill that edits files runs inside an agent: name the skill in that agent's prompt.
+
+**`--fable` (opt-in):** dispatch with `model: "fable"` where the dispatch would run on Opus (the `design` model tier, or a `model: opus` agent with no tier). Leave `sonnet` and `haiku` dispatches unchanged. If a Fable dispatch fails because the model is unavailable or rejected, re-dispatch that agent once with `model: "opus"` and tell the user. Fable can bill usage credits, so never use it without the flag or an explicit request.
 
 Debate roles (`requirements-*`, `code-*`: advocate, skeptic, judge) are **`context: fork` skills**, not agents. Invoke each via the Skill tool (`Skill({ skill: "code-skeptic" })`); a `subagent_type` with these names fails.
 
@@ -169,9 +171,9 @@ After architecture is ready, build a lightweight Implementation Plan directly fr
 ## Implementation Plan
 
 ### Order of work
-1. **<Workstream 1>** — <one-line scope>. Agent: <agent>. Files: <paths>. Depends on: none.
-2. **<Workstream 2>** — <one-line scope>. Agent: <agent>. Files: <paths>. Depends on: 1.
-3. **<Workstream 3>** — <one-line scope>. Agent: <agent>. Files: <paths>. Depends on: 1.
+1. **<Workstream 1>** — <one-line scope>. Agent: <agent>. Model tier: <tier>. Files: <paths>. Depends on: none.
+2. **<Workstream 2>** — <one-line scope>. Agent: <agent>. Model tier: <tier>. Files: <paths>. Depends on: 1.
+3. **<Workstream 3>** — <one-line scope>. Agent: <agent>. Model tier: <tier>. Files: <paths>. Depends on: 1.
 
 ### Acceptance (per workstream, terse)
 - WS1: <criterion from ADR>
@@ -195,11 +197,11 @@ Present before dispatching any work:
 ```markdown
 ## Execution Plan
 
-| Story | Assigned Agent | Dependencies | Parallel Group |
-|-------|---------------|-------------|----------------|
-| Story 1 | backend-engineer | None | Group A |
-| Story 2 | frontend-specialist | None | Group A |
-| Story 3 | database-specialist | Story 1 | Group B |
+| Story | Assigned Agent | Model tier | Dependencies | Parallel Group |
+|-------|---------------|------------|-------------|----------------|
+| Story 1 | wordpress-backend | design | None | Group A |
+| Story 2 | wordpress-frontend | implement | None | Group A |
+| Story 3 | database-specialist | implement | Story 1 | Group B |
 
 ### Strategy
 - **Group A** (parallel): Stories 1, 2
@@ -246,11 +248,23 @@ Dispatch specialist agents with structured handoff contracts:
   "acceptance_criteria": [
     { "criterion": "Given X, when Y, then Z", "verification": "how to test" }
   ],
-  "responseStyle": "orchestrator"
+  "responseStyle": "orchestrator",
+  "model": "sonnet",
+  "effort": "medium"
 }
 ```
 
-All four keys required. Do NOT dispatch without them. `responseStyle: "orchestrator"` triggers the specialist's `terse-report` skill — compresses report tokens ~65% without losing actionable signal. See `${CLAUDE_PLUGIN_ROOT}/skills/terse-report/SKILL.md`.
+All four keys required. Do NOT dispatch without them. `model` and `effort` repeat the model tier below, so a router agent passes them on when it delegates. `responseStyle: "orchestrator"` triggers the specialist's `terse-report` skill — compresses report tokens ~65% without losing actionable signal. See `${CLAUDE_PLUGIN_ROOT}/skills/terse-report/SKILL.md`.
+
+**Model tier (per dispatch).** Pass the story's model tier as `model` and `effort` on the Agent call:
+
+| Model tier | When | `model` | `effort` |
+|---|---|---|---|
+| `mechanical` | Rename, config, copy, dashboard regeneration | `haiku` | `low` |
+| `implement` | Plan, files, and acceptance criteria already clear | `sonnet` | `medium` |
+| `design` | Unclear scope, architecture, auth, payments, security, debug with an unclear cause | `opus` | `high` |
+
+Prefer the stack leaf agent (`forgebee:wordpress-frontend`, not `forgebee:frontend-specialist`) when the stack is known: a router dispatch loads two agent definitions. `security-auditor` always runs at `design`. A `BLOCKED` report below `design` → re-dispatch once at the next tier up, then escalate. The retry prompt carries the blocker text and the files the first attempt changed (`git diff --stat`), so the new agent does not build blind on partial edits.
 
 ### Budget Circuit Breaker (best-effort, unenforced — no backing hook)
 

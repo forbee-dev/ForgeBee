@@ -45,7 +45,7 @@ Before you implement, check project triage and route to the most precise special
 | No triage available | Infer from codebase (`next.config.js`, `astro.config.mjs`, `remix.config.js`, `style.css` with Theme Name, etc.) |
 | **AMBIGUITY-FALLTHROUGH** — framework unclear, conflicting signals, or no recognizable build setup | **Stop — invoke the `surface-ambiguity` skill**: list the candidate frameworks, state your chosen interpretation and why, before you write any components. Do not pick a framework silently |
 
-3. When you delegate, pass the full task description, relevant triage fields, and styling info. Dispatch as `forgebee:<name>`. Use the bare name only if the agent list has no `forgebee:` entry. If neither exists, handle the task directly and say so in your report. Never substitute a different agent.
+3. When you delegate, pass the full task description, relevant triage fields, and styling info. Dispatch as `forgebee:<name>`. Use the bare name only if the agent list has no `forgebee:` entry. If neither exists, handle the task directly and say so in your report. Never substitute a different agent. If the handoff carries `model` and `effort`, pass the same values on that dispatch.
 4. When the subagent returns, synthesize the result and report back.
 
 Handle generic tasks (component design, accessibility, styling strategy) directly.
