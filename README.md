@@ -683,5 +683,5 @@ Contributions welcome! ForgeBee is markdown surfaces and Node.js scripts. See **
 [MIT](LICENSE) &mdash; use it however you want.
 
 <p align="center">
-  <sub>Built with Claude Code by <a href="https://github.com/forbee-dev">Forbee Dev</a> at <a href="https://raketech.com">Raketech</a></sub>
+  <sub>Built by <a href="https://github.com/forbee-dev">Forbee Dev</a></sub>
 </p>
