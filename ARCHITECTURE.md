@@ -83,6 +83,7 @@ the README.
 
 One source, four manifests: `.claude-plugin/marketplace.json` (+ `forgebee/.claude-plugin/plugin.json`),
 `.codex-plugin/plugin.json`, `.cursor-plugin/plugin.json`, `gemini-extension.json`,
-plus `openclaw/install-openclaw.js` (converts agents/commands to OpenClaw skills).
+plus `openclaw/install-openclaw.js` (converts agents/commands to OpenClaw skills)
+and `opencode/install-opencode.js` (converts skills, agents, commands to OpenCode format).
 All version-bearing files are listed in `.version-bump.json` and kept in sync by
 `bump-version.sh`. Surface **counts** in manifest/README prose are maintained by hand.

@@ -6,6 +6,14 @@ The format roughly follows [Keep a Changelog](https://keepachangelog.com/) and t
 
 ---
 
+## [Unreleased]
+
+### Added
+
+- **OpenCode installer.** `node opencode/install-opencode.js [target-dir]` converts skills, agents, commands, and rules to OpenCode format. Hooks do not convert. `npm run check:opencode` tests it.
+
+---
+
 ## [7.1.1] — 2026-10-20
 
 ### Fixed

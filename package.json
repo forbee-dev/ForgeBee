@@ -9,8 +9,9 @@
     "check:references": "node scripts/check-references.js",
     "check:agents": "node scripts/check-agent-contract.js",
     "check:version": "bash scripts/bump-version.sh --check",
+    "check:opencode": "node opencode/test-install-opencode.js",
     "eval": "node forgebee/eval/harness/run.js",
     "eval:golden": "node forgebee/eval/golden/run-golden.js",
-    "check": "npm run index:check && npm run check:references && npm run check:agents && npm run check:version && npm run eval"
+    "check": "npm run index:check && npm run check:references && npm run check:agents && npm run check:version && npm run eval && npm run check:opencode"
   }
 }
