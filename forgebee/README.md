@@ -76,7 +76,7 @@ forgebee/
 
 ### Other capabilities
 - **Orchestrator by default** — the main thread runs as `forgebee:orchestrator`, delegates real work, keeps tiny edits inline; opt out with `claude --agent forgebee:direct`
-- **Multi-platform** — works with Claude Code, Codex, Cursor, Gemini, OpenClaw (separate manifests)
+- **Multi-platform** — works with Claude Code, Codex, Cursor, Gemini, OpenClaw, OpenCode (separate manifests or installers)
 - **Adaptive pipeline** — `/workflow` scrum phase is promptable (full sprint planning OR direct delegation)
 - **Decision logs + addenda** — `/workflow` and `/plan` persist decisions across runs
 - **Continuous learning** — Stop hook asks Claude to save instincts; SessionStart digest applies them and auto-activates ≥0.7; `/learn` and `/evolve` stay manual

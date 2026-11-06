@@ -25,7 +25,7 @@
   46 specialist agents. 35 skills. 39 slash commands. 28 lifecycle hooks.<br/>
   Three execution modes: inline skills, context:fork, subagents.<br/>
   Adaptive pipeline. Karpathy principles. Adversarial debate. Continuous learning.<br/>
-  <em>Works with Claude Code, Codex, Cursor, Gemini, and OpenClaw.</em>
+  <em>Works with Claude Code, Codex, Cursor, Gemini, OpenClaw, and OpenCode.</em>
 </p>
 
 <p align="center">
@@ -36,7 +36,8 @@
   <a href="#continuous-learning">Learning</a> &nbsp;&bull;&nbsp;
   <a href="#growth-os">Growth OS</a> &nbsp;&bull;&nbsp;
   <a href="#project-management">PM System</a> &nbsp;&bull;&nbsp;
-  <a href="#openclaw">OpenClaw</a>
+  <a href="#openclaw">OpenClaw</a> &nbsp;&bull;&nbsp;
+  <a href="#opencode">OpenCode</a>
 </p>
 
 ---
@@ -421,6 +422,8 @@ The **skills, agents, and commands** are portable — they ship to Claude Code, 
 | Continuous learning (observe → instincts) | ✅ | ❌ |
 | Auto project-triage routing | ✅ | ❌ |
 
+OpenCode gets skills, agents, commands, and rules through its [own installer](#opencode). It gets no hooks.
+
 On non-Claude harnesses you get the full prompt library; the guardrails, governance, and learning loop are Claude Code-only today.
 
 ---
@@ -610,6 +613,51 @@ This converts every agent and command into `SKILL.md` files in `~/.openclaw/work
 - YAML frontmatter maps: `name` + `description` + `metadata.openclaw`
 - Agent body instructions transfer directly (markdown is markdown)
 - Model preferences are noted but OpenClaw handles model selection through its own config
+
+</details>
+
+---
+
+## OpenCode
+
+ForgeBee converts to [OpenCode](https://opencode.ai) format. Skills, agents, commands, and rules work. Hooks do not.
+
+```bash
+# Global install (default target: ~/.config/opencode)
+node ForgeBee/opencode/install-opencode.js
+
+# Project install
+node ForgeBee/opencode/install-opencode.js ./.opencode
+```
+
+<details>
+<summary><strong>How the conversion works</strong></summary>
+
+- Each skill goes to `skills/forgebee-<name>/` with the whole skill directory. The `name:` field matches the directory.
+- Each agent goes to `agents/forgebee-<name>.md` with `mode: subagent`. The `tools:` list becomes a `permission:` map.
+- `orchestrator` and `direct` are skipped. They need Claude Code hooks.
+- Each command goes to `commands/<name>.md`. Only `description`, `agent`, and `subtask` stay.
+- The `forgebee/` tree (without `eval/`) goes to `<target>/forgebee/`. `${CLAUDE_PLUGIN_ROOT}` becomes that absolute path.
+- `forgebee:<name>` references become `forgebee-<name>`.
+- The installer writes `forgebee/.opencode-install.json`. A reinstall deletes only the paths in that file.
+
+**Not converted:** hooks. Orchestrator mode, guards, learning, and PM sync do not run on OpenCode.
+
+**Existing files.** The installer keeps your own files. If a skill, agent, or command already exists at the target, it skips that file and lists it in the summary. It does not overwrite it.
+
+**Rules.** The installer does not edit `opencode.json`. Add this entry yourself. Use the absolute path the installer prints. Do not use `~`.
+
+```json
+{
+  "instructions": ["/absolute/path/to/opencode/forgebee/rules/common/general.md"]
+}
+```
+
+Add `rules/php/conventions.md`, `rules/python/conventions.md`, or `rules/typescript/conventions.md` for your stack. Do not load `rules/common/hooks.md`. It documents Claude Code hooks.
+
+OpenCode reads `CLAUDE.md` when no `AGENTS.md` exists.
+
+**Models.** The installer drops `model:` from agents. Claude aliases such as `opus` are not valid in OpenCode. Subagents use the model of the calling agent. To pin a model, add `model: provider/model-id` to the agent file.
 
 </details>
 
