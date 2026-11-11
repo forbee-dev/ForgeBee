@@ -4,7 +4,7 @@
  * Continuous Learning observation hook for ForgeBee.
  * Captures tool use events (PreToolUse/PostToolUse) as JSONL entries.
  * 
- * Registered on PreToolUse (*) and PostToolUse (*) in hooks.json.
+ * Registered on PreToolUse and PostToolUse (Edit|Write|Bash|Task|Agent) in hooks.json.
  * Claude Code passes hook data via stdin as JSON.
  */
 

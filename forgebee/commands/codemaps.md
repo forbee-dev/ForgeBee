@@ -16,8 +16,6 @@ Generate architecture documentation optimized for AI context consumption. Each c
 - Never exceed ~1000 tokens per codemap
 - Never document files that don't exist — read the codebase first
 
-Generate or refresh architecture documentation optimized for AI context consumption. Each codemap stays under ~1000 tokens and captures structure, not implementation.
-
 $ARGUMENTS: Optional flags — `--force` to regenerate all, `--diff` to show changes only.
 
 ## When to Use

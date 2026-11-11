@@ -108,17 +108,17 @@ npm run deploy:production # Deploy to production
 - `/instinct-import` — Import instincts from a file
 
 **Meta:**
-- `/workflow` — Full pipeline orchestrator: Plan → Debate → Architect → Scrum → Execute → Debate → Deliver (with adversarial review). Auto-tracks in PM system.
-- `/team` — Lightweight multi-agent orchestration (ad-hoc delegation without debate ceremony)
+- `/team` — Default for tickets, bugs, features, refactors: Understand → Research → Grill → Spec → Build → Review loop
+- `/workflow` — For ADR, auth, payments, or data-model work: Grill → Plan → Architect → Execution Plan → Execute → Review loop → Verify → Checkpoint → Deliver (Critical tier adds Requirements Debate and Skeptic Pass). Auto-tracks in PM system.
 - `/idea` — Idea-to-product validation and MVP planning (with debate). Auto-tracks in PM system.
 - `/pm` — Automated project management: reads state.yaml, syncs TASKS.md, regenerates dashboards, surfaces blockers
 - `/audit` — Governance audit trail: query permission decisions, debate rulings, verification results, escalations
 
 **Specialist Agents** (for Agent Teams):
 
-*Development:* frontend, backend, database, security, testing, devops, perf, debug, research, content, seo, supabase, ios, flutter, n8n, session-librarian, ux-designer, scrum-master, delivery-agent, dashboard-generator, verification-enforcer, tdd-enforcer, contract-validator
+*Development:* frontend, backend, database, security, testing, devops, perf, debug, research, content, seo, supabase, ios, flutter, n8n, session-librarian, ux-designer, scrum-master, delivery-agent, dashboard-generator, verification-enforcer, tdd-enforcer
 
-*Dev Debate:* requirements-advocate, requirements-skeptic, requirements-judge, code-advocate, code-skeptic, code-judge
+*Dev Debate:* requirements-advocate, requirements-skeptic, requirements-judge, code-skeptic, code-judge
 
 *Strategy Debate:* strategy-advocate, strategy-skeptic, strategy-judge
 

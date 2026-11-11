@@ -10,7 +10,7 @@ For each skill in `forgebee/skills/`, score Y/N on these questions:
 6. **Body matches description:** What the description promises is what the body delivers? (Karpathy P1 trace)
    - **Check:** Pull verbs from the description (e.g., "audits", "scans", "writes", "compresses"). Grep the body for evidence of each verb. Description over-promising is a routing-trust bug — orchestrators dispatch based on description.
 7. **Skill length:** Body under ~300 lines? (Capture line count.)
-8. **`context: fork` justified:** If declared, is fork isolation actually needed?
+8. **`context: fork` justified:** If declared, is fork isolation actually needed? A fork sees no conversation: does the body avoid "use session context" and name the arguments it needs?
 9. **Duplication risk:** Overlaps significantly with another skill? (Name which.)
 
 ## Output per skill

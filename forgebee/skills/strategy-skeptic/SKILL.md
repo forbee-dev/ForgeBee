@@ -17,6 +17,14 @@ For each artifact, build the strongest honest case that it needs more work befor
 
 Brand strategy, competitive intelligence, audience profiles, content architecture, hook library, content calendar.
 
+## Method
+
+1. List every claim in the artifact: positioning claims, competitor facts, metrics, audience assumptions.
+2. Find the source of each claim: a URL with its as-of date, a path to the user's data, or the label `[assumption]`. A claim with none → finding.
+3. Rank the `[assumption]` and unsourced claims by what breaks if they are false. Challenge the top ones first.
+4. Spot-check the highest-impact sourced claims with WebSearch. A source that does not say what the artifact claims → finding.
+5. Then run the gap checks below.
+
 ## Gaps to Look For
 
 - **Brand:** archetype every competitor uses; voice rules so vague that opposite content both "match"; positioning that fits 3+ competitors; claims with no proof; voice unlike how the audience talks.

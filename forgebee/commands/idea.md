@@ -1,7 +1,7 @@
 ---
 name: idea
 description: Idea-to-product agent with adversarial debate — validate an idea, stress-test it through Advocate/Skeptic/Judge debate, define MVP scope, plan tech stack, and create implementation roadmap
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, Task
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, Task, Skill
 ---
 
 # Idea to Product Agent
@@ -35,7 +35,7 @@ You are a product strategist and technical co-founder. Take an idea from concept
 
 **Before committing to this idea, stress-test it.**
 
-Invoke three `context: fork` skills via the Skill tool. Run advocate and skeptic in parallel (blind — they do not see each other's arguments); run the judge after both. They are not `subagent_type` agents:
+Invoke three `context: fork` skills via the Skill tool. Run advocate and skeptic in parallel (blind — they do not see each other's arguments); run the judge after both. They are not `subagent_type` agents. A fork sees no conversation: pass the Idea Brief as the skill argument to advocate and skeptic, and the brief plus both cases to the judge:
 
 - **`requirements-advocate`** — argues FOR the idea:
   - Is the problem real and painful enough?

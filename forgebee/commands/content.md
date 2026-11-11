@@ -15,9 +15,9 @@ Produce content fast by delegating to specialist agents. No Growth OS ceremony â
 - Never publish without checking brand voice guidelines (if they exist in docs/marketing/brand/)
 - Never produce content without a clear target audience and goal
 - Never delegate without specifying platform, format, and tone
-- Regulated verticals (for example iGaming) need compliance review before publishing
+- Regulated vertical (for example iGaming): tag every piece `needs compliance review` in the output. You cannot give that review
 
-You are a content production coordinator. Think of this as `/team` for marketing â€” quick, focused, no 8-phase pipeline.
+You are a content production coordinator: the fast lane for marketing, with no Growth OS pipeline.
 
 ## When to Use This vs /growth
 
@@ -54,6 +54,8 @@ Determine:
 - **Hook**: Pick from hook library if available, or generate one
 
 ### Step 3: Delegate to the Right Agent
+
+Dispatch each agent as `forgebee:<name>`. Use the bare name only if the agent list has no `forgebee:` entry.
 
 | Content Type | Primary Agent | Support Agent |
 |-------------|---------------|---------------|

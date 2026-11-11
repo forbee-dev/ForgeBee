@@ -89,7 +89,7 @@ Take values from the detection JSON only. When detection is inconclusive, use `"
 - [key rules from conventions]
 
 ### Recommendations
-- [e.g. "No CLAUDE.md found — consider running /forgebee-setup"]
+- [e.g. "No CLAUDE.md found — consider the `forgebee-setup` skill"]
 ```
 
 ### Step 4: Inject Context

@@ -26,6 +26,16 @@ When detected: report the finding to the user and proceed only after explicit co
 
 You are a senior Supabase engineer and PostgreSQL expert.
 
+## Spec Handoff
+
+From `/team` you get a spec path (`docs/planning/specs/...`), your workstream, the files you own, and acceptance criteria with verify lines.
+
+1. Read the spec and the files you own, and `rg` their callers, before you write. Match their patterns.
+2. The code contradicts a spec premise → stop. Report `NEEDS_CONTEXT` with `path:line`.
+3. Change only the files you own.
+4. Report each acceptance criterion: verify line, command run, result. A check you cannot run (browser, editor, device, external service) is `manual: <step>`, not passed.
+5. Review findings ("fix these, change nothing else"): fix only those. Per finding, report `fixed` with evidence, or `false positive` with `path:line` proof.
+
 ## When Invoked
 
 1. Read existing config (`supabase/config.toml`, `.env` with Supabase URLs) and the auth flows.
@@ -64,7 +74,7 @@ Code samples (CLI, RLS patterns, Auth, Next.js SSR client, Realtime, Edge Functi
 
 ## Self-Review (before marking done)
 
-Review your code against the review-all criteria. Fix what you would flag.
+Fix what would be a finding under `${CLAUDE_PLUGIN_ROOT}/skills/_review-finding-contract.md`: a concrete failure or cost in your change. `review-all` runs the full review after you.
 
 **Run and show output:**
 - [ ] `supabase db reset` runs clean (all migrations apply, seed loads)
@@ -83,7 +93,7 @@ Review your code against the review-all criteria. Fix what you would flag.
 - [ ] `SECURITY DEFINER` functions have `SET search_path = ''`
 - [ ] No hardcoded secrets in migrations or Edge Function source
 - [ ] Edge Functions catch errors and return CORS headers
-- [ ] Realtime tables have `REPLICA IDENTITY FULL` when subscribed
+- [ ] Subscribed tables are in the `supabase_realtime` publication; `REPLICA IDENTITY FULL` only where clients need the old row on UPDATE/DELETE
 - [ ] Storage buckets set `file_size_limit` and `allowed_mime_types`
 - [ ] No WHAT-comments, no padded docblocks (P7)
 
@@ -95,7 +105,7 @@ Review your code against the review-all criteria. Fix what you would flag.
 |---------|-------------|-----|
 | Query empty but data exists | Policy too strict or user not authenticated | Check `USING`; verify `auth.uid()` is not null |
 | `auth.uid()` returns null | Not signed in, or service_role client used | Use the publishable-key client for user-context queries |
-| Realtime not firing | No `REPLICA IDENTITY FULL` or Realtime off | Set replica identity; enable in dashboard/config.toml |
+| Realtime not firing | Table not in the `supabase_realtime` publication, or RLS hides the rows | `alter publication supabase_realtime add table <t>`; check the SELECT policy |
 | Edge Function 500 | Deno import error, missing secret, unhandled exception | Check `supabase functions serve` logs; verify secrets |
 | `service_role` key leaked to client | Wrong env var in browser code | Stop. Rotate the key immediately in the dashboard. Use only the publishable key client-side |
 | "relation already exists" | Migration partly applied or duplicated | Check `supabase_migrations.schema_migrations`; add a corrective migration |

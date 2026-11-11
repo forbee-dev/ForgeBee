@@ -100,7 +100,7 @@ Per trend: signal strength (strong / emerging / weak), timeline (now / 6 months 
 - [ ] FIA battlecards for the top 3-5 competitors
 - [ ] Niche gaps and underserved segments identified
 - [ ] Trends cover emerging patterns and threats
-- [ ] **Source-and-date gate:** every competitive fact, pricing figure, traction signal, and trend carries an inline citation (URL/tool/review platform) AND an as-of date. Intelligence ages fast — an undated claim is unverifiable and may already be stale. Anything that cannot be sourced is labeled `[INFERRED]` or `[UNVERIFIED]`, never stated as fact.
+- [ ] **Source-and-date gate:** every competitive fact, pricing figure, traction signal, and trend carries an inline citation (URL/tool/review platform) AND an as-of date. Intelligence ages fast — an undated claim is unverifiable and may already be stale. Anything that cannot be sourced is labeled `[assumption]`, never stated as fact.
 - [ ] Intelligence stored in `docs/marketing/intel/`
 
 **Evidence required:** complete report with specific competitor data; each claim sourced and dated.

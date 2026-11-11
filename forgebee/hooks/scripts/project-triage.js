@@ -2,7 +2,7 @@
 /**
  * project-triage.js
  * Run project detection and cache the result
- * Called by session-load.js on SessionStart, or manually by the router skill
+ * Registered on SessionStart in hooks.json, or run manually by the router skill
  * Caches the triage JSON so agents can consume it without re-scanning
  */
 

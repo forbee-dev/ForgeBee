@@ -328,31 +328,31 @@ async function main() {
   // Detect implementation intent (build, implement, create feature, add feature, etc.)
   // Skip if the user is already using a command (starts with /)
   if (!PROMPT.startsWith('/')) {
-    // Strong implementation signals — suggest /workflow
+    // Strong implementation signals — /team is the default, /workflow only for design-heavy work
     const BUILD_PATTERNS =
       /build a |build the |implement |create a new |add a new feature|develop a |ship a |code a |make a new |architect a |set up a new |scaffold /i;
     if (BUILD_PATTERNS.test(PROMPT_LOWER)) {
-      INTENT_CONTEXT = `**Implementation intent detected.** Before jumping into code, consider:\n- \`/workflow\` — Full pipeline with planning, debate, and delivery\n- \`/plan\` — Lightweight planning (brief → requirements → architecture → stories)\n- \`/team\` — Quick multi-agent delegation without ceremony\n\nPlanning first catches design issues before they become code rewrites.\n`;
+      INTENT_CONTEXT = `**Implementation intent detected.** Pick the flow before you write code:\n- \`/forgebee:team\` — default: goal → verified spec → build → review loop\n- \`/forgebee:workflow\` — only when the work needs an ADR or changes auth, payments, or the data model\n- \`/forgebee:plan\` — plan only, no code\n`;
     }
 
     // Debug/fix signals — suggest /debug
     const DEBUG_PATTERNS =
       /fix this bug|debug |broken |not working|crashes when|error when|fails to |throwing an error|can.t figure out why/i;
     if (!INTENT_CONTEXT && DEBUG_PATTERNS.test(PROMPT_LOWER)) {
-      INTENT_CONTEXT = `**Debug intent detected.** Consider using \`/debug\` for systematic debugging (reproduce → isolate → diagnose → fix) instead of ad-hoc investigation.\n`;
+      INTENT_CONTEXT = `**Debug intent detected.** Consider using \`/forgebee:debug\` for systematic debugging (reproduce → isolate → diagnose → fix) instead of ad-hoc investigation.\n`;
     }
 
     // Refactor signals — suggest /refactor
     const REFACTOR_PATTERNS =
       /refactor |clean up |restructure |reorganize |simplify |extract |decouple |split this /i;
     if (!INTENT_CONTEXT && REFACTOR_PATTERNS.test(PROMPT_LOWER)) {
-      INTENT_CONTEXT = `**Refactor intent detected.** Consider using \`/refactor\` for safe refactoring with test verification and behavior preservation checks.\n`;
+      INTENT_CONTEXT = `**Refactor intent detected.** Consider using \`/forgebee:refactor\` for safe refactoring with test verification and behavior preservation checks.\n`;
     }
 
     // TDD signals — suggest tdd-enforcer
     const TDD_PATTERNS = /test.first|test.driven|tdd|write tests before|red.green.refactor/i;
     if (TDD_PATTERNS.test(PROMPT_LOWER)) {
-      INTENT_CONTEXT += `**TDD mode available.** The \`tdd-enforcer\` agent can enforce RED-GREEN-REFACTOR discipline throughout implementation.\n`;
+      INTENT_CONTEXT += `**TDD mode available.** The \`forgebee:tdd-enforcer\` agent can enforce RED-GREEN-REFACTOR discipline throughout implementation.\n`;
     }
   }
 

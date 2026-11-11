@@ -169,11 +169,6 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/context-guard.js",
-            "timeout": 10
-          },
-          {
-            "type": "command",
             "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/checkpoint.js",
             "timeout": 5
           }
@@ -242,30 +237,6 @@
             "type": "command",
             "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/notification.js",
             "timeout": 5
-          }
-        ]
-      }
-    ],
-    "TaskCompleted": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "prompt",
-            "prompt": "A task was marked as completed. Verify it is actually done:\n\n1. If the task involved code changes: check that the relevant files exist and contain the expected changes (use Read/Grep)\n2. If there is a test suite: run it and confirm tests pass\n3. If the task was skipped by design or is config/documentation only: accept with {\"ok\": true}\n\nRespond {\"ok\": true} if the work is done. Respond {\"ok\": false, \"reason\": \"...\"} only if you find concrete evidence the task is NOT done (missing files, broken syntax, etc). Do NOT reject just because you cannot run a test suite — many tasks are config/markdown changes with no tests.",
-            "timeout": 30
-          }
-        ]
-      }
-    ],
-    "TeammateIdle": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "prompt",
-            "prompt": "A teammate is about to go idle. Check: did they complete ALL assigned tasks? Are there unclaimed tasks they should pick up? If there's more work to do, respond with {\"ok\": false, \"reason\": \"pick up task X next\"}. Otherwise {\"ok\": true}.",
-            "timeout": 15
           }
         ]
       }

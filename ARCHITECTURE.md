@@ -24,15 +24,15 @@ see [`CONTRIBUTING.md`](./CONTRIBUTING.md).
 | Main-thread agent | `forgebee/settings.json` → `agents/orchestrator.md` | runs the main conversation every turn; `orchestrator-mode.js` adds the rules each prompt and blocks main-thread edits except tiny ones and orchestration files. Opt out: `agents/direct.md` |
 | Agents (46) | `forgebee/agents/*.md` | dispatched via `Agent` (formerly `Task`) as `forgebee:<name>` |
 | References | `forgebee/references/*.md` | read by agents on demand via `${CLAUDE_PLUGIN_ROOT}/references/` |
-| Skills (35) | `forgebee/skills/*/SKILL.md` | activated by name / `skill-activator` |
+| Skills (34) | `forgebee/skills/*/SKILL.md` | activated by name / `skill-activator` |
 | Commands (39) | `forgebee/commands/*.md` | `/name` slash invocation |
 | Shared contracts | `forgebee/skills/_review-finding-contract.md`, `_debate-protocol.md` | imported by review/debate skills |
 
 ## Hooks (Claude Code only)
 
-`forgebee/hooks/hooks.json` wires 28 Node lifecycle hooks (`forgebee/hooks/scripts/`)
+`forgebee/hooks/hooks.json` wires 27 Node lifecycle hooks (`forgebee/hooks/scripts/`)
 to Claude Code events (SessionStart, UserPromptSubmit, PreToolUse, PostToolUse,
-PreCompact, Stop, PermissionDenied, Notification, TaskCompleted, TeammateIdle).
+PreCompact, Stop, PermissionDenied, Notification).
 `_common.js` is the shared helper library (not itself a hook). These are the
 framework's enforcement backbone — permission-guard, secret-scan, audit-trail,
 project-triage, observe (continuous learning), the post-edit quality hooks.

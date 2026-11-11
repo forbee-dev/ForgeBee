@@ -24,14 +24,12 @@ async function main() {
   try {
     toolInput = JSON.parse(input);
   } catch (e) {
-    process.stdout.write(input);
     process.exit(0);
   }
 
   const filePath = toolInput?.tool_input?.file_path;
 
   if (!filePath) {
-    process.stdout.write(input);
     process.exit(0);
   }
 
@@ -39,7 +37,6 @@ async function main() {
   const testFilePattern =
     /\.(test|spec)\.[jt]sx?$|__tests__|__mocks__|\/tests\//;
   if (testFilePattern.test(filePath)) {
-    process.stdout.write(input);
     process.exit(0);
   }
 
@@ -60,8 +57,6 @@ async function main() {
         additionalContext: warning.join('\n'),
       },
     });
-  } else {
-    process.stdout.write(input);
   }
   process.exit(0);
 }

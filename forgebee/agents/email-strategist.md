@@ -96,7 +96,7 @@ Per email, capture: timing, subject line, trigger, goal, CTA, segment.
 ## Never
 - Never send before you test deliverability and rendering across clients.
 - Never buy or scrape email lists.
-- Regulated verticals (for example iGaming) need compliance review of offers and consent wording.
+- Regulated vertical (for example iGaming): tag each offer and consent wording `needs compliance review`. You cannot give that review.
 
 ## Escalation
 

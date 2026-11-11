@@ -28,7 +28,7 @@ These principles apply to every code-producing action, regardless of which agent
 
 **P4 — Orphan Rule:** Clean up only your own mess. Remove imports/variables/functions that YOUR changes made unused. Don't remove pre-existing dead code unless asked. Don't 'improve' adjacent code, comments, or formatting. Match existing style, even if you'd do it differently.
 
-**P5 — Anti-Stop Rule (orchestrators only):** After dispatching a sub-agent, IMMEDIATELY continue with your own next-step work. Do not idle waiting for the sub-agent to return — the harness notifies you when work completes.
+**P5 — Anti-Stop Rule (orchestrators only):** After dispatching a sub-agent, continue with orchestration work: plan the next dispatch, prepare the review. Do not announce that you wait. Do not implement, verify, or poll the agent's work while it runs — the harness notifies you when work completes.
 
 **P6 — Severity Vocabulary Standard (review skills only):** Use `Critical` (blocks merge) / `High` (must fix before next sprint) / `Medium` (fix when convenient) / `Low` (nice-to-have). Do NOT introduce alternate vocabularies like Warning/Suggestion. Enables cross-skill aggregation in `review-all` and `/audit-self`.
 
@@ -63,7 +63,7 @@ ForgeBee ships 119 surfaces. They are worthless if nothing consults them. Apply 
 
 **R3 — Read the index, do not guess.** `forgebee/INDEX.md` is the full directory of skills, agents, and commands. SessionStart injects only a digest — the Quick Triage table plus this project's stack section. When routing is unclear, `Read` the full file. Never assert that a surface does not exist without checking.
 
-**R4 — Hook candidates are input, not orders.** `skill-activator.js` scores candidates on every prompt and lists the top 5. Its top hit can be wrong. Choose or reject it explicitly in the R1 line.
+**R4 — Hook candidates are input, not orders.** `skill-activator.js` scores candidates on every prompt and lists the top 3. Its top hit can be wrong. Choose or reject it explicitly in the R1 line.
 
 ## Agent Output Modes
 
@@ -146,6 +146,7 @@ npm run deploy:production # Deploy to production
 - `/plan` — Phased planning workflow: Brief → Requirements → Architecture → Sprint Stories. Emits decision log + addendum.
 - `/architect` — Architecture decisions with trade-off analysis and ADR output (auto-offers `/elicit` at decision boundaries)
 - `/idea` — Idea-to-product validation with debate
+- `/grill` — Interview the user on a plan in rounds, one recommended answer per question, until every decision is settled or accepted as a risk
 
 **Diagnosis & Debugging:**
 - `/debug` — Clear-cause debugging. Delegates to `debugger-detective` agent (3-failed-fix Iron Law)
@@ -188,16 +189,17 @@ npm run deploy:production # Deploy to production
 - `/instinct-import` — Import instincts from a file
 
 **Meta:**
-- `/workflow` — Full pipeline orchestrator: Plan → Batched Debate → Architect → Work Breakdown (promptable) → Execute → **Spec Compliance** → **Checkpoint Preview** → Code Debate → Deliver. Pass `--strict` to require a design spec via `brainstorming`. Auto-tracks in PM system.
-- `/team` — Multi-agent orchestration with dependency graphs + checkpoints at 3+ agents. Sub-agent dispatches use `terse-report` mode and a budget circuit breaker.
+- `/workflow` — Full pipeline for work that needs an ADR or touches auth/payments/data model: Grill (when triggered) → Plan → Architect → Execution Plan → Execute → **Review loop** (`review-all`, fix, repeat, max 3 rounds) → Verify → **Checkpoint Preview** → Deliver. Critical tier adds a Requirements Debate and a Skeptic Pass. Pass `--strict` to require a design spec via `brainstorming`. Auto-tracks in PM system.
+- `/team` — Default ticket-to-code flow: Understand (goal + outcome; ticket claims are unverified) → Research → Grill (unknowns only) → Spec (`spec-writer`, user approval) → Build (the lead dispatches leaf specialists) → Review loop (`review-all`, fix all severities, max 3 rounds, then the user).
 - `/pm` — Automated project management: reads state.yaml, syncs TASKS.md, regenerates dashboards, surfaces blockers
-- `/audit` — Governance audit trail: query permission decisions, debate rulings, verification results, escalations
+- `/audit` — Governance audit trail: query permission decisions, agent dispatches (agent, model, effort), and verification results
+- `/release` — Pre-flight gate, version bump across all manifests, changelog, tag, and PR
 
 **Specialist Agents** (for Agent Teams):
 
-*Development:* frontend, backend, database, security, testing, devops, perf, debug, research, content, seo, supabase, ios, flutter, n8n, llm-app-engineer, session-librarian, ux-designer, scrum-master, delivery-agent, dashboard-generator, verification-enforcer, tdd-enforcer, contract-validator
+*Development:* spec-writer, frontend, backend, database, security, testing, devops, perf, debug, research, content, seo, supabase, ios, flutter, n8n, llm-app-engineer, session-librarian, ux-designer, scrum-master, delivery-agent, dashboard-generator, verification-enforcer, tdd-enforcer
 
-*Dev Debate (context:fork skills):* requirements-advocate, requirements-skeptic, requirements-judge, code-advocate, code-skeptic, code-judge
+*Dev Debate (context:fork skills):* requirements-advocate, requirements-skeptic, requirements-judge, code-skeptic, code-judge
 
 *Strategy Debate (context:fork skills):* strategy-advocate, strategy-skeptic, strategy-judge
 
@@ -209,15 +211,15 @@ npm run deploy:production # Deploy to production
 
 *CRO:* saas-cro
 
-*Review (context:fork skills):* review-code, review-code-style, review-security, review-performance, review-accessibility, review-api, review-database, review-tests, review-docs, review-best-practices, review-wordpress
+*Review (context:fork skills):* review-code, review-code-style, review-security, review-performance, review-accessibility, review-api, review-database, review-tests, review-docs, review-best-practices, review-wordpress, review-prompt
 
-*Review (inline skill):* review-all — runs in session context for efficiency, delegates to review agents for large diffs (>500 lines)
+*Review (inline skill):* review-all — runs in session context on the full branch diff, runs the checks, verifies each Critical/High, and delegates deep passes by risk
 
 *Discipline skills (5.1.0):* brainstorming (opt-in hard-gate), elicitation (18 methods), surface-ambiguity (silent-pick guard), terse-report (sub-agent token compression), checkpoint-preview (diff-by-concern), investigate (forensic case file), audit-self (regression detection)
 
 **Routing index:** `forgebee/INDEX.md` is auto-generated by `scripts/build-index.js`. SessionStart injects a digest of it (Quick Triage + the detected stack's agents) — the full 20KB file exceeds the `additionalContext` size limit and would be dropped, so `Read` it directly when the digest is not enough. It maps user intent → the right skill/agent/command. Regenerate after any skill/agent/command add or remove.
 
-**Quality Pipeline:** All commands have Objective + Never rules. All code-producing agents self-review against review-all criteria before reporting `DONE`. Agents report status: `DONE`, `DONE_WITH_CONCERNS`, `BLOCKED`, or `NEEDS_CONTEXT`. `/workflow` runs Spec Compliance Check → Checkpoint Preview → Code Debate → Deliver. review-all is the final validation gate — only Critical/High issues block the push.
+**Quality Pipeline:** All commands have Objective + Never rules. All code-producing agents self-review against review-all criteria before reporting `DONE`. Agents report status: `DONE`, `DONE_WITH_CONCERNS`, `BLOCKED`, or `NEEDS_CONTEXT`. `/team` and `/workflow` run one review loop: `review-all` on the full change → fix → review again, max 3 rounds. Run alone, review-all blocks the push only on Critical/High.
 
 **Karpathy P1-P7** (see Core Principles section above) baked into every code-producing agent and orchestrator.
 

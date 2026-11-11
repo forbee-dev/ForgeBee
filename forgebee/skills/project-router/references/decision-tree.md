@@ -10,32 +10,32 @@ Is wordpress.type != "none"?
 │   ├── wordpress.type == "plugin"
 │   │   └── Load: conventions-wordpress.md § Plugin Development
 │   ├── wordpress.type == "theme" AND wordpress.subtype == "block-theme"
-│   │   └── Load: conventions-wordpress.md § Block Theme Development
+│   │   └── Load: conventions-wordpress.md § Theme Development › Block Theme Structure
 │   ├── wordpress.type == "theme" AND wordpress.subtype == "classic-theme"
-│   │   └── Load: conventions-wordpress.md § Classic Theme Development
+│   │   └── Load: conventions-wordpress.md § Theme Development › Classic Theme Structure
 │   ├── wordpress.type == "full-install"
-│   │   └── Load: conventions-wordpress.md § Full Install (all sections)
+│   │   └── Load: conventions-wordpress.md (all sections)
 │   └── wordpress.type == "mu-plugins"
-│       └── Load: conventions-wordpress.md § Plugin Development (with MU-plugin notes)
+│       └── Load: conventions-wordpress.md § Plugin Development
 │
 ├── NO → Check node.framework
 │   ├── node.framework == "nextjs"
 │   │   ├── node.nextjs_router == "app"
-│   │   │   └── Load: conventions-nextjs.md § App Router
+│   │   │   └── Load: conventions-nextjs.md § Next.js — App Router
 │   │   └── node.nextjs_router == "pages"
-│   │       └── Load: conventions-nextjs.md § Pages Router
+│   │       └── Load: conventions-nextjs.md § Next.js — Pages Router
 │   ├── node.framework == "express" | "hono"
-│   │   └── Load: conventions-nextjs.md § Node API
+│   │   └── Load: conventions-nextjs.md § Node.js API (Non-Next.js)
 │   ├── node.framework == "react" | "vite-react"
-│   │   └── Load: conventions-nextjs.md § React SPA
+│   │   └── Load: conventions-nextjs.md § TypeScript General
 │   ├── node.framework in ["nuxt", "svelte", "astro", "vue", "gatsby"]
-│   │   └── Load: conventions-nextjs.md § Generic Node (adapt to framework)
+│   │   └── Load: conventions-nextjs.md § TypeScript General (adapt to framework)
 │   │
 │   ├── php.detected == true
 │   │   ├── php.framework == "laravel"
-│   │   │   └── Load: conventions-wordpress.md § PHP Generic (Laravel patterns)
+│   │   │   └── Load: conventions-wordpress.md § PHP General
 │   │   └── php.framework == "symfony" | none
-│   │       └── Load: conventions-wordpress.md § PHP Generic
+│   │       └── Load: conventions-wordpress.md § PHP General
 │   │
 │   └── FALLBACK → project_type == "unknown"
 │       └── Ask user to confirm stack manually
@@ -59,8 +59,8 @@ Does styling.systems contain any entries?
 ├── "tailwindcss" in systems → Load: conventions-styling.md § Tailwind CSS
 ├── "scss" in systems → Load: conventions-styling.md § SCSS/SASS
 ├── "css-modules" in systems → Load: conventions-styling.md § CSS Modules
-├── "styled-components" in systems → Load: conventions-styling.md § CSS-in-JS
-├── "postcss" in systems → Load: conventions-styling.md § PostCSS
+├── "styled-components" in systems → No section; follow the project's own config
+├── "postcss" in systems → No section; follow the project's own config
 └── Multiple systems → Load ALL matching sections (common in WP + Tailwind projects)
 ```
 
@@ -69,8 +69,8 @@ Does styling.systems contain any entries?
 ```
 Is wordpress.type != "none" AND node.framework == "nextjs"?
 ├── YES → Headless WordPress + Next.js
-│   ├── Load: conventions-wordpress.md § REST API / WPGraphQL
-│   ├── Load: conventions-nextjs.md § App Router or Pages Router
+│   ├── Load: conventions-wordpress.md § REST API
+│   ├── Load: conventions-nextjs.md § Next.js — App Router or Pages Router
 │   └── Note: "Headless WP detected — WordPress provides content API, Next.js is the frontend"
 └── NO → Single-stack project
 ```
@@ -89,11 +89,11 @@ Is supabase.detected == true?
 
 ## Agent Routing Hints
 
-Based on project type, prefer these Tier 1 agents (they auto-delegate to Tier 2 subagents):
+Dispatch the leaf agent (right of `→`) when the stack is known. A router loads two agent definitions, and the per-dispatch model does not reach the inner agent. Add `test-engineer` only when the repo has a real suite and the change adds a code path; add `security-auditor` only for auth, sessions, payments, PII, secrets, uploads, or untrusted input.
 
 ### Dev Agents
 
-| Project Type | Primary Agents | Always Include |
+| Project Type | Primary Agents | Conditional |
 |-------------|---------------|----------------|
 | WordPress plugin | backend-engineer → wordpress-backend, security-auditor → wordpress-security | test-engineer → phpunit-engineer |
 | WordPress theme | frontend-specialist → wordpress-frontend, ux-designer | test-engineer → phpunit-engineer |
@@ -112,4 +112,4 @@ Based on project type, prefer these Tier 1 agents (they auto-delegate to Tier 2 
 | Headless WP + Next.js | seo-specialist → nextjs-seo (frontend SEO) | growth-engineer → saas-cro | content-creator → nextjs-content |
 | Generic / other | seo-specialist (direct) | growth-engineer (direct) | content-creator (direct) |
 
-**Note:** Tier 1 agents handle delegation automatically via their Delegation Strategy section. Orchestrators (team.md, workflow.md, growth.md) just spawn the Tier 1 agent — routing to Tier 2 happens internally.
+**Note:** `/team` and `/workflow` dispatch the leaf. A Tier 1 router delegates through its Delegation Strategy section only when the caller does not know the stack.

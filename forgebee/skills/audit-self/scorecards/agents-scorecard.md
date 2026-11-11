@@ -4,9 +4,9 @@ For each agent in `forgebee/agents/`, score Y/N on these questions:
 
 1. **Status protocol:** Has `## Status Reporting` block with the canonical four (`DONE | DONE_WITH_CONCERNS | BLOCKED | NEEDS_CONTEXT`)?
 2. **Has Never rules:** Explicit hard boundaries?
-3. **Has Expertise section:** Defines what it knows?
+3. **Expertise is specific:** Domain traps, exact commands, exact formats — not generic advice the model already knows? (A long generic Expertise list fails.)
 4. **Has Methodology / Process section:** Defines how it operates?
-5. **Self-review evidence:** Required to self-review before reporting DONE?
+5. **Evidence before DONE:** Must attach command output (test, lint, build, or a verify line per criterion) before reporting DONE? A self-review with no output fails.
 6. **Escalation guidance:** Explicit "when to escalate to user" rules?
 7. **Description focused:** Description tight, not overloaded with multiple roles?
 8. **No redundancy:** Doesn't duplicate another agent's role significantly? (Name which.)

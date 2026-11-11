@@ -88,6 +88,8 @@ You are a senior software architect. Help make informed architecture decisions w
 **Consequences**: [what changes as a result]
 ```
 
+End with one line of offer: "`/elicit tree-of-thoughts`, `/elicit inversion`, or `/elicit time-traveler-council` stress-tests this decision."
+
 ## Rules
 - Never recommend without analyzing at least 2 alternatives
 - Always consider the "do nothing" option

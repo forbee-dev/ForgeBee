@@ -4,10 +4,10 @@
 > Source of truth: frontmatter in `forgebee/skills/*`, `forgebee/agents/*`, `forgebee/commands/*`.
 > Regenerate with: `node scripts/build-index.js`
 
-> Loaded on SessionStart so Claude routes user intent to the right surface in one read instead of scanning 122 frontmatter blocks.
+> Loaded on SessionStart so Claude routes user intent to the right surface in one read instead of scanning 121 frontmatter blocks.
 
 
-**Stats:** 35 skills · 48 agents · 39 commands
+**Stats:** 34 skills · 48 agents · 39 commands
 
 ---
 
@@ -16,7 +16,8 @@
 
 | User Intent | Route |
 |---|---|
-| Build a feature end-to-end | `/workflow` (full pipeline with debate) or `/team` (faster, no debate) |
+| Build from a ticket, bug, or feature request | `/team` (default: goal → verified spec → build → review loop) |
+| Work that needs an ADR, or touches auth/payments/data model | `/workflow` (full pipeline) |
 | Build a feature with design-first | `/workflow --strict` (triggers `brainstorming` hard-gate) |
 | Pre-push thorough review | `/review-all` |
 | Focused single-dimension review | `/review` (or specific: `/security`, `/perf`, etc.) |
@@ -33,7 +34,7 @@
 
 ---
 
-## Skills (35)
+## Skills (34)
 
 ### Pre-Implementation Discipline
 
@@ -65,9 +66,8 @@
 
 ### Debate Triads
 
-- `code-advocate` — Use when /workflow reaches the code debate phase — argues FOR implementation quality, defends completeness and correctness against the Sk...
-- `code-judge` — Use when /workflow code debate needs adjudication — rules on each item after reading blind Advocate and Skeptic cases. Approve, block, or...
-- `code-skeptic` — Use when /workflow reaches the code debate phase — argues AGAINST the implementation, finds bugs, security holes, missing requirements, t...
+- `code-judge` — Use when the /workflow Skeptic Pass needs adjudication — verifies each Skeptic claim against the code and rules on it. Approve, block, or...
+- `code-skeptic` — Use when /workflow runs the Skeptic Pass (Critical tier, after the review loop) — argues AGAINST the implementation, finds attack vectors...
 - `requirements-advocate` — Use when /workflow reaches the requirements debate phase — argues FOR planning artifacts, defends quality, feasibility, and completeness ...
 - `requirements-judge` — Use when /workflow requirements debate needs adjudication — rules on each item after reading blind Advocate and Skeptic cases. Approve, b...
 - `requirements-skeptic` — Use when /workflow reaches the requirements debate phase — argues AGAINST planning artifacts, finds gaps, risks, missing edge cases, flaw...
@@ -116,7 +116,6 @@
 ### Process & Architecture
 
 - `architect` — Advises on architecture decisions, trade-offs, and technical strategy. Use for system design, technology selection, scalability planning,...
-- `contract-validator` — Validates that an agent's output matches its pipeline-phase contract before handoff. Use when orchestrators (/workflow, /growth, /team) p...
 - `dashboard-generator` — Regenerates the markdown PM dashboards (project index, per-feature pages, decision log) from docs/pm/state.yaml. Use at the end of /workf...
 - `scrum-master` — Breaks features into context-rich stories any agent can pick up, with estimates and dependencies. Use for story decomposition, backlog gr...
 - `session-librarian` — Maintains project institutional knowledge — session summaries, CLAUDE.md curation, learnings, and context recovery. Use when organizing s...
@@ -177,6 +176,7 @@
 
 - `direct` — Opt-out main-thread agent. Run `claude --agent forgebee:direct`, or set "agent" to "forgebee:direct" in your settings, to turn off orches...
 - `orchestrator` — Main-thread agent that ForgeBee sets by default (plugin settings.json). Never dispatch it as a subagent. The empty body keeps Claude Code...
+- `spec-writer` — Writes a build spec from a ticket or prompt — goal, outcome, verified ticket claims, approach, workstreams, and acceptance criteria with ...
 - `wp-design-system` — Use for WordPress block design systems — theme.json tokens, Figma-variables-to-presets pipeline, patterns/variations as components, Code ...
 
 ---
@@ -188,8 +188,8 @@
 - `/architect` — Architecture advisor — design decisions, trade-offs, and technical strategy
 - `/idea` — Idea-to-product agent with adversarial debate — validate an idea, stress-test it through Advocate/Skeptic/Judge debate, define MVP scope,...
 - `/plan` — BMAD-inspired planning agent — enforces a phased artifact chain from problem brief through sprint stories before any code gets written
-- `/team` — Master orchestrator — analyzes the task, designs an implementation plan, and coordinates specialist agents working in parallel
-- `/workflow` — Full-pipeline orchestrator — delegates through Grill → Plan → Debate → Architect → Work Breakdown → Execute → Debate → Deliver. Scrum pha...
+- `/team` — Ticket-to-code orchestrator — finds the goal, checks the ticket's claims against the code, writes a spec, dispatches specialists, then lo...
+- `/workflow` — Full-pipeline orchestrator for work that needs an architecture decision or touches auth, payments, or the data model — Grill → Plan → Arc...
 
 ### Diagnosis
 
@@ -253,14 +253,14 @@
 Surfaces that compose. These are the contracts you can rely on.
 
 - `/investigate` → `debugger-detective` — diagnosis hands off to fix (forensic case file → Iron Law fix loop)
-- `/workflow` Execute → `verification-enforcer` → `delivery-agent` — delivery reads verdict, does NOT re-run tests
-- `/workflow` Execute → Spec Compliance → `checkpoint-preview` → Code Debate → Deliver (full pipeline)
+- `/team` Spec (`spec-writer`) → Build → Review loop (`review-all`, max 3 rounds) — the default ticket-to-code flow
+- `/workflow` Execute → Review loop (`review-all`, max 3 rounds) → Skeptic Pass (Critical only) → Verify → `checkpoint-preview` → Deliver (full pipeline)
+- `/workflow` Verify (`verification-enforcer`) → Deliver (`delivery-agent`) — delivery reads the verdict, does NOT re-run tests
 - `/team` and `/workflow` → `terse-report` skill — sub-agent reports compress ~65% via `responseStyle: orchestrator` contract field
-- `code-skeptic` references `review-all` checklist as single source of truth (no drift)
+- `code-skeptic` runs after a clean `review-all` loop and does not repeat its dimension sweep (adversarial read only)
 - `tdd-enforcer` audits TDD cycle discipline; `test-engineer` writes the tests. Dispatch test-engineer first, then tdd-enforcer.
 - `/elicit` auto-offered at end of Plan and Architect phases (opt-out)
 - `/learn` → `continuous-learning` skill → `compress-learnings.js` ages out >14-day entries
-- All code-producing agents read `CLAUDE.md` Karpathy principles P1-P6 (trace test, senior engineer test, YAGNI timing, orphan rule, anti-stop rule, severity standard)
+- All code-producing agents read `CLAUDE.md` Karpathy principles P1-P7 (trace test, senior engineer test, YAGNI timing, orphan rule, anti-stop rule, severity standard, lean output)
 - Every agent runs Adversarial Input Hardening preamble before processing untrusted content
-- Every `Task()` dispatch from `/workflow` or `/team` carries a budget envelope (`maxHops` default 8, ceiling 64) with constant-string errors
 - Email-sequence work → `email-strategist` (single owner; `content-creator` delegates)

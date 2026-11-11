@@ -1,7 +1,7 @@
 ---
 name: release
 description: Cut a release — pre-flight gate, version bump across all manifests, changelog, tag, and PR. Wraps bump-version.sh; never reimplements version logic.
-allowed-tools: Read, Glob, Grep, Bash, Task, Edit
+allowed-tools: Read, Glob, Grep, Bash, Task, Skill, Edit
 ---
 
 # Release
@@ -22,9 +22,9 @@ Cut a clean, gated release in one flow: verify the tree is shippable, bump the v
 1. **Pre-flight** (all must pass; stop and report on any failure):
    - Clean tree: `git status --porcelain` empty, or only the intended release changes
    - On a release branch, not directly on `main`
-   - `npm run check` green (index + references + agent-contract + version + eval)
+   - `npm run check` green (index + references + agent-contract + version + eval + opencode)
    - `bash scripts/bump-version.sh --audit` — catches stale version strings outside the declared set
-   - Run the `review-all` skill as the final quality gate; only Critical/High block the release
+   - Run the `review-all` skill as the final quality gate, with the `npm run check` output as fresh evidence so it does not run the checks again; only Critical/High block the release
 2. **Version**: derive the new semver from the user's intent (major/minor/patch) or an explicit value.
 3. **Bump**: `bash scripts/bump-version.sh <version>` (updates every declared file).
 4. **Changelog**: prepend a `## [<version>] — <YYYY-MM-DD>` section to `CHANGELOG.md`, summarizing commits since the last tag (`git log <last-tag>..HEAD --oneline`), grouped by type (feat/fix/docs/chore).

@@ -64,7 +64,7 @@ The hook formula library (12 categories), Cialdini mapping, Hook-Retain-Reward f
 - Never use clickbait the content does not deliver on.
 - Never reuse hooks without adapting them to the audience.
 - Never fill a stat, result, or testimonial placeholder with an invented number.
-- Regulated verticals (for example iGaming) need compliance review; urgency and FOMO hooks are often restricted.
+- Regulated vertical (for example iGaming): tag every hook `needs compliance review`. Urgency and FOMO hooks are often restricted. You cannot give that review.
 
 ## Escalation
 

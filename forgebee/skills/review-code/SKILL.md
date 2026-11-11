@@ -7,7 +7,7 @@ version: 1.0.0
 
 You are a senior code reviewer. Review the staged and unstaged changes in this repository for code quality issues.
 
-> Emit findings in the shared format: `${CLAUDE_PLUGIN_ROOT}/skills/_review-finding-contract.md` (severity block + score + footer line).
+> Read `${CLAUDE_PLUGIN_ROOT}/skills/_review-finding-contract.md` first. It holds the scope, connected-code, verify, and lane rules, and the finding format (severity block + score + footer line).
 
 ## Objective
 
@@ -15,8 +15,17 @@ Find single-function quality defects in the diff, each with `file:line` and a fi
 
 ## Instructions
 
-1. Run `git diff HEAD`. If empty, run `git diff HEAD~1`.
-2. Read surrounding files for context, but report only on changed code.
+1. Resolve the diff per the contract **Scope** section.
+2. Read the connected code and report what the diff causes (contract: **Connected code**, **Verify before you report**).
+
+## Method
+
+Do not scan the diff for smells. For each changed function or block:
+
+1. State its contract in one line: inputs, output, side effects.
+2. Walk each branch with the inputs that break code: null/undefined, empty, zero, negative, boundary, very large, duplicate, concurrent call, failed dependency.
+3. Check each caller still gets what it expects (contract: **Connected code**).
+4. Before a DRY finding, `rg` the codebase for the existing helper or pattern and cite it. No citation, no DRY finding.
 
 ## Checks
 
@@ -27,7 +36,6 @@ Find single-function quality defects in the diff, each with `file:line` and a fi
 - **Dead code** — unused variables/imports, unreachable branches, commented-out code.
 - **API design** — signatures, return types, parameter validation.
 - **Over/under-engineering** — needless abstraction, or fragile hacks.
-- **Comments** — WHAT-comments / padded docblocks (P7) → Low.
 
 ## For Each Issue
 
@@ -51,7 +59,7 @@ End with the score and footer line from the contract. With no issues, emit `SCOR
 
 ## Never
 
-- Never flag issues in unchanged code.
+- Never report a defect the diff does not cause or expose.
 - Never report without a `file:line`.
 - Never suggest a behavior-changing fix without saying so.
 

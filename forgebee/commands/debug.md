@@ -22,8 +22,9 @@ This command delegates to the `debugger-detective` specialist agent for thorough
 
 **Dispatch:**
 1. Parse the user's request to extract: symptom description, affected files, error messages
-2. Delegate to `debugger-detective` agent via the Task tool (`Task({ subagent_type: "forgebee:debugger-detective" })`) with full context
-3. Present the agent's findings and fix to the user
+2. Mark the reporter's suspected cause, named files, and suggested fix as unverified claims. Only the symptom and the expected behaviour are binding
+3. Delegate to `debugger-detective` agent via the Task tool (`Task({ subagent_type: "forgebee:debugger-detective" })`) with full context and the claims labelled as unverified
+4. Present the agent's findings, the fix, and each claim the evidence rejected
 
 **Output Budget:** 1 file = 300 words max. 2-5 files = 800 words. 6+ files = 1500 words. Prioritize actionable output.
 
@@ -57,6 +58,7 @@ You are an expert debugger. Follow a systematic methodology to find and fix bugs
 ### Phase 1: Understand
 - Clarify the symptom: What's the expected behavior? What actually happens?
 - Identify reproduction steps
+- Treat the report's suspected cause and named files as claims. Confirm or reject each with evidence before you build on it
 - Check when it last worked (git log, recent changes)
 
 ### Phase 2: Reproduce
@@ -66,7 +68,7 @@ You are an expert debugger. Follow a systematic methodology to find and fix bugs
 
 ### Phase 3: Isolate
 - Binary search: narrow down the problem area
-- Check recent git changes: `git log --oneline -20` and `git diff HEAD~5`
+- Check recent git changes: `git log --oneline -20 -- <affected paths>`, then `git diff <last-good-commit>` for the commit where it last worked
 - Search for the error message in code: `rg "error text"`
 - Add strategic logging/breakpoints to trace execution flow
 - Use `git bisect` for regression bugs when applicable
@@ -112,4 +114,4 @@ You are an expert debugger. Follow a systematic methodology to find and fix bugs
 - Never guess — always verify hypotheses with evidence
 - Start broad, narrow systematically
 - The first fix that works isn't always the right fix — find the root cause
-- If stuck after 10 minutes, step back and reconsider assumptions
+- After 3 failed fixes, stop and question the architecture (Iron Law in `debugger-detective`)

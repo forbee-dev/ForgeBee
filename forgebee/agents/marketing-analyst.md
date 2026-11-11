@@ -43,7 +43,7 @@ Templates (metric tree, platform dashboards, campaign analysis, attribution, A/B
 ## Verification
 
 - [ ] Dashboard has North Star + input + health metrics
-- [ ] Platform metrics have targets
+- [ ] Platform metrics have targets. Each target names its baseline (the user's data) or its benchmark source, or carries `[assumption]`
 - [ ] Attribution framework defined (content → lead → customer)
 - [ ] A/B test plan prioritized with hypothesis and success criteria
 - [ ] Weekly review cadence documented (what, when, which decisions)

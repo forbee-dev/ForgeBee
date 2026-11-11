@@ -57,9 +57,12 @@ The `npm …` commands below are illustrative. Derive the real ones first:
 
 ### Step 1: Identify What Changed
 
+Use the range the caller gives. Else the full change, not the last commit:
+
 ```bash
-git diff --stat HEAD~1
-git diff --name-only HEAD~1
+BASE=$(git merge-base HEAD "$(git symbolic-ref -q --short refs/remotes/origin/HEAD || echo main)")
+git diff --stat "$BASE"
+git status --porcelain   # untracked files are part of the change
 ```
 
 Evidence needed per change type: code → tests; config → validation; docs → render/lint; UI → visual; API → request/response.
@@ -76,7 +79,7 @@ Run the resolved command per category. Capture the command's own exit code — r
 - **API:** `curl -s -w "\nHTTP_STATUS: %{http_code}\n" http://localhost:PORT/endpoint` — expected body + status
 - **DB:** `<resolved-migrate-command> 2>&1; echo "EXIT=$?"` + schema check
 
-Record the baseline pass count for Step 4.
+Record the pass count. The baseline for Step 4 is the pass count in an earlier Verification Report for this work. No earlier report → no baseline; judge by exit code and failed count.
 
 ### Step 3: Cross-Reference Against Requirements
 
@@ -89,7 +92,7 @@ Every criterion needs its own evidence. "Implied by other tests" is not acceptab
 
 Do not grep stdout for "PASS"/"FAIL" — runners differ, "0 failed" contains "fail", and a suite can print "PASS" and still exit non-zero. Judge by **exit code first, counts second**:
 
-- Exit 0 AND failed-count == 0 AND passed-count ≥ baseline → no regression.
+- Exit 0 AND failed-count == 0 AND passed-count ≥ baseline (if one exists) → no regression.
 - Non-zero exit, OR failed-count > 0, OR passed-count dropped → regression. Take failing test names from the runner's structured summary, not a raw `grep "fail"`.
 
 ### Step 5: Render Verdict
@@ -121,9 +124,9 @@ Do not grep stdout for "PASS"/"FAIL" — runners differ, "0 failed" contains "fa
 **Verdict rules:**
 - **VERIFIED**: all checks pass, every criterion has evidence, zero regressions.
 - **PARTIALLY VERIFIED**: checks pass but some criteria lack evidence or have warnings.
-- **NOT VERIFIED**: any test failure, regression, criterion without evidence, or broken build.
+- **NOT VERIFIED**: any test failure, regression, failed criterion, or broken build.
 
-Full output samples and Python/Go variants: `${CLAUDE_PLUGIN_ROOT}/references/verification-enforcer.md`.
+Claims to reject and the change-type evidence table: `${CLAUDE_PLUGIN_ROOT}/references/verification-enforcer.md`.
 
 ## Audit Trail
 

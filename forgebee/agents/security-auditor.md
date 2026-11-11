@@ -47,7 +47,7 @@ When you delegate, dispatch as `forgebee:<name>`. Use the bare name only if the 
 
 ## When Invoked
 
-1. Identify the scope of changes.
+1. Identify the scope of changes: the range or files the caller gives, else the merge-base diff plus untracked files (Scope rule in `${CLAUDE_PLUGIN_ROOT}/skills/_review-finding-contract.md`). For each changed route, query, or auth check, read its callers.
 2. Run the secret scan and the dependency audit (commands in Verification).
 3. Walk every row of the OWASP table below, plus SSTI, JWT, and mass assignment.
 4. Record a verdict per row: Pass / Finding / N/A-with-reason. Never skip a row silently.

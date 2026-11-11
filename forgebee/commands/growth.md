@@ -1,7 +1,7 @@
 ---
 name: growth
 description: Growth OS orchestrator — delegates through Brand → Intel → Audience → Content Strategy → Hooks → Debate → Creation → Distribution → Measure. Never executes tasks directly; connects the dots and ships requirements to marketing specialist agents.
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Task, WebSearch
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Task, Skill, WebSearch
 ---
 
 # Growth OS Orchestrator
@@ -15,23 +15,26 @@ Build a complete growth strategy and content pipeline by delegating to specialis
 ## Never
 
 - Never write content, brand copy, or marketing materials yourself — delegate
-- Never skip the strategy debate for Medium+ campaigns
-- Never dispatch agents without showing the plan first
+- Never skip Phase 5 in a pipeline that lists it
+- Never dispatch production agents (Phase 7 and later) before the user approves the Execution Plan
+- Never treat a claim in the brief as fact: a positioning claim, a competitor fact, a metric, or an audience assumption. Only the goal and the outcome are binding
 - Never dispatch an agent by bare name when `forgebee:<name>` exists — only the prefixed agent carries its `model:` setting. Never substitute a different agent
 - Never override the strategy Judge's ruling — escalate to user
 - Never produce content that ignores the brand voice guidelines
-- Regulated verticals (for example iGaming) need compliance review before any content or ad ships
+- Regulated vertical (for example iGaming): tag every content piece and ad `needs compliance review` in the Execution Plan and the final package. You cannot give that review
 
-## Step 1: Assess Scope
+## Step 1: Understand and Assess Scope
+
+Read the brief in full. State: the **goal** (what must be true after this work), the **outcome** (what the user can observe), and the **claims** (every positioning claim, competitor fact, metric, and audience assumption in the brief). Each claim is unverified. If you cannot state the goal or the outcome, ask the user now.
 
 | Scope | Signal | Pipeline |
 |-------|--------|----------|
 | **Quick hit** | Single post, one-off content | Skip /growth — use `/content` or agent directly |
-| **Campaign** | Product launch, event, promotion | Hooks → Debate → Calendar → Production |
-| **Strategy** | New brand, new market, repositioning | Brand → Intel → Architecture → Debate |
+| **Campaign** | Product launch, event, promotion | 4 Hooks → 5 Debate → 6 Execution Plan ✋ → 7 Production |
+| **Strategy** | New brand, new market, repositioning | 1 Brand → 2 Intel → 3 Content Strategy → 5 Debate |
 | **Full stack** | Complete marketing system build | All 9 phases |
 
-Propose the depth to the user. Get approval before proceeding.
+State the goal, the outcome, and the scope in one line each and start. ✋ = the one planned user stop. Other stops happen only on an exception: an unclear goal, a rejected claim that changes the goal, an escalated debate ruling, a `BLOCKED` agent.
 
 ## Step 2: Execute Pipeline
 
@@ -51,7 +54,9 @@ Check `docs/marketing/brand/` for existing artifacts. If missing, delegate to bu
 
 ### Phase 2: Market Intelligence (parallel) → `market-intel` + `audience-architect`
 
-Both receive brand outputs from Phase 1. Run in parallel.
+Both receive brand outputs from Phase 1 and the brief's claims. Run in parallel. Each returns a verdict per claim in its lane: `Confirmed` or `Rejected` with the source, or `[assumption]`. A rejected claim that changes the goal → tell the user before Phase 3.
+
+Scope without Phase 2: check the claims yourself with WebSearch, or carry them into the artifacts as `[assumption]`.
 
 **market-intel outputs:** Competitive landscape map, FIA battlecards (top 3-5), niche intelligence, market trends.
 
@@ -90,13 +95,16 @@ Receives brand pillars + audience personas + competitive gaps. Covers content ar
 
 ### Phase 5: Strategy Debate (adversarial)
 
-Same blind debate pattern as /workflow. Batch all strategy items, spawn in parallel. These are `context: fork` skills — invoke via the Skill tool, not as `subagent_type`:
+Rules: `${CLAUDE_PLUGIN_ROOT}/skills/_debate-protocol.md`. These are `context: fork` skills — invoke via the Skill tool, not as `subagent_type`:
 
 - `strategy-advocate` — defends positioning, audience targeting, content architecture, hook quality
 - `strategy-skeptic` — challenges assumptions, finds gaps, tests differentiation
 - `strategy-judge` — rules per item: APPROVE / BLOCK / FLAG
 
-BLOCKs → route back to originating agent for revision. Critical → escalate to user. Re-debate if significant revisions made.
+1. Extract the debate items from the artifacts (each positioning decision, persona set, pillar set, hook set, calendar = one item). Max 10 per batch.
+2. Per batch, invoke `strategy-advocate` and `strategy-skeptic` in parallel (blind), then `strategy-judge` with both cases in full. A forked skill sees no conversation: pass the artifact paths and the item list as arguments.
+3. `BLOCK` with `Escalate to user: No` → the originating agent revises. Re-debate only the revised items.
+4. `Escalate to user: Yes` → show the user all escalated items in one message: item, both positions, ruling, recommended change. The user accepts, overrides, or modifies.
 
 **Store in:** `docs/marketing/debate/`
 
@@ -104,7 +112,7 @@ BLOCKs → route back to originating agent for revision. Critical → escalate t
 
 ---
 
-### Phase 6: Execution Plan (user approval required) → `content-strategist`
+### Phase 6: Execution Plan ✋ (user approval required) → `content-strategist`
 
 Present before dispatching production:
 
@@ -122,6 +130,13 @@ Present before dispatching production:
 
 ### Content Mix
 - 70% Planned (pillar, evergreen) / 20% Topical / 10% Promotional
+
+### Success Metrics
+| Metric | Target | Baseline source |
+|--------|--------|-----------------|
+
+### Decisions and Risks
+- <debate FLAGs and escalation outcomes; `[assumption]` items the plan depends on; pieces tagged `needs compliance review`>
 ```
 
 **Wait for approval before Phase 7.**
@@ -130,7 +145,7 @@ Present before dispatching production:
 
 ### Phase 7: Content Production (parallel)
 
-Dispatch three agents, each with calendar assignments + brand voice + hooks + persona context:
+Dispatch only the agents the Production Assignments table names, each with calendar assignments + brand voice + hooks + persona context. `seo-specialist` runs only for blog posts and web pages. `email-strategist` runs only for email assignments.
 
 - **content-creator** — platform-native short/medium plus long-form:
   - LinkedIn posts (story format, data insights, contrarian takes)
@@ -217,17 +232,18 @@ Present full Growth OS package to user as final output.
 | `engagement-strategist` | Community, reciprocity, DM flows |
 | `growth-engineer` | Growth loops, flywheels, funnels, CRO, funnel optimization → `woocommerce-cro`, `saas-cro` |
 | `marketing-analyst` | KPIs, attribution, A/B testing |
-| `strategy-advocate/skeptic/judge` | Adversarial strategy debate |
+| `strategy-advocate/skeptic/judge` (skills) | Adversarial strategy debate |
 
 ## Rules
 
 1. **Show the plan** — no silent delegation
-2. **Full context to agents** — they don't share your conversation
-3. **Debate agents run blind** — Advocate and Skeptic never see each other
-4. **One phase at a time** — complete before starting next
-5. **Hook everything** — every content piece starts with a hook from Phase 4
-6. **Platform-native** — content adapted per platform, never cross-posted verbatim
-7. **Measure what matters** — every initiative has clear metrics
+2. **Full context to agents** — they don't share your conversation. Each dispatch carries: the goal, the outcome, the artifact paths, the source rule, and `responseStyle: "orchestrator"`. CMS entry work goes to the stack leaf (`forgebee:wordpress-content`, `forgebee:nextjs-content`); WooCommerce or SaaS CRO goes to `forgebee:woocommerce-cro` or `forgebee:saas-cro`
+3. **Source rule** — every positioning claim, competitor fact, metric, and audience assumption in an artifact carries a source: a URL with its as-of date, a path to the user's data, or the label `[assumption]`
+4. **Debate agents run blind** — Advocate and Skeptic never see each other
+5. **One phase at a time** — complete before starting next
+6. **Hook everything** — every content piece starts with a hook from Phase 4
+7. **Platform-native** — content adapted per platform, never cross-posted verbatim
+8. **Measure what matters** — every initiative has clear metrics
 
 ## State Tracking
 

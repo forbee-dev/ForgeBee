@@ -126,6 +126,10 @@ Called by `[parent-agent]` when triage detects [condition]. You receive the task
 | `wordpress-frontend` | `frontend-specialist` | Block/classic themes + templates |
 | `wordpress-security` | `security-auditor` | Sanitize/escape + nonces + WPCS |
 | `nextjs-frontend` | `frontend-specialist` | App Router + SSR + Server Components |
+| `flutter-expert` | `frontend-specialist` | Flutter + Dart |
+| `ios-expert` | `frontend-specialist` | Swift + SwiftUI |
+| `n8n-builder` | `backend-engineer` | n8n workflows |
+| `llm-app-engineer` | `backend-engineer` | LLM SDKs + RAG + agents |
 | `phpunit-engineer` | `test-engineer` | WP_UnitTestCase + PHPUnit |
 
 ### Tier 2 — Growth Specialists (no Task tool)
@@ -139,4 +143,4 @@ Called by `[parent-agent]` when triage detects [condition]. You receive the task
 | `nextjs-content` | `content-creator` | MDX + Contentlayer + React content components |
 
 ### Non-Routed Agents (No delegation needed)
-Debate agents (requirements-*, code-*, strategy-*), pure strategy agents (brand-strategist, audience-architect, etc.), delivery agents, and utility agents remain as-is — they don't need tech-specific routing.
+Debate roles (requirements-*, code-*, strategy-*) are `context: fork` skills, not agents. Pure strategy agents (brand-strategist, audience-architect, etc.), delivery agents, and utility agents remain as-is — they don't need tech-specific routing.

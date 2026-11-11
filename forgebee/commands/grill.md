@@ -19,7 +19,7 @@ Settle every decision in a plan before work starts. Output: a resolved decision 
 
 ## Delegation
 
-This command invokes the `grill` skill (`${CLAUDE_PLUGIN_ROOT}/skills/grill/SKILL.md`).
+Read `${CLAUDE_PLUGIN_ROOT}/skills/grill/SKILL.md` and follow it. Do not call the Skill tool: the name `grill` resolves to this command.
 
 - `/grill <topic>` → grill that topic
 - `/grill <path>` → read the plan or spec at that path, then grill it

@@ -23,20 +23,17 @@ async function main() {
   try {
     toolInput = JSON.parse(input);
   } catch (e) {
-    process.stdout.write(input);
     process.exit(0);
   }
 
   const command = toolInput?.tool_input?.command;
 
   if (!command) {
-    process.stdout.write(input);
     process.exit(0);
   }
 
   // Only process git push commands
   if (!/^git push/.test(command)) {
-    process.stdout.write(input);
     process.exit(0);
   }
 
@@ -52,7 +49,6 @@ async function main() {
     process.exit(0);
   }
 
-  process.stdout.write(input);
   process.exit(0);
 }
 

@@ -1,7 +1,7 @@
 ---
 name: plan
 description: BMAD-inspired planning agent — enforces a phased artifact chain from problem brief through sprint stories before any code gets written
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Task, WebSearch
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Task, Skill, WebSearch
 ---
 
 # Planning Agent
@@ -24,7 +24,7 @@ Produce written planning artifacts that any agent or developer can pick up witho
 
 | Complexity | Signal | Artifacts Needed |
 |------------|--------|-----------------|
-| **Trivial** | Bug fix, typo, config | Skip /plan — just do it |
+| **Trivial** | Bug fix, typo, config | 3-line brief; say `/team` fits better |
 | **Small** | 1-2 files, clear change | Brief only |
 | **Medium** | 3-5 files, new endpoint or component | Brief + Requirements |
 | **Large** | 5+ files, new system or major refactor | Brief + Requirements + Architecture |
@@ -38,7 +38,7 @@ Guide through the required phases. After each, summarize and confirm before movi
 
 ### Decision logging (every /plan and /workflow run)
 
-Alongside the canonical artifacts (brief, requirements, stories), maintain a **decision log** at `docs/planning/requirements/<feature>.decision-log.md`. Append a D-NNN entry every time a choice is made — choice, why, alternatives considered, status. See `${CLAUDE_PLUGIN_ROOT}/templates/decision-log-template.md` for the shape.
+Alongside the canonical artifacts (brief, requirements, stories), maintain a **decision log** at `docs/planning/requirements/YYYY-MM-DD-<feature>.decision-log.md` (the file `/grill` writes). Append a D-NNN entry every time a choice is made — choice, why, alternatives considered, status. See `${CLAUDE_PLUGIN_ROOT}/templates/decision-log-template.md` for the shape.
 
 If rejected alternatives, options matrices, or sizing data accumulate, write an **addendum** at `docs/planning/requirements/<feature>.addendum.md`. See `${CLAUDE_PLUGIN_ROOT}/templates/addendum-template.md`.
 
@@ -48,7 +48,11 @@ On subsequent `/plan` or `/workflow` runs for the same feature: **read both file
 
 ### Brief (always required when /plan is invoked)
 
-Ask: What problem? Who has it? What does success look like? What constraints?
+A ticket or request is a claim, not a fact. Only the goal and the outcome are binding.
+
+1. State the goal and the outcome, one sentence each.
+2. Check each premise, named file, cause, and suggested solution against the code (bounded `rg`, read the file). Verdict: Confirmed, Rejected, or Unverified, with `path:line`.
+3. Ask only what the code cannot answer: What problem? Who has it? What does success look like? What constraints?
 
 Write to `docs/planning/briefs/YYYY-MM-DD-[feature-name].md`:
 
@@ -68,6 +72,11 @@ Write to `docs/planning/briefs/YYYY-MM-DD-[feature-name].md`:
 ## Success Criteria
 - [ ] [Measurable outcome 1]
 - [ ] [Measurable outcome 2]
+
+## Premises Checked
+| Claim | Verdict | Evidence |
+|-------|---------|----------|
+| [claim from the ticket] | Confirmed / Rejected / Unverified | `path:line` |
 
 ## Constraints
 - Timeline: [deadline or sprint]
@@ -169,7 +178,7 @@ Write to `docs/planning/stories/[feature-name]/story-[N].md`:
 
 ## Step 3: Hand Off
 
-Summarize the full plan. Suggest next steps: `/workflow` for full pipeline, `/team` for quick delegation, or assign stories directly.
+Summarize the full plan and the rejected premises. Offer in one line: "`/elicit pre-mortem`, `/elicit stakeholder-round-table`, or `/elicit red-team` stress-tests this plan." Suggest next steps: `/team` to build it (the default), or `/workflow` when it needs an ADR or touches auth, payments, or the data model.
 
 ## Rules
 

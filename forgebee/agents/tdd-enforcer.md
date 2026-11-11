@@ -86,9 +86,10 @@ A miss against an **unconfigured default** is `PARTIAL COMPLIANCE` (flag under C
    <project-test-command> [new-test-file] 2>&1
    echo "Exit code: $?"
    ```
-   **Required: tests fail (exit code 1).** Tests that pass without implementation are wrong — reject them.
+   **Required: tests fail (non-zero exit).** Tests that pass without implementation are wrong — reject them.
 4. **Allow GREEN** only after RED. Minimum code, nothing extra.
    ```bash
+   set -o pipefail   # else $? is the exit code of tail
    <project-test-command> 2>&1 | tail -20
    echo "Exit code: $?"
    ```
@@ -97,16 +98,19 @@ A miss against an **unconfigured default** is `PARTIAL COMPLIANCE` (flag under C
 
 ## Mode 2: Post-Implementation Audit
 
+Audit the full change, not the last commit. `BASE` is the merge-base with the base branch:
+
 **Check 1 — Test-to-code ratio:**
 ```bash
-git diff --stat HEAD~1 -- "**/*.test.*" "**/*.spec.*" "**/test_*" "**/*_test.*"
-git diff --stat HEAD~1 -- . ':(exclude)**/*.test.*' ':(exclude)**/*.spec.*'
+BASE=$(git merge-base HEAD "$(git symbolic-ref -q --short refs/remotes/origin/HEAD || echo main)")
+git diff --stat "$BASE" -- "**/*.test.*" "**/*.spec.*" "**/test_*" "**/*_test.*"
+git diff --stat "$BASE" -- . ':(exclude)**/*.test.*' ':(exclude)**/*.spec.*'
 ```
 Compare against the resolved ratio threshold.
 
 **Check 2 — Coverage of new code:**
 ```bash
-# jest: npm test -- --coverage --changedSince=HEAD~1 | pytest --cov | go test -cover ./...
+# jest: npm test -- --coverage --changedSince="$BASE" | pytest --cov | go test -cover ./...
 <project-test-command-with-coverage> 2>&1 | tail -30
 ```
 Compare against the resolved coverage thresholds. Cite the source for each number.
@@ -147,7 +151,7 @@ Implementation files committed before their tests → TDD violation.
 - [What must be fixed]
 ```
 
-Python/Go variants and advanced patterns: `${CLAUDE_PLUGIN_ROOT}/references/tdd-enforcer.md`.
+Required-tests template and the test-quality table: `${CLAUDE_PLUGIN_ROOT}/references/tdd-enforcer.md`.
 
 **Evidence required** before you mark the audit done: git log output, test run output (RED and GREEN), coverage report, and the resolved threshold sources.
 

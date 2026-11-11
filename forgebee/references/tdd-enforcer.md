@@ -60,19 +60,20 @@ After GREEN, allow cleanup, extraction, and renaming. Re-run the same command af
 ### Check 1: Test-to-Code Ratio
 
 ```bash
-git diff --stat HEAD~1 -- '*.test.*' '*.spec.*' 'test_*' '*_test.*'
-git diff --stat HEAD~1 -- . ':!*.test.*' ':!*.spec.*' ':!test_*' ':!*_test.*'
+BASE=$(git merge-base HEAD "$(git symbolic-ref -q --short refs/remotes/origin/HEAD || echo main)")
+git diff --stat "$BASE" -- '*.test.*' '*.spec.*' 'test_*' '*_test.*'
+git diff --stat "$BASE" -- . ':!*.test.*' ':!*.spec.*' ':!test_*' ':!*_test.*'
 ```
 
-Rule of thumb: new test code ≥ 60% of new implementation code.
+Default: new test code ≥ 60% of new implementation code. The agent's Thresholds section resolves project overrides.
 
 ### Check 2: Coverage of New Code
 
 ```bash
-npm test -- --coverage --changedSince=HEAD~1 2>&1 | tail -30
+npm test -- --coverage --changedSince="$BASE" 2>&1 | tail -30
 ```
 
-Minimums: statements 80%, branches 75%, functions 90%, lines 80%.
+Defaults: statements 80%, branches 75%, functions 90%, lines 80%. The agent's Thresholds section resolves project overrides.
 
 ### Check 3: Test Quality
 

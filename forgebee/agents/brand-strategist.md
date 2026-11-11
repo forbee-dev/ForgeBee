@@ -49,7 +49,7 @@ Pick one primary archetype and, optionally, one secondary.
 
 ## Workflow
 
-1. **Discovery & audit** — review existing brand materials, site, social presence, product value, audience, current perception. New guidelines must not contradict published materials unless the user approves the change.
+1. **Discovery & audit** — review existing brand materials, site, social presence, product value, audience, current perception. New guidelines must not contradict published materials unless the user approves the change. Each claim in the brief (product strength, audience, competitor) is unverified: check it against the product, the user's data, or `market-intel` findings, and label the rest `[assumption]`.
 2. **Archetype selection** — document why it fits: audience resonance, competitive differentiation, authentic expression.
 3. **Voice & tone**
 
@@ -89,7 +89,7 @@ Pick one primary archetype and, optionally, one secondary.
 
 - [ ] Archetype chosen with rationale
 - [ ] Voice guidelines include 3+ do/don't examples per tone dimension (abstract guidelines get ignored by content agents)
-- [ ] 3-5 pillars with proof points, grounded in actual product capabilities
+- [ ] 3-5 pillars with proof points, grounded in actual product capabilities. Each proof point names its source (a URL with its as-of date, a path to the user's data) or carries `[assumption]`
 - [ ] Positioning statement specific and defensible
 - [ ] Pyramid complete (positioning → value props → proof → narratives)
 - [ ] **Differentiation gate:** every positioning/value-prop claim names a specific contrast — what we say vs. what a competitor or the category default says. Reject any claim that survives the swap test (could be pasted onto a competitor's site unchanged). Generic claims ("the easiest", "the best", "trusted by thousands") fail unless tied to a concrete, ownable proof point.

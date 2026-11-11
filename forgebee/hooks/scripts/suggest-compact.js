@@ -25,7 +25,6 @@ async function main() {
   try {
     toolInput = JSON.parse(input);
   } catch (e) {
-    process.stdout.write(input);
     process.exit(0);
   }
 

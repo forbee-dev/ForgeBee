@@ -1,6 +1,6 @@
 ---
 name: checkpoint-preview
-description: Use after autonomous /workflow execution to walk the diff by concern (not by file) with risk-tagged hot spots — bridges agent autonomy to human judgment before debate or delivery.
+description: Use after autonomous /workflow execution to walk the diff by concern (not by file) with risk-tagged hot spots — bridges agent autonomy to human judgment before delivery.
 version: 1.0.0
 ---
 
@@ -14,8 +14,7 @@ Adapted from BMAD's bmad-checkpoint-preview. A raw `git diff` is in file order, 
 
 ## When this fires
 
-- After `/workflow` Execute + Spec Compliance, before Code Debate (Large/Critical).
-- After `/team` dispatch, before the final review-all.
+- After the `/workflow` Review loop and Verify, before Deliver.
 - When a user asks to "walk me through this diff" or "review this branch".
 
 Skip when the user passes `--skip-checkpoint` to `/workflow`, or the change is trivial (1-2 files, one concern).
@@ -60,8 +59,8 @@ Runs before DB access; dates are RFC3339.
 2. `[data-loss]` `migrations/2026_05_19_export_log.sql:8` — DROP TABLE in down-migration loses the audit log on rollback. Keep down-migration empty or rename.
 ```
 
-### 4. Adversarial Findings (if Code Debate ran)
-Surface unresolved Skeptic concerns: flagged decisions the reviewer should know, not bugs already fixed.
+### 4. Adversarial Findings
+Surface what the machine gates left for a human: findings dropped as false positives, `[needs tool]` items, and Skeptic `FLAG` rulings (Critical tier). Not bugs already fixed.
 
 ### 5. Verdict Prompt
 
@@ -81,5 +80,5 @@ One message with the 5 sections in order. No file dumps; concerns and hot spots 
 - Never present changes in file order.
 - Never list more than 5 hot spots. The cap forces real prioritization.
 - Never report bugs already fixed in the diff.
-- Never substitute for review-all or Code Debate. This is a human-handoff layer, not a quality gate.
+- Never substitute for review-all. This is a human-handoff layer, not a quality gate.
 - Never pick the verdict yourself. The human chooses ship / rework / dig deeper.

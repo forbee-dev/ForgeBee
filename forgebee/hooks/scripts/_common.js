@@ -181,20 +181,16 @@ function detectProjectStacks() {
 
 /**
  * Initializes project directory structure
- * Creates: .claude/sessions, .claude/session-cache/context-backups, .claude/learnings,
- *          docs/pm/features, docs/planning/briefs, docs/planning/requirements, docs/planning/stories
+ * Creates: .claude/sessions, .claude/session-cache, .claude/learnings
+ * No docs/ dirs: Stop and PreCompact hooks call this in every project, every turn.
  */
 function initializeProjectDirs() {
   const projectDir = getProjectDir();
 
   const dirsToCreate = [
     path.join(projectDir, '.claude', 'sessions'),
-    path.join(projectDir, '.claude', 'session-cache', 'context-backups'),
+    path.join(projectDir, '.claude', 'session-cache'),
     path.join(projectDir, '.claude', 'learnings'),
-    path.join(projectDir, 'docs', 'pm', 'features'),
-    path.join(projectDir, 'docs', 'planning', 'briefs'),
-    path.join(projectDir, 'docs', 'planning', 'requirements'),
-    path.join(projectDir, 'docs', 'planning', 'stories'),
   ];
 
   dirsToCreate.forEach(dir => ensureDir(dir));

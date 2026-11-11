@@ -1,7 +1,7 @@
 ---
 name: elicit
 description: Stress-test the most recent plan, design, or architecture artifact using a named reasoning method (Pre-mortem, Red Team, Inversion, Stakeholder Round Table, etc.)
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Task
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Task, Skill
 ---
 
 # Elicit
@@ -51,6 +51,6 @@ This command invokes the `elicitation` skill (`${CLAUDE_PLUGIN_ROOT}/skills/elic
 
 ## Pairs with
 
-- `/plan` and `/workflow` Plan phase — auto-offers `pre-mortem` / `stakeholder-round-table` / `red-team` at phase boundary
-- `/architect` — auto-offers `tree-of-thoughts` / `inversion` / `time-traveler-council` at decision boundary
+- `/plan` at the phase boundary and `/workflow` with the Execution Plan — offer `pre-mortem` / `stakeholder-round-table` / `red-team`
+- `/architect` — offers `tree-of-thoughts` / `inversion` / `time-traveler-council` at decision boundary
 - Debate triads — debates run on requirements; elicitation runs on artifacts. Complementary, not redundant.

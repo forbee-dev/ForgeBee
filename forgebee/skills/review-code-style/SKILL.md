@@ -7,7 +7,7 @@ version: 1.1.0
 
 Review changed code for consistency with the project's own conventions. Focus on patterns that affect maintainability.
 
-> Emit findings in the shared format: `${CLAUDE_PLUGIN_ROOT}/skills/_review-finding-contract.md` (severity block + score + footer line).
+> Read `${CLAUDE_PLUGIN_ROOT}/skills/_review-finding-contract.md` first. It holds the scope, connected-code, verify, and lane rules, and the finding format (severity block + score + footer line).
 
 ## Use When
 - Changed code needs a convention check: import order, naming, type patterns, comments.
@@ -86,7 +86,7 @@ End with a one-line consistency summary, then the score and footer line from the
 
 ## Never
 - Enforce a rule that contradicts the project's existing conventions.
-- Flag style issues in unchanged code.
+- Report a style issue the diff does not cause.
 - Rank style above correctness.
 
 ## Communication

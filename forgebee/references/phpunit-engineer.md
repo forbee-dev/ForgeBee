@@ -28,8 +28,10 @@ The WP test suite needs `yoast/phpunit-polyfills`. Point `WP_TESTS_PHPUNIT_POLYF
 
 ## Unit Test
 
+No WordPress call in the code under test, so no WordPress boot. Run the `unit` suite with its own config whose `bootstrap` is `vendor/autoload.php`.
+
 ```php
-class Test_My_Helper extends WP_UnitTestCase {
+class Test_My_Helper extends \PHPUnit\Framework\TestCase {
 
 	public function test_format_price_with_decimals() {
 		$this->assertSame( '$19.99', my_plugin_format_price( 19.99 ) );

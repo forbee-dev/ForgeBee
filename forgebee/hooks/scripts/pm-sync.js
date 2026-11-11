@@ -56,10 +56,14 @@ async function main() {
     const now = Date.now();
     const sevenDaysAgo = now - 7 * 24 * 60 * 60 * 1000;
 
-    const updatedMatches = content.match(/updated:\s*(\d{4}-\d{2}-\d{2})/g) || [];
+    // Feature blocks only, done ones skipped: a finished feature keeps its last date forever.
+    const updatedMatches = content.split(/\n  - id: /).slice(1)
+      .filter(block => !/^ {4}phase:\s*done\b/m.test(block))
+      .map(block => block.match(/^ {4}updated:\s*"?(\d{4}-\d{2}-\d{2})/m))
+      .filter(Boolean)
+      .map(m => m[1]);
 
-    for (const match of updatedMatches) {
-      const dateStr = match.match(/(\d{4}-\d{2}-\d{2})/)[1];
+    for (const dateStr of updatedMatches) {
       try {
         const updatedTs = new Date(dateStr).getTime();
         if (updatedTs < sevenDaysAgo && updatedTs > 0) {

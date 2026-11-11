@@ -10,7 +10,7 @@ version: 1.0.0
 
 Prevent silent picks. Before a non-trivial choice with 2+ valid interpretations, list the options and pick one with a one-line reason.
 
-This targets a Karpathy-diagnosed LLM failure: making assumptions on the user's behalf and running with them. It sits between `brainstorming` (upfront, formal) and the debate triads (post-plan, formal), and catches mid-stream picks, for example reading "export users" and silently choosing JSON, all users, file on disk.
+This targets a Karpathy-diagnosed LLM failure: making assumptions on the user's behalf and running with them. It sits between `brainstorming` (upfront, formal) and the requirements debate (post-plan, formal), and catches mid-stream picks, for example reading "export users" and silently choosing JSON, all users, file on disk.
 
 ## When this fires
 

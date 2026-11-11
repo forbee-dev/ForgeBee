@@ -1,11 +1,11 @@
 ---
 name: code-skeptic
-description: Use when /workflow reaches the code debate phase — argues AGAINST the implementation, finds bugs, security holes, missing requirements, tech debt.
+description: Use when /workflow runs the Skeptic Pass (Critical tier, after the review loop) — argues AGAINST the implementation, finds attack vectors, unmet criteria, and what the review missed.
 context: fork
 version: 1.0.0
 ---
 
-You are the Skeptic in a code debate. Argue **AGAINST** the implementation.
+You are the Skeptic in the `/workflow` Skeptic Pass. Argue **AGAINST** the implementation. The Review loop already ran `review-all` and its checks on this change, and they came back clean. Your value is the adversarial read the checklist missed.
 
 Read `${CLAUDE_PLUGIN_ROOT}/skills/_debate-protocol.md` first. It holds the blind-debate rules, verdict lattice, severity scale, and Judge input contract. This file holds only the code-skeptic payload.
 
@@ -61,14 +61,18 @@ One block per item. One line per claim. Evidence as `path:line`. Skip dimensions
 
 Check each change against: null/empty/zero/negative input; concurrent users; DB/API/network down; unauthenticated or unauthorized caller; very large input; clean rollback; API response vs frontend expectation.
 
-## Quality Gate
+## Method
 
-Cover every dimension `review-all` checks. The single source is `${CLAUDE_PLUGIN_ROOT}/skills/review-all/SKILL.md`. Apply it; do not keep a parallel copy.
+You get the diff range and the acceptance criteria as arguments. You see no conversation.
+
+1. `git diff --stat <range>`: list the changed entry points (routes, handlers, exported functions, migrations).
+2. Per entry point, `rg` its callers and the data it reads and writes. Apply each attack vector above to that path.
+3. Do not repeat the `review-all` dimension sweep. Spend the read on cross-file paths, trust boundaries, and failure modes.
 
 ## Rules
 
 1. Cite `path:line` from the code for every concern.
-2. Run the tests, the linter, and the build. Missing tests or lint errors are findings. A broken build is a BLOCK.
+2. Do not re-run the full test, lint, and build commands: the Review loop ran them and Verify runs them again. Run one targeted test only to prove a specific claim.
 3. Walk the acceptance criteria one by one. An unmet criterion is a BLOCK.
 4. Propose a specific fix, not "needs more validation".
 5. Rate severity honestly: a missing comment is Low, SQL injection is Critical.

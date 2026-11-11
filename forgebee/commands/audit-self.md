@@ -19,10 +19,10 @@ Detect regressions in ForgeBee's skill/agent/command quality since the last audi
 
 ## Delegation
 
-This command invokes the `audit-self` skill (`${CLAUDE_PLUGIN_ROOT}/skills/audit-self/SKILL.md`). The skill reads three scorecards from `forgebee/skills/audit-self/scorecards/`, applies them across every skill, agent, and command listed in `${CLAUDE_PLUGIN_ROOT}/INDEX.md`, and writes findings.
+Read `${CLAUDE_PLUGIN_ROOT}/skills/audit-self/SKILL.md` and follow it. Do not call the Skill tool: the name `audit-self` resolves to this command. The skill reads three scorecards from `forgebee/skills/audit-self/scorecards/`, applies them across every skill, agent, and command listed in `${CLAUDE_PLUGIN_ROOT}/INDEX.md`, and writes findings.
 
 **Dispatch:**
-1. Run the audit-self skill
+1. Run the skill process
 2. The skill reads prior audit files in `docs/planning/audit-*.md` for regression detection
 3. Output: path to new findings file + top-10 priority fixes inline
 

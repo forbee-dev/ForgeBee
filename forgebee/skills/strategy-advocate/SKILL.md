@@ -62,7 +62,7 @@ One block per artifact. One line per field. Cite the artifact section or market 
 ## Rules
 
 1. One argument per artifact. Answer the strongest objection, not a strawman.
-2. Cite artifact data, frameworks, or research for every claim.
+2. Cite artifact data, frameworks, or research for every claim. An `[assumption]` in the artifact is not evidence.
 3. Concede weak points and say why they do not break the strategy.
 4. Tie the argument to business results.
 

@@ -58,7 +58,7 @@ Status: <DONE | DONE_WITH_CONCERNS | BLOCKED | NEEDS_CONTEXT>
 - <check>: <pass/finding>
 ```
 
-Orchestrators reject a report without `Scope-Delta`. Write the literal `none` when nothing was out of scope. `Concerns` holds quality caveats, not scope.
+Every report has `Scope-Delta`. Write the literal `none` when nothing was out of scope. `Concerns` holds quality caveats, not scope.
 
 ## Example
 

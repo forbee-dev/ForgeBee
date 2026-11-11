@@ -46,7 +46,7 @@ Before proceeding, confirm NONE of these are true:
    - List all breaking changes that affect the codebase
 
 3. **Impact analysis**:
-   - `grep` for deprecated APIs across the codebase
+   - `rg` each deprecated API, scoped to source dirs (exclude `vendor/`, `node_modules/`)
    - Count affected files and lines
    - Identify high-risk areas (auth, payments, data layer)
    - Check dependency compatibility with target version

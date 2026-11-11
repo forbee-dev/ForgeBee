@@ -104,13 +104,13 @@ Assign in the proxy so the variant is known before first paint (no flash, no hyd
 import { NextResponse, type NextRequest } from 'next/server';
 
 export function proxy(req: NextRequest) {
-  const res = NextResponse.next();
-  if (!req.cookies.has('ab_hero_v2')) {
-    res.cookies.set('ab_hero_v2', Math.random() < 0.5 ? 'control' : 'variant', {
-      maxAge: 60 * 60 * 24 * 30,
-      sameSite: 'lax',
-    });
-  }
+  if (req.cookies.has('ab_hero_v2')) return NextResponse.next();
+
+  const variant = Math.random() < 0.5 ? 'control' : 'variant';
+  // Set it on the request too, so the page reads the same variant on the first visit.
+  req.cookies.set('ab_hero_v2', variant);
+  const res = NextResponse.next({ request: req });
+  res.cookies.set('ab_hero_v2', variant, { maxAge: 60 * 60 * 24 * 30, sameSite: 'lax' });
   return res;
 }
 
@@ -147,7 +147,7 @@ export function ExitIntent({ children }: { children: React.ReactNode }) {
     // mouseout is unreliable on touch devices.
     if (!window.matchMedia('(pointer: fine)').matches) return;
     const onOut = (e: MouseEvent) => {
-      if (e.clientY < 10 && !sessionStorage.getItem('exit_shown')) {
+      if (e.clientY < 10 && !e.relatedTarget && !sessionStorage.getItem('exit_shown')) {
         sessionStorage.setItem('exit_shown', '1');
         setShow(true);
       }

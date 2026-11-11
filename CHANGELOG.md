@@ -8,9 +8,55 @@ The format roughly follows [Keep a Changelog](https://keepachangelog.com/) and t
 
 ## [Unreleased]
 
+---
+
+## [8.0.0] — 2026-11-11
+
+**Theme: the ticket is a claim, not a fact.** `/team` is now the default ticket-to-code flow and builds from a spec that is checked against the code. One review loop replaces the stacked gates. A plugin-wide audit applied the same rules to every agent, command, skill, and hook.
+
+### Breaking
+
+- **`/team` is rewritten.** Flow: Understand (goal and outcome; every other ticket statement is an unverified claim) → Research (each claim gets `Confirmed`, `Rejected`, or `Unverified` with `path:line`) → Grill (only unknowns the code cannot answer) → Spec (user approval) → Build (the lead dispatches leaf agents) → Review loop.
+- **`/workflow` is now only for work that needs an ADR or touches auth, payments, or the data model.** Two tiers (Standard, Critical) and two planned user stops (Execution Plan, Checkpoint). The Spec Compliance phase, the Code Debate triad, the budget circuit breaker, and the Step→Verify round trip are removed. The Critical tier adds a Requirements Debate and a Skeptic Pass (`code-skeptic` + `code-judge`, no Advocate).
+- **Removed:** the `code-advocate` skill, the `contract-validator` agent, the `context-guard` hook, the `TaskCompleted` and `TeammateIdle` prompt hooks, `skills/_budget-breaker.md`, `continuous-learning/agents/observer.md`, and `rules/common/hooks.md` (its content is now in `CONTRIBUTING.md`).
+- **`/growth` has one planned user stop**, at the Execution Plan. The Step 1 approval stop is removed.
+
 ### Added
 
+- **`spec-writer` agent.** Writes `docs/planning/specs/YYYY-MM-DD-<slug>.md`: goal, outcome, a verdict per ticket claim, approach, workstreams, and acceptance criteria with a verify line each.
+- **Review loop** in `/team` and `/workflow`: `review-all` on the full change → fix every finding at every severity → review again. Max 3 rounds. After round 3 the orchestrator stops, reports the cause, and asks the user.
+- **Shared review rules** in `skills/_review-finding-contract.md`: merge-base scope (the whole branch plus uncommitted and untracked files), connected code, verify before report, what counts as a finding, lanes.
+- **`## Method` section** in ten review skills (how to find a defect, not only what to look for). `review-wordpress` gains ACF/SCF checks.
+- **`Spec Handoff` section** in 16 build agents: read the spec and the callers first, stop on a false premise, report evidence per acceptance criterion.
+- **Source rule** for growth surfaces: a market claim, metric, or competitor fact needs a URL with a date, a path to the user's data, or the label `[assumption]`.
 - **OpenCode installer.** `node opencode/install-opencode.js [target-dir]` converts skills, agents, commands, and rules to OpenCode format. Hooks do not convert. `npm run check:opencode` tests it.
+
+### Changed
+
+- **`review-all` 2.0.** It runs the project's test, lint, and build commands; checks each acceptance criterion when it gets a spec; verifies each Critical and High finding; routes deep passes by risk, not by diff size; and reports a confidence level.
+- `/plan`, `/debug`, and `/investigate` treat the reporter's premises and suspected cause as unverified claims.
+- `/review` uses the merge-base scope and routes deep passes by risk. The 500-line threshold is removed.
+- `code-skeptic` does the adversarial read only. It no longer repeats the `review-all` sweep or re-runs the checks.
+- `dev-server-blocker` allows a dev server that runs in the background.
+- `skill-activator` and the routing index name `/team` as the default build route.
+- Counts: 46 agents, 34 skills, 39 commands, 27 hooks across 8 events.
+
+### Fixed
+
+- **Skill name shadowing.** The `grill`, `investigate`, and `audit-self` commands hide the skills of the same name, so a skill call loaded the command, which called itself again. Each command now reads its `SKILL.md` file.
+- `review-*` skills reviewed only the last commit on a clean multi-commit branch (`git diff HEAD`, then `HEAD~1`).
+- `tdd-enforcer` read the exit code of `tail`, so a failed run looked green.
+- `verification-enforcer` compared its baseline with the same run, and gave "criterion without evidence" two verdicts.
+- `/plan` looked for an undated decision-log path and missed the log `/grill` writes.
+- `pm-sync` reported a stale feature on every SessionStart and Stop when one finished feature was older than 7 days.
+- `_common.js` created `docs/pm` and `docs/planning` folders in every project on every turn.
+- Six hooks echoed the full tool input and output to stdout on every call.
+- `/growth` started the strategy Judge in parallel with the two cases it must read.
+- `brainstorming` called `/plan` itself under `/workflow --strict`, which ran Plan twice.
+- `project-router` decision tree pointed at 15 section names that do not exist.
+- `rules/php/conventions.md` contradicted the WordPress agents (`wp_unslash()`, the ACF registration hook, mocks versus integration tests).
+- `saas-cro` reference: the A/B proxy showed the control page while the cookie said variant.
+- Agents and commands told to use a tool they do not have (`Skill`, `Task`, web access) now do the work inline or report `NEEDS_CONTEXT`.
 
 ---
 

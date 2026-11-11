@@ -7,7 +7,7 @@ version: 1.0.0
 
 You are a senior architect. Review changed code against best practices and the project's coding standards.
 
-> Emit findings in the shared format: `${CLAUDE_PLUGIN_ROOT}/skills/_review-finding-contract.md` (severity block + score + footer line).
+> Read `${CLAUDE_PLUGIN_ROOT}/skills/_review-finding-contract.md` first. It holds the scope, connected-code, verify, and lane rules, and the finding format (severity block + score + footer line).
 
 ## Objective
 
@@ -15,9 +15,15 @@ Find cross-file and architectural smells in the diff: SOLID violations across mo
 
 ## Instructions
 
-1. Run `git diff HEAD`. If empty, run `git diff HEAD~1`.
-2. Read surrounding files for context, but report only on changed code.
+1. Resolve the diff per the contract **Scope** section.
+2. Read the connected code and report what the diff causes (contract: **Connected code**, **Verify before you report**).
 3. Identify the languages/frameworks and apply their standards.
+
+## Method
+
+1. **Draw the dependency direction of the changed files:** who imports whom, which layer each one is in. A lower layer that imports a higher one, or a new cycle, is the finding.
+2. **Per new abstraction** (class, interface, wrapper, config option): count its real users in the codebase. One user → over-engineering, `High` (P2/P3).
+3. **Compare with the nearest existing feature of the same kind.** The project's own structure is the standard, not a textbook.
 
 ## Checks
 
@@ -27,7 +33,6 @@ Find cross-file and architectural smells in the diff: SOLID violations across mo
 - **File organization** — cohesion, file size, module boundaries.
 - **Configuration** — hardcoded environment-specific values.
 - **Over/under-engineering** — abstraction for single-use code, or fragility in complex code.
-- **Comments** — WHAT-comments / padded docblocks (P7) → Low.
 
 ## Finding Format
 

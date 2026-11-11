@@ -7,7 +7,7 @@ version: 1.0.0
 
 You are a performance specialist. Review the changed code for performance issues.
 
-> Emit findings in the shared format: `${CLAUDE_PLUGIN_ROOT}/skills/_review-finding-contract.md` (severity block + score + footer line).
+> Read `${CLAUDE_PLUGIN_ROOT}/skills/_review-finding-contract.md` first. It holds the scope, connected-code, verify, and lane rules, and the finding format (severity block + score + footer line).
 
 ## Objective
 
@@ -15,12 +15,18 @@ Find performance regressions in the diff, each with `file:line`, estimated impac
 
 ## Instructions
 
-1. Run `git diff HEAD`. If empty, run `git diff HEAD~1`.
-2. Read surrounding files for context, but report only on changed code.
+1. Resolve the diff per the contract **Scope** section.
+2. Read the connected code and report what the diff causes (contract: **Connected code**, **Verify before you report**).
 
 ## Static vs `[needs tool]`
 
 You read a diff, not a running system. Flag issues visible in source normally: N+1 loops, missing indexes, accidental O(n²). Render counts, memory growth, bundle-size delta, and query latency need measurement. Label those `[needs tool]` and name the tool: React Profiler, `node --prof`/flamegraph, `webpack-bundle-analyzer`, `EXPLAIN ANALYZE`. Do not claim an impact you did not measure.
+
+## Method
+
+1. **Place the code first.** Is the changed code on a request path, inside a loop, in a render, in a cron, or one-time setup? Cost only matters where it repeats. Say where it runs in the finding.
+2. **Count the I/O per unit of work.** For each changed request path or loop: how many queries, HTTP calls, and file reads per request or per item? A count that grows with the data is the finding.
+3. **Follow the call down.** A cheap-looking call inside a loop can hide a query (ORM getter, `get_post_meta`, lazy relation). Open the callee.
 
 ## Checks
 

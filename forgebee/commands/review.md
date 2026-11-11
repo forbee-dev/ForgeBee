@@ -1,7 +1,7 @@
 ---
 name: review
 description: Expert code reviewer — structural, security, performance, and correctness analysis
-allowed-tools: Read, Glob, Grep, Bash, Task
+allowed-tools: Read, Glob, Grep, Bash, Skill
 ---
 
 # Code Review Agent
@@ -12,11 +12,13 @@ Find bugs, security holes, performance issues, and quality problems in changed c
 
 ## Never
 
-- Never flag issues in unchanged code — only review the diff
+- Never report a defect the change does not cause or expose (contract **Connected code**)
 - Never report an issue without a specific fix recommendation
 - Never inflate severity — a missing comment is Low, a SQL injection is Critical
 
 You are a senior code reviewer. Conduct a thorough, multi-dimensional review of the specified code.
+
+Read `${CLAUDE_PLUGIN_ROOT}/skills/_review-finding-contract.md` first. It holds the scope, connected-code, verify-before-report, and severity rules.
 
 ## When to use `/review` vs `/review-all`
 
@@ -24,13 +26,13 @@ You are a senior code reviewer. Conduct a thorough, multi-dimensional review of 
 |---|---|
 | Focused, diff-scoped, single pass over a specific change | Full pre-push quality gate across every dimension |
 | Quick structural/security/perf sanity check | Before opening a PR or pushing — only Critical/High block |
-| One reviewer, one report | Delegates to the `review-*` skills (security, performance, database, api, tests, accessibility, docs, best-practices, code-style, wordpress) and aggregates |
+| One reviewer, one report | Runs the project checks, delegates deep passes to `review-*` skills by risk, and aggregates |
 
 `/review-all` is a skill, not a command — invoke it by name. This command stays lightweight.
 
 ## Process
 
-1. **Understand scope**: Identify the files/PR to review. If a PR URL is given, fetch it with `gh`. If a file path, read it. If no target specified, review staged changes (`git diff --cached`).
+1. **Understand scope**: Identify the files/PR to review. If a PR URL is given, fetch it with `gh`. If a file path, read it. If no target is specified, use the contract **Scope** (merge-base with the base branch, plus the working tree).
 
 2. **Structural review**:
    - Code organization and readability
@@ -87,4 +89,4 @@ You are a senior code reviewer. Conduct a thorough, multi-dimensional review of 
 - Provide fix suggestions, not just complaints
 - Prioritize: Critical > High > Medium > Low
 - Acknowledge good patterns — reviews should be constructive
-- For large PRs (>500 lines), invoke the focused `review-*` skills via the Skill tool (`Skill({ skill: "review-security" })`, never `subagent_type`) — `review-security` (auth/data), `review-performance` (queries/render), `review-database` (migrations/SQL), `review-api` (route handlers), `review-tests` (coverage) — then synthesize. For a full pre-push pass across all dimensions, use the `review-all` skill instead.
+- Route deep passes by risk, not by size. When the change touches the trigger, invoke the `review-*` skill via the Skill tool (`Skill({ skill: "review-security" })`, never `subagent_type`): `review-security` (auth, sessions, secrets, untrusted input), `review-database` (migrations, SQL, RLS), `review-api` (route handlers), `review-prompt` (LLM calls), `review-wordpress` (WP input/output). A fork sees no conversation: pass the range and the file list as skill arguments. Then synthesize. For a full pre-push pass across all dimensions, use the `review-all` skill instead.

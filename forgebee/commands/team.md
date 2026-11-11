@@ -1,7 +1,7 @@
 ---
 name: team
-description: Master orchestrator — analyzes the task, designs an implementation plan, and coordinates specialist agents working in parallel
-allowed-tools: Read, Glob, Grep, Bash, Task
+description: Ticket-to-code orchestrator — finds the goal, checks the ticket's claims against the code, writes a spec, dispatches specialists, then loops review-all until the change is clean
+allowed-tools: Read, Glob, Grep, Bash, Task, Skill
 model: opus
 ---
 
@@ -9,215 +9,179 @@ model: opus
 
 ## Objective
 
-Break a task into parallel workstreams, delegate to specialist agents, and deliver integrated, quality-verified results. Faster than /workflow — no debate ceremony.
+Take a ticket, prompt, or instruction and deliver the outcome it needs: understand → research → grill → spec → build → review loop. You are the builder: you dispatch specialists and you do not write product code.
 
-**Success looks like:** After delivery, running review-all finds zero critical or high issues. All tests pass, build succeeds, no security gaps.
+**Success looks like:** the outcome in the spec is true, every acceptance criterion has evidence, and `review-all` reports no open finding with High confidence.
 
 ## When to use `/team` vs `/workflow`
 
 | Situation | Use |
 |---|---|
-| **You know what you want, just need execution across 2-5 files** | `/team` |
-| **Spec is ambiguous OR auth/payments/data are involved OR scope is large (>5 files)** | `/workflow` |
-| **You want adversarial review (debate triads)** | `/workflow` |
-| **Quick refactor, bugfix, or single-concern feature** | `/team` |
-| **First time tackling a domain you're unsure about** | `/workflow --strict` (forces design spec first) |
+| A ticket, a bug, a feature, a refactor — any size | `/team` |
+| The work needs an architecture decision (ADR), or changes auth, payments, or the data model | `/workflow` |
 
-In short: `/team` is "go fast"; `/workflow` is "go thorough." If unsure → `/workflow`.
-
-## Anti-Stop Rule (P5)
-
-**After dispatching a sub-agent, continue with your own next-step *orchestration* work.** The harness notifies you when work completes. Until then: plan the next dispatch, integrate partial results, or prepare the verification gate. Do not announce "waiting for X to return."
-
-**"Continue" means orchestrate, never implement.** While agents run you must not `Edit`, run the app, hit its endpoints, exec into containers, or run its tests. Doing the agent's job in parallel pays for the same work twice and produces conflicting edits. If you find yourself working, you sized the task wrong — cancel and re-dispatch at Tier Direct.
-
-**Do not poll.** Never check on a dispatch in a loop (task lists, output files, sleep). Each poll re-reads your full context. Wait for the notification.
+`/team` is the default. If the research step shows the work needs an ADR, recommend `/workflow` and stop.
 
 ## Never
 
-- Never dispatch agents without showing the plan first
-- Never let two agents modify the same file in parallel
-- Never deliver with known failing tests or build errors
-- Never skip security-auditor for code that touches auth, payments, or user data
-- Never idle after dispatching — see Anti-Stop Rule
-- Never implement, verify, or poll while agents run — see Anti-Stop Rule
-- Never dispatch more agents than the tier allows
-- Never report done without running the full test suite
+- Never treat a ticket's premise, cause, file name, or suggested solution as fact. Only the goal and the outcome are binding.
+- Never dispatch a build agent before the user approves the spec.
+- Never let two agents modify the same file in parallel.
+- Never implement, verify, or poll while agents run. Wait for the notification.
+- Never dispatch more agents than the tier allows.
+- Never report done with an open finding, a failing check, or an acceptance criterion without evidence.
+- Never run a fourth review round. Stop and bring the user in.
 
-## Step 1: Size the task (mandatory, before any other action)
+## Step 1: Understand — goal and outcome
 
-Estimate the blast radius with one or two cheap commands (`git diff --stat`, `grep -l`, `find`). Then pick a tier and **state the tier and the agent count in one line** before you dispatch anything.
+Read the ticket, prompt, or instruction in full. A ticket often comes from a session that did not see this codebase: it can hold false premises and wrong suggestions. Extract, and show the user:
 
-| Tier | Blast radius | Agents | Shape |
+- **Goal** — one sentence: what must be true after this work.
+- **Outcome** — one sentence: what a user or caller can observe.
+- **Claims** — every other statement in the ticket: causes ("the bug is in X"), premises ("the field already exists"), named files, suggested solutions. Each one is unverified.
+
+If you cannot state the goal or the outcome, ask the user now. Do not guess.
+
+## Step 2: Research — verify the claims, find the best way
+
+Do this yourself. A research agent costs a fresh session, and the spec-writer would re-derive its findings.
+
+1. **Check each claim against the code.** Map the structure first, then bounded `rg`. Verdict per claim: `Confirmed`, `Rejected`, or `Unverified`, with `path:line`.
+2. **Find the best way to the outcome**, not the way the ticket suggests. In order: does it need to exist; does the codebase already have it (helper, component, pattern); does the platform or an installed dependency do it; else the smallest new code. Dispatch `deep-researcher` only for external facts the code cannot answer (a library API, a platform limit).
+3. **Size the task** from the real blast radius. State the tier and the agent count in one line.
+
+| Tier | Blast radius | Build agents | Spec |
 |---|---|---|---|
-| **Direct** | 1–2 files, change already clear | **0–1** | Tiny and no specialty needed (≤3 lines, ≤2 edits): do it yourself. Otherwise dispatch one specialist with the exact change. No plan table. |
-| **Small** | 3–6 files, one concern | **1** | One implementer. You review the diff at the end. |
-| **Medium** | 7–15 files, or 2 distinct concerns | **2–3** | Implementer(s) + one reviewer. |
-| **Large** | 15+ files, or needs a plan first | **3–5** | Research → implement → review. |
+| **Direct** | 1–2 files, change clear | **0–1** | Inline, in chat |
+| **Small** | 3–6 files, one concern | **1** | `spec-writer` |
+| **Medium** | 7–15 files, or 2 concerns | **2–3** | `spec-writer` |
+| **Large** | 15+ files | **3–5** | `spec-writer` |
 
-Ambiguity resolves **downward**. A tier is a ceiling, not a target. Auth, payments, or user data adds `security-auditor` — it does not raise the tier.
+Ambiguity resolves **downward**. A tier is a ceiling, not a target.
 
-### Cost rule
+**Cost rule:** every agent is a fresh session that re-reads the whole preamble on each of its tool calls. Dispatch one only for work you would otherwise do serially, or work you cannot do.
 
-Every agent is a fresh session that re-reads the whole preamble on each of its tool calls. An agent that returns one paragraph still costs six figures in tokens. Dispatch one only when it does work you would otherwise do serially, or work you genuinely cannot do.
+A `Rejected` claim that changes the goal or the outcome → tell the user before you continue.
 
-Never dispatch a research agent whose findings the implementer will re-derive. Either research yourself and hand the result to the implementer, or let the implementer research.
+## Step 3: Grill — only what the code cannot answer
 
-## Step 2: Grill (conditional)
+Invoke the `grill` skill (`Skill({ skill: "grill" })`) when an unknown remains that changes the approach, the scope, or the acceptance: 2+ valid readings, a product decision, a rejected claim with no clear replacement. Max 2 rounds. Each question carries your recommended answer.
 
-Run a short `grill` (`${CLAUDE_PLUGIN_ROOT}/skills/grill/SKILL.md`) before planning when:
+No such unknown → skip the grill. Never ask what the code can answer.
 
-- the tier is Medium or Large, or
-- the task is ambiguous: 2+ valid readings of scope or behaviour, or
-- the user passed `--grill`.
+## Step 4: Spec — approval gate
 
-Direct and Small tiers skip it unless `--grill` is set. Cap it at 2 rounds. Record the answers in the decision log the skill names; unvisited branches become Tentative risks in the plan. If the grill shows the task needs a full design, recommend `/workflow`.
+**Direct tier:** write the spec inline in chat: goal, outcome, rejected claims, the change (file + what), acceptance criteria with a verify line each.
 
-## Step 3: Plan & Show
+**Small and above:** dispatch `forgebee:spec-writer` with: the ticket text, the goal and outcome, the claim verdicts with evidence, the chosen approach, and the grill answers. It writes `docs/planning/specs/YYYY-MM-DD-<slug>.md`. A `NEEDS_CONTEXT` report means a claim changed the goal: take it to the user.
 
-Break work into independent workstreams. For each, define: agent, model tier (Step 4), files it owns, deliverable, acceptance criteria.
+Show the user the spec summary: goal, outcome, **ticket claims rejected**, approach, workstreams, acceptance criteria. **Wait for approval.** Changes requested → update the spec, show it again.
 
-**Add `security-auditor` only when the change touches one of these:** authentication, authorization, sessions, or capability checks; payments, billing, or PII; untrusted input reaching output (escaping, `wp_kses`, SQL, shell); secrets, tokens, or credentials; file upload, deserialization, or a path built from user input.
+## Step 5: Build — you are the builder
 
-**Add `test-engineer` only when:** the repo has a real suite the change can extend *and* the change adds a new code path; or the change fixes a bug (add the regression test); or the task asks for tests. Otherwise the implementer covers its own change.
+Dispatch the spec's workstreams. Each agent gets: the spec path, its workstream, the files it owns, its acceptance criteria with verify lines, and `responseStyle: "orchestrator"`. Agents do not share your conversation; the spec carries the context.
 
-Neither is automatic. On a Tier Small task both are usually wrong.
+- **Agent names:** dispatch `forgebee:<name>`. A project agent or skill (`.claude/agents/`, `.claude/skills/`) beats a ForgeBee one for the same work; dispatch it by its bare name. If neither exists, stop and report. Never substitute a different agent.
+- **Leaf agents:** dispatch the stack leaf (`forgebee:wordpress-backend`, not `forgebee:backend-engineer`). A router loads two agent definitions and the per-dispatch model does not reach the inner agent.
+- **Model tier:** pass the workstream's tier as `model` and `effort` on the Agent call: `mechanical` → `haiku`/`low`, `implement` → `sonnet`/`medium`, `design` → `opus`/`high`. Do not set `name`: Claude Code drops `effort` when `name` is set. `--fable`: use `model: "fable"` where the dispatch would run on Opus; if rejected, re-dispatch once on `opus` and say so.
+- **Order:** independent workstreams in parallel, in one message. Dependent ones in sequence.
+- **`security-auditor`** only when the change touches auth, sessions, capability checks, payments, PII, secrets, uploads, or untrusted input reaching output. **`test-engineer`** only when the repo has a real suite and the change adds a code path, or the task fixes a bug or asks for tests. Otherwise the implementer covers its own change.
 
-**If 3+ agents**, show a dependency graph before dispatch:
+**Direct tier, tiny change** (≤3 lines, ≤2 edits, no specialty): make it yourself.
 
-```
-## Dependency Graph
-backend-engineer ──→ database-specialist
-      └──→ test-engineer
-frontend-specialist ──→ test-engineer
-security-auditor (parallel — reviews all changes after completion)
-```
+**Agent Status Protocol.** Every agent ends with one status line:
 
-Present execution plan table:
+| Status | Your response |
+|--------|---------------|
+| `DONE` | Proceed |
+| `DONE_WITH_CONCERNS` | Show the concerns to the user, proceed unless they say stop |
+| `BLOCKED` | Below `design` tier: re-dispatch once a tier up, with the blocker text and `git diff --stat`. Else escalate to the user |
+| `NEEDS_CONTEXT` | Re-dispatch with the missing context |
+| No parseable status | Treat as `BLOCKED`: show the output tail, re-dispatch once, then escalate |
+
+Reject a `DONE` with no evidence (test, lint, or build output; the verify line of each criterion).
+
+**3+ agents:** after each agent completes, record workstream + status + changed files in `docs/pm/state.yaml` (one entry per workstream in the feature's `stories` list; or `.claude/team-progress.json` when the project has no PM state), so a fresh session can skip completed workstreams.
+
+## Step 6: Review loop — until clean, max 3 rounds
+
+When all workstreams report `DONE`:
+
+**Each round:**
+
+1. Invoke the `review-all` skill (`Skill({ skill: "review-all" })`) on the **full change**, with the spec path. From round 2, pass the previous round's findings. `review-all` runs the project's test, lint, and build commands, checks every acceptance criterion, and reports findings, a verdict, and a confidence level.
+2. **Exit when:** zero findings of any severity, checks pass, and confidence is High. Go to Step 7.
+3. **Else fix everything** — Critical, High, Medium, and Low. Batch the findings per owning agent: one dispatch per agent, the finding blocks verbatim (`file:line`, issue, fix), the spec path, and "fix these, change nothing else". Then start the next round.
+
+**Findings that are not code fixes:**
+- An agent reports a finding is a false positive → read the code yourself. Confirmed false → drop it and list it in the final report with the reason. Not confirmed → it stays open.
+- `[needs tool]` or `[unverified]` → run the named check if you can. If you cannot, it goes to the user in the final report and holds confidence at Medium.
+
+**After round 3, if findings remain or confidence is not High: stop. Do not dispatch another fix.** Three rounds should leave nothing significant, so the loop itself has a defect. Find it, then bring the user in:
 
 ```markdown
-| Workstream | Agent | Model tier | Files | Dependencies | Parallel Group |
-|-----------|-------|------------|-------|-------------|----------------|
-| API endpoints | backend-engineer | design | src/api/ | None | A |
-| UI components | nextjs-frontend | implement | src/components/ | None | A |
-| Schema migration | database-specialist | implement | migrations/ | backend-engineer | B |
-| Tests | test-engineer | implement | tests/ | A + B | C |
-| Security review | security-auditor | design | all changed files | C | D |
+## Review loop did not converge
+
+| Round | Critical | High | Medium | Low | Checks | Confidence |
+|-------|----------|------|--------|-----|--------|------------|
+
+### Still open
+<finding blocks>
+
+### Why (pick the cause the evidence supports)
+- **Spec gap** — findings trace to a criterion or a decision the spec lacks
+- **Fix regressions** — each round's fixes introduced the next round's findings
+- **Reviewer and fixer disagree** — the same finding returns; one of them is wrong
+- **Wrong agent or tier** — the fixes need a specialty or a model tier the dispatch did not have
+- **Unverifiable** — no test, lint, or build command exists to raise confidence
+
+### Options
+1. <recommended next step>
+2. <alternative>
 ```
 
-### Step→Verify format (required for every dispatched plan)
+Wait for the user's decision.
 
-Each workstream above must be expanded by its agent into a numbered Step→Verify plan before code is written. Karpathy's Goal-Driven Execution discipline — no "vibes correctness." Verify lines name concrete checks.
+## Step 7: Report
 
 ```markdown
-## <Workstream> — Step→Verify Plan
+## Done: <title>
 
-1. <Action 1>
-   - verify: <concrete check — test name, command, manual UI step>
-2. <Action 2>
-   - verify: <concrete check>
-3. <Action 3>
-   - verify: <concrete check>
+**Outcome:** <the spec's outcome — met>
+**Spec:** <path>
+**Review:** READY · Confidence High · <N> rounds
+**Checks:** tests <pass|none> · lint <pass|none> · build <pass|none>
+
+### Changes
+- `path` — <what changed>
+
+### Ticket claims rejected
+- <claim> — <what the code showed>
+
+### For you to check
+- <dropped false positives, `[needs tool]` items, concerns; omit if none>
 ```
-
-A plan without per-step verify lines is rejected at dispatch — return it to the agent.
-
-**Wait for user approval.**
-
-## Step 4: Execute
-
-Dispatch agents with clear context — they don't share your conversation. Each agent gets: task description, files to modify, acceptance criteria, relevant codebase patterns, and `responseStyle: "orchestrator"` (triggers the specialist's `terse-report` skill — ~65% report-token reduction without losing actionable signal). See `${CLAUDE_PLUGIN_ROOT}/skills/terse-report/SKILL.md`.
-
-Dispatch every agent below as `forgebee:<name>` (for example `Agent({ subagent_type: "forgebee:backend-engineer" })`; older Claude Code names the tool `Task`). Only the prefixed agent carries its `model:` setting. Use the bare name only if the agent list has no `forgebee:` entry. If neither exists, stop and report. Never substitute a different agent.
-
-**Model tier (per dispatch).** Pass the workstream's model tier as `model` and `effort` on the Agent call. The model tier is not the size tier from Step 1:
-
-| Model tier | When | `model` | `effort` |
-|---|---|---|---|
-| `mechanical` | Rename, config, copy, dashboard regeneration | `haiku` | `low` |
-| `implement` | Plan, files, and acceptance criteria already clear | `sonnet` | `medium` |
-| `design` | Unclear scope, architecture, auth, payments, security, debug with an unclear cause | `opus` | `high` |
-
-Prefer the stack leaf agent (`forgebee:wordpress-frontend`, not `forgebee:frontend-specialist`) when the stack is known: a router dispatch loads two agent definitions. `security-auditor` always runs at `design`. A `BLOCKED` report below `design` → re-dispatch once at the next tier up, then escalate. The retry prompt carries the blocker text and the files the first attempt changed (`git diff --stat`), so the new agent does not build blind on partial edits.
-
-Also write `model` and `effort` in the dispatch prompt, so a router agent passes them on when it delegates. Do not set `name` on the Agent call: Claude Code drops `effort` when `name` is set.
-
-**`--fable` (opt-in):** dispatch with `model: "fable"` where the dispatch would run on Opus (the `design` model tier, or a `model: opus` agent with no tier). Leave `sonnet` and `haiku` dispatches unchanged. If a Fable dispatch fails because the model is unavailable or rejected, re-dispatch that agent once with `model: "opus"` and tell the user. Fable can bill usage credits, so never use it without the flag or an explicit request.
-
-### Budget envelope
-
-Every dispatch carries a budget that sub-dispatches must propagate:
-
-```json
-{
-  "budget": { "hopCount": 1, "maxHops": 8, "maxTokens": null, "maxUsd": null }
-}
-```
-
-Default `maxHops: 8`, ceiling 64. Reject `hopCount > maxHops` with `HOP_LIMIT_EXCEEDED`; surface trips to the user with the dispatch chain. Prevents runaway specialist fan-out. Full rules + the oracle-leakage hardening (constant-string peer errors, `maxTokens`/`maxUsd`) — only needed for untrusted multi-tenant fan-out — are in `${CLAUDE_PLUGIN_ROOT}/skills/_budget-breaker.md`.
-
-**If 3+ agents:** after each agent completes, record its workstream id + status + changed files to `docs/pm/state.yaml` (or a lightweight `.claude/team-progress.json` if no PM state exists) so progress survives a crash. On failure or a fresh session, read it and skip already-completed workstreams.
-
-**Agent Status Protocol:** Every specialist must report one of:
-
-| Status | Meaning | Your response |
-|--------|---------|---------------|
-| `DONE` | Work complete, self-review passed | Proceed |
-| `DONE_WITH_CONCERNS` | Complete but has trade-offs/risks | Show concerns to user, proceed unless they say stop |
-| `BLOCKED` | Cannot complete | Show blocker, re-route or escalate to user |
-| `NEEDS_CONTEXT` | Missing info from the session | Re-dispatch with additional context |
-
-Reject any response without a status. If `BLOCKED` twice on same issue → escalate to user.
-
-**No parseable Status line** (agent died, timed out, or returned off-format output) → treat as `BLOCKED`: surface the raw output tail to the user, re-dispatch **once** with a reminder of the required EOF-anchored `Status:` format, then escalate. Never silently stall on an unparseable return (Anti-Stop Rule).
-
-**Quality mandate:** Every specialist must self-review their output against review-all criteria (code quality, security, performance, accessibility) before reporting `DONE`. Reject output without evidence (test output, lint output, build output).
-
-## Step 5: Quality Gate & Deliver
-
-1. Collect results from all agents
-2. Verify integration — do the workstreams fit together?
-3. Run concrete checks:
-   - Full test suite — show actual output
-   - Linter/type-check — show actual output
-   - Build — show actual output
-   - Review `git diff HEAD` for DRY violations, missing error handling, security gaps
-4. **If issues found:** Route back to the responsible specialist with file:line references. Do NOT deliver with known issues.
-5. Report final status with summary of all changes
-
-**Quality contract:** After /team completes, review-all should find zero critical or high issues.
 
 ## Available Agents
 
-**Project agents and skills first.** An agent in the project's `.claude/agents/` or a skill in `.claude/skills/` (listed without the `forgebee:` prefix) beats a generic ForgeBee agent for the same work. Dispatch it by its bare name. A project skill that edits files runs inside an agent: name the skill in that agent's prompt.
+Prefer the leaf in the right column when the stack is known.
 
-**Tier 1 — auto-route to tech-specific subagents:**
-
-| Agent | Best For | Routes To |
-|-------|----------|-----------|
-| `frontend-specialist` | UI, components, styling, mobile | → `nextjs-frontend`, `wordpress-frontend`, `flutter-expert`, `ios-expert` |
-| `backend-engineer` | APIs, server logic, auth, automation | → `wordpress-backend`, `n8n-builder`, `llm-app-engineer` |
-| `database-specialist` | Schema, migrations, queries | → `supabase-specialist` |
-| `security-auditor` | Vulnerabilities, OWASP | → `wordpress-security` |
-| `test-engineer` | Test generation, coverage | → `phpunit-engineer` |
+| Agent | Best For | Leaf agents |
+|-------|----------|-------------|
+| `spec-writer` | Build spec from ticket + research | — |
+| `frontend-specialist` | UI, components, styling, mobile | `nextjs-frontend`, `wordpress-frontend`, `flutter-expert`, `ios-expert` |
+| `backend-engineer` | APIs, server logic, auth, automation | `wordpress-backend`, `n8n-builder`, `llm-app-engineer` |
+| `database-specialist` | Schema, migrations, queries | `supabase-specialist` |
+| `security-auditor` | Vulnerabilities, OWASP | `wordpress-security` |
+| `test-engineer` | Test generation, coverage | `phpunit-engineer` |
 | `devops-engineer` | Docker, CI/CD, deployment | — |
 | `performance-optimizer` | Profiling, bottlenecks | — |
 | `debugger-detective` | Bug hunting, root cause | — |
-| `deep-researcher` | Docs, APIs, technical questions | — |
+| `deep-researcher` | External docs, library APIs | — |
 | `ux-designer` | User flows, wireframes, accessibility | — |
-| `content-creator` | Copy, docs, blog posts | → `wordpress-content`, `nextjs-content` |
-| `seo-specialist` | Search optimization | → `wordpress-seo`, `nextjs-seo` |
+| `content-creator` | Copy, docs, blog posts | `wordpress-content`, `nextjs-content` |
+| `seo-specialist` | Search optimization | `wordpress-seo`, `nextjs-seo` |
+| `wp-design-system` | theme.json tokens, Figma variables, patterns as components | — |
+| `growth-engineer` | CRO, funnels, A/B test design | `woocommerce-cro`, `saas-cro` |
 
-**Debate skills** (for adversarial review without full /workflow). These are `context: fork` skills, not agents. Invoke each with the Skill tool, for example `Skill({ skill: "code-skeptic" })`. Never use them as `subagent_type`:
-`code-advocate`, `code-skeptic`, `code-judge`, `requirements-advocate`, `requirements-skeptic`, `requirements-judge`
-
-**Delivery:** `delivery-agent`, `verification-enforcer`, `contract-validator`
-
-## Rules
-
-- The tier from Step 1 caps the agent count. 3–5 is the Large ceiling, not a default
-- The lead orchestrates only — it does not edit, verify, or poll while agents run
-- Break work so each agent owns different files
-- Include full context in each agent's first message; a follow-up round trip costs as much as the first
-- Sequence reviewers after implementers — reviewing a diff still being written wastes the review
-- After all agents finish, run the full test suite as verification
+`review-all` and `grill` are **skills**: invoke them with the Skill tool, never as `subagent_type`.

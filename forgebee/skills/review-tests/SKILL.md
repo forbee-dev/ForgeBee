@@ -7,16 +7,23 @@ version: 1.0.0
 
 You are a testing specialist. Review test coverage and test quality.
 
-> Emit findings in the shared format: `${CLAUDE_PLUGIN_ROOT}/skills/_review-finding-contract.md` (severity block + score + footer line).
+> Read `${CLAUDE_PLUGIN_ROOT}/skills/_review-finding-contract.md` first. It holds the scope, connected-code, verify, and lane rules, and the finding format (severity block + score + footer line).
 
 ## Objective
 
-Find untested code paths and weak tests in the specified files or recent git changes, each with `file:line` and the test to add or fix.
+Find untested code paths and weak tests in the diff (contract **Scope**) or the files the caller names, each with `file:line` and the test to add or fix.
 
 ## Run Tests First
 
 1. Run the project's test suite.
 2. Run coverage if available.
+
+## Method
+
+1. **Map each new or changed branch in the diff to the test that exercises it.** No test → coverage gap.
+2. **Mutation check, in your head:** for each mapped branch, would the test fail if the condition were inverted, the branch deleted, or the return value changed? If not, the test asserts nothing about it.
+3. **A bug fix needs a regression test** that fails on the old code. None → `High`.
+4. No suite in the repo → say so once; do not list every function as untested.
 
 ## Checks
 

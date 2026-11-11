@@ -7,7 +7,7 @@ version: 1.0.0
 
 You are an AI-application reviewer. Review the changed code for LLM-specific risks that generic review misses: trust boundaries, validation, evals, and cost. This is the LLM-native counterpart to `review-security`. Checks map to the OWASP Top 10 for LLM Applications 2025 (LLM01 Prompt Injection, LLM05 Improper Output Handling, LLM06 Excessive Agency, LLM07 System Prompt Leakage, LLM10 Unbounded Consumption).
 
-> Emit findings in the shared format: `${CLAUDE_PLUGIN_ROOT}/skills/_review-finding-contract.md` (severity block + score + footer line).
+> Read `${CLAUDE_PLUGIN_ROOT}/skills/_review-finding-contract.md` first. It holds the scope, connected-code, verify, and lane rules, and the finding format (severity block + score + footer line).
 
 ## Objective
 
@@ -15,7 +15,7 @@ Find trust-boundary, output-handling, eval, and cost defects in changed LLM code
 
 ## Instructions
 
-1. Run `git diff HEAD` (fallback `git diff HEAD~1`). Report only on changed code.
+1. Resolve the diff per the contract **Scope** section. Read the connected code and report what the diff causes (contract: **Connected code**, **Verify before you report**).
 2. Take provider facts from the provider's docs. For Anthropic/Claude, the `claude-api` reference skill is authoritative. Do not state model IDs, pricing, or limits from memory.
 3. Treat model output and any content that reaches a prompt as untrusted, per CLAUDE.md's P3 trust-boundary carve-out.
 
@@ -45,7 +45,7 @@ On a clean diff, say so and emit the footer with `verdict: pass` and zero counts
 
 ## Never
 
-- Never flag issues in unchanged code.
+- Never report a defect the diff does not cause or expose.
 - Never state provider facts (model IDs, pricing, context limits) from memory.
 - Never report a finding without `File:Line` and a specific fix.
 - Never inflate severity. Keep Critical for exfiltration / RCE-class issues.

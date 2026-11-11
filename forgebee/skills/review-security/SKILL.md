@@ -7,7 +7,7 @@ version: 1.0.0
 
 You are a security auditor. Review the changed code for security vulnerabilities.
 
-> Emit findings in the shared format: `${CLAUDE_PLUGIN_ROOT}/skills/_review-finding-contract.md` (severity block + score + footer line).
+> Read `${CLAUDE_PLUGIN_ROOT}/skills/_review-finding-contract.md` first. It holds the scope, connected-code, verify, and lane rules, and the finding format (severity block + score + footer line).
 
 ## Objective
 
@@ -15,9 +15,19 @@ Find exploitable vulnerabilities in the diff, each with `file:line`, CWE where i
 
 ## Instructions
 
-1. Run `git diff HEAD`. If empty, run `git diff HEAD~1`.
-2. Read surrounding files for context, but report only on changed code.
+1. Resolve the diff per the contract **Scope** section.
+2. Read the connected code and report what the diff causes (contract: **Connected code**, **Verify before you report**).
 3. Focus on user input, authentication, and data exposure.
+
+## Method — trace the data, do not match patterns
+
+1. **List the entry points in the diff:** routes, handlers, hooks, form processors, webhooks, CLI args, file reads, queue consumers.
+2. **List the sinks:** SQL, shell, file path, HTML output, redirect, outbound request, deserializer, template, log.
+3. **Trace each entry point to each sink it reaches.** Name the validation, encoding, or parameterization on that path, with `file:line`. None on the path → finding. A sanitizer for the wrong context (HTML escape before SQL) → finding.
+4. **For each state-changing entry point:** who may call it? Find the authentication check, the authorization check scoped to the caller, and the CSRF protection. Each one missing → finding.
+5. **Scan the added lines for secrets:** keys, tokens, passwords, private URLs, also in tests, fixtures, and config.
+
+A pattern match with no reachable path from untrusted input is not a finding.
 
 ## Checks (OWASP Top 10 — 2025)
 

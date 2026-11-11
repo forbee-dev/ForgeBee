@@ -10,7 +10,7 @@ forgebee/
 ├── settings.json                # Plugin default: main thread runs as forgebee:orchestrator
 ├── hooks/
 │   ├── hooks.json               # Hook event wiring
-│   └── scripts/                 # 28 wired lifecycle hooks (+ _common.js shared helper)
+│   └── scripts/                 # 27 wired lifecycle hooks (+ _common.js shared helper)
 ├── agents/
 │   ├── *.md                     # 46 specialist agent personas + orchestrator, direct (main-thread)
 ├── references/                  # Reference material extracted from agents (outside agents/ so it is not loaded as agents)
@@ -20,8 +20,8 @@ forgebee/
 ├── skills/
 │   ├── audit-self/              # On-demand quality scorecard with regression detection
 │   ├── brainstorming/           # Opt-in hard-gate via /workflow --strict
-│   ├── checkpoint-preview/      # Diff-by-concern review before Code Debate
-│   ├── code-{advocate,skeptic,judge}/      # Code debate triad (context: fork)
+│   ├── checkpoint-preview/      # Diff-by-concern human gate before Deliver
+│   ├── code-{skeptic,judge}/               # Skeptic Pass (context: fork)
 │   ├── continuous-learning/     # Instinct-based learning system + references/
 │   ├── elicitation/             # 18 reasoning methods (methods.csv)
 │   ├── figma-code-sync/         # Code-first Figma design-system reconciliation
@@ -38,7 +38,7 @@ forgebee/
 └── eval/                        # Eval scenarios
 ```
 
-## Key Features (v7.1.1)
+## Key Features (v8.0.0)
 
 ### Behavioral discipline (Karpathy principles)
 - **P1 Trace test** — every changed line traces to the user's request; no drive-by edits
@@ -49,8 +49,8 @@ forgebee/
 - **P6 Severity standard** — Critical / High / Medium / Low across all review skills
 
 ### Quality pipeline
-- **Two-stage review** in `/workflow`: Spec Compliance Check → Checkpoint Preview → Code Debate → Deliver
-- **Adversarial debate triads** (advocate/skeptic/judge) for requirements, code, and strategy
+- **One review loop** in `/team` and `/workflow`: `review-all` on the full change → fix → review again (max 3 rounds), then Verify → Checkpoint Preview → Deliver in `/workflow`
+- **Adversarial debate** (advocate/skeptic/judge) for requirements and strategy; a Skeptic Pass (skeptic + judge) for Critical-tier code
 - **3-failed-fix Iron Law** in `debugger-detective` — escalate to architecture after 3 attempts
 - **Failure-Capture template** (7 fields) required before any recovery action
 - **Verification-enforcer + delivery-agent contract** — Step 0 reads verdict, does NOT re-run
@@ -63,21 +63,20 @@ forgebee/
 
 ### Safety
 - **Adversarial Input Hardening** preamble on all 46 agents (homoglyphs, urgency, role-play overrides flagged)
-- **Budget circuit breaker** on every `Task()` dispatch (maxHops default 8, ceiling 64) with constant-string errors
 - **Defensive hooks** — `safeWriteFlag` (O_NOFOLLOW symlink defense), `validateHookFields` (settings.json guard)
 - **Sensitive-path refusal** in compression (`.env`, credentials, `.ssh/`, `.aws/`, private keys)
 
 ### Counts
 - **39 slash commands** — orchestration, diagnosis, quality, growth, learning, meta
 - **46 specialist agents** — code, growth, debate, WordPress, Next.js, mobile, CRO, tool
-- **35 skills** — 14 inline + 21 context:fork
-- **28 lifecycle hooks** across 10 events
+- **34 skills** — 14 inline + 20 context:fork
+- **27 lifecycle hooks** across 8 events
 - **6 templates** — decision log, addendum, failure-capture, investigation case file, prompt-defense baseline, brainstorming/spec
 
 ### Other capabilities
 - **Orchestrator by default** — the main thread runs as `forgebee:orchestrator`, delegates real work, keeps tiny edits inline; opt out with `claude --agent forgebee:direct`
 - **Multi-platform** — works with Claude Code, Codex, Cursor, Gemini, OpenClaw, OpenCode (separate manifests or installers)
-- **Adaptive pipeline** — `/workflow` scrum phase is promptable (full sprint planning OR direct delegation)
+- **Ticket-to-code `/team`** — goal and outcome first, ticket claims checked against the code, `spec-writer` spec, review loop
 - **Decision logs + addenda** — `/workflow` and `/plan` persist decisions across runs
 - **Continuous learning** — Stop hook asks Claude to save instincts; SessionStart digest applies them and auto-activates ≥0.7; `/learn` and `/evolve` stay manual
 - **`/audit-self`** — re-runs the quality scorecard, surfaces regressions since last audit

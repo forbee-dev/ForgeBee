@@ -950,8 +950,6 @@ function parseArgs() {
       options.generate = true;
     } else if (arg === '--dry-run') {
       options.dryRun = true;
-    } else if (arg === '--force') {
-      options.force = true;
     } else if (arg === '--scope' && args[i + 1]) {
       options.scope = args[++i];
     } else if (arg === '--domain' && args[i + 1]) {
@@ -964,8 +962,6 @@ function parseArgs() {
       options.activate = args[++i];
     } else if (arg === '--reject' && args[i + 1]) {
       options.reject = args[++i];
-    } else if (arg === '--include-pending') {
-      options.includePending = true;
     } else if (arg === '--auto') {
       options.auto = true;
     } else if (arg === '--id' && args[i + 1]) {

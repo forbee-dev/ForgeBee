@@ -100,7 +100,7 @@ Track macro (purchase/signup) and micro (add-to-cart, scroll depth) conversions 
 - [ ] Flywheel mapped (action → metric → current → target) with friction and accelerators
 - [ ] Platform tactics with estimated impact
 - [ ] Shareability analysis with built-in sharing mechanics
-- [ ] Funnel drop-off identified (or estimated if no analytics) + Invesp 7 principles scored
+- [ ] Funnel drop-off from the user's analytics + Invesp 7 principles scored. No analytics → no CRO change: recommend instrumentation first and label any estimate `[assumption]`
 - [ ] PXL-scored queue with ≥3 experiments (hypothesis + sample + win criterion)
 - [ ] Quick wins with expected impact
 - [ ] If delegated: the subagent's verification checklist passed

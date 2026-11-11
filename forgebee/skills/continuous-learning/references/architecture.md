@@ -27,7 +27,7 @@ Session Activity (in a git repo)
 |   * grep-before-edit.yaml (0.6)          |
 +-----------------------------------------+
       |
-      | /evolve clusters + /promote
+      | /evolve clusters + `instinct-cli.js promote`
       v
 +-----------------------------------------+
 |  evolved/                                |
@@ -50,12 +50,12 @@ Each project gets a 12-character hash ID. A registry at `~/.claude/forgebee-lear
 
 ## Hooks
 
-Observation hooks fire on every tool call (100% reliable — unlike skills which are probabilistic):
+Observation hooks fire on every matched tool call. `forgebee/hooks/hooks.json` registers them:
 
 ```json
 {
-  "PreToolUse": [{ "matcher": "*", "hooks": [{ "type": "command", "command": "node \"${CLAUDE_PLUGIN_ROOT}/skills/continuous-learning/scripts/observe.js\"" }] }],
-  "PostToolUse": [{ "matcher": "*", "hooks": [{ "type": "command", "command": "node \"${CLAUDE_PLUGIN_ROOT}/skills/continuous-learning/scripts/observe.js\"" }] }]
+  "PreToolUse": [{ "matcher": "Edit|Write|Bash|Task|Agent", "hooks": [{ "type": "command", "command": "node ${CLAUDE_PLUGIN_ROOT}/skills/continuous-learning/scripts/observe.js" }] }],
+  "PostToolUse": [{ "matcher": "Edit|Write|Bash|Task|Agent", "hooks": [{ "type": "command", "command": "node ${CLAUDE_PLUGIN_ROOT}/skills/continuous-learning/scripts/observe.js" }] }]
 }
 ```
 

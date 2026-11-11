@@ -16,14 +16,15 @@ ForgeBee includes an automated PM layer that tracks features across sessions usi
 Features progress through phases depending on their origin:
 
 ```
-idea → idea-debate → mvp-definition → mvp-debate → planning → requirements-debate →
-architecture → sprint-planning → execution → code-debate → delivery → done
+idea → idea-debate → mvp-definition → mvp-debate → grill → planning → requirements-debate →
+architecture → sprint-planning → execution-plan → execution → review → skeptic-pass → verify → checkpoint →
+delivery → done
 ```
 
 Entry points:
 - `/idea` starts at `idea`
 - `/plan` starts at `planning`
-- `/workflow` starts at `planning` (or resumes existing)
+- `/workflow` starts at `grill` or `planning` (or resumes existing)
 
 ### Automated Tracking
 
@@ -44,8 +45,7 @@ TASKS.md is a downstream consumer of the PM system. The `/pm` command syncs stor
 
 Runs on SessionStart and Stop:
 - Reports active feature count and blocked stories
-- Detects stale features (not updated in 7+ days)
-- Creates PM directories if they don't exist
+- Detects stale features (not done, not updated in 7+ days)
 
 ### State Schema
 
@@ -69,7 +69,7 @@ features:
         blocked_by: ""
     decisions:
       - id: dec-001
-        type: idea-debate | requirements-debate | code-debate | architecture | user-override
+        type: idea-debate | requirements-debate | skeptic-pass | architecture | user-override
         ruling: approved | blocked | flagged | proceed | pivot | kill | trim
         summary: ""
         date: ""
@@ -77,7 +77,7 @@ features:
     risks:
       - description: ""
         severity: low | medium | high | critical
-        source: requirements-debate | code-debate | idea-debate
+        source: requirements-debate | skeptic-pass | review | idea-debate
         status: open | mitigated | accepted
     blocked:
       - description: ""

@@ -23,11 +23,12 @@ Every governance decision is recorded with timestamp, session ID, and context:
 
 | Event Type | Source | What's Logged |
 |:-----------|:-------|:-------------|
-| `permission_denied` | permission-denied-logger | Every auto-mode classifier denial with tool, command, and reason |
-| `debate` | judge agents | Every ruling (approve/block/flag) with severity |
+| `permission_denied` | permission-denied-logger hook | Every auto-mode classifier denial with tool, command, and reason |
 | `verification` | verification-enforcer | Every verdict with evidence summary |
-| `escalation` | judge agents | High/Critical items escalated to user |
-| `dispatch` | workflow/growth | Every agent dispatch with pipeline context |
+| `dispatch` | PreToolUse hook on `Task`/`Agent` | Every agent dispatch with the requested model, effort, and caller |
+| `session_end` | Stop hook | Session end with cwd and permission mode |
+
+`audit-trail.js` also accepts `debate` and `escalation` entries, but no ForgeBee surface writes them today. Report their counts as 0, not as a clean result.
 
 ## Usage
 
@@ -67,10 +68,9 @@ Present results in a clean table format:
 
 | Timestamp | Type | Feature | Summary |
 |:----------|:-----|:--------|:--------|
-| 2024-01-15 14:30 | debate | auth-refactor | APPROVE — code quality meets threshold |
 | 2024-01-15 14:28 | verification | auth-refactor | VERIFIED — 47 tests pass, build clean |
-| 2024-01-15 14:25 | dispatch | auth-refactor | backend-engineer → implement auth middleware |
-| 2024-01-15 14:20 | permission | - | ALLOW — npm test (tier: safe) |
+| 2024-01-15 14:25 | dispatch | - | forgebee:backend-engineer → implement auth middleware (model: sonnet, effort: medium) |
+| 2024-01-15 14:20 | permission_denied | - | denied Bash: rm -rf build (classifier) |
 ```
 
 For summaries, calculate:

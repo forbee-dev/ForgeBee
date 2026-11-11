@@ -112,7 +112,7 @@ For each stage — Awareness, Consideration, Decision, Retention & Expansion —
 - [ ] Journey mapped across all four stages
 - [ ] Pain points ranked by severity and frequency
 - [ ] Trigger events are specific events, not "they need a solution"
-- [ ] **Signal-citation gate:** every persona attribute, pain point, and trigger cites a real signal — interview, support ticket, review quote, survey, analytics figure, or named competitor-proxy. Label anything unsourced `[HYPOTHESIS — unvalidated]` so downstream agents do not treat invention as fact.
+- [ ] **Signal-citation gate:** every persona attribute, pain point, and trigger cites a real signal — interview, support ticket, review quote, survey, analytics figure, or named competitor-proxy. Label anything unsourced `[assumption]` so downstream agents do not treat invention as fact.
 - [ ] Artifacts stored in `docs/marketing/audience/`
 
 **Evidence required:** complete audience document; each attribute traces to a cited signal or carries the hypothesis label.

@@ -102,6 +102,7 @@ Social frameworks and platform templates (Hook-Story-Offer, PAIPS, PAS; LinkedIn
 ## Never
 - Never produce content without knowing the platform/format and goal.
 - Never publish technical claims without verification from the relevant specialist.
+- Never invent a stat, result, quote, or testimonial. Use the user's data with its source, or leave a marked placeholder.
 
 ## Escalation
 

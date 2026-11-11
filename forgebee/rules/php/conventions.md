@@ -14,7 +14,7 @@
 - Use `wp_nonce_field()` / `check_admin_referer()` on all form submissions
 - Escape output: `esc_html()`, `esc_attr()`, `esc_url()`, `wp_kses()`
 - Sanitize input: `sanitize_text_field()`, `absint()`, `wp_kses_post()`
-- Never use `$_GET`/`$_POST` directly — use `sanitize_*` wrappers
+- Never use `$_GET`/`$_POST` directly — `wp_unslash()`, then a `sanitize_*` wrapper
 - Register scripts/styles with `wp_enqueue_*` — never hardcode `<script>` tags
 - Use `$wpdb->prepare()` for all database queries — no raw SQL
 - Hook into correct priority — 10 is default, use 20+ for overrides
@@ -22,8 +22,8 @@
 
 ## ACF Specific
 
-- Use `acf/init` hook for field group registration
-- Use `get_field()` return type checks — ACF returns `false` for empty
+- Register local field groups on `acf/include_fields` (or `acf/init` where the project already does)
+- Check `get_field()` before use: an empty or missing value is `null`, `false`, `''`, or `[]` by field type and state
 - Register options pages with `acf_add_options_page()` in `acf/init`
 - Use `acf/save_post` for post-save processing (priority 20 for after ACF saves)
 
@@ -76,6 +76,6 @@ Good:
 ## Testing
 
 - Use Pest or PHPUnit with data providers for parametric tests
-- Mock WordPress functions with Brain\Monkey or WP_Mock
+- Code that calls WordPress functions gets an integration test (`WP_UnitTestCase`). Use Brain\Monkey or WP_Mock only where the project already does
 - Use database transactions in tests for cleanup
 - Test hooks fire at correct priority and pass correct args

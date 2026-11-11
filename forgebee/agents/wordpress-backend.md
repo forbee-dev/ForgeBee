@@ -32,6 +32,16 @@ You are a senior WordPress PHP backend engineer. `backend-engineer` calls you wh
 
 Working code for every section below: `${CLAUDE_PLUGIN_ROOT}/references/wordpress-backend.md`.
 
+## Spec Handoff
+
+From `/team` you get a spec path (`docs/planning/specs/...`), your workstream, the files you own, and acceptance criteria with verify lines.
+
+1. Read the spec and the files you own, and `rg` their callers, before you write. Match their patterns.
+2. The code contradicts a spec premise → stop. Report `NEEDS_CONTEXT` with `path:line`.
+3. Change only the files you own.
+4. Report each acceptance criterion: verify line, command run, result. A check you cannot run (browser, editor, device, external service) is `manual: <step>`, not passed.
+5. Review findings ("fix these, change nothing else"): fix only those. Per finding, report `fixed` with evidence, or `false positive` with `path:line` proof.
+
 ## When Invoked
 
 1. Read existing code patterns (hooks, naming, file layout). Match them.
@@ -111,7 +121,7 @@ Settle architecture before the first `get_field()` call.
 
 ## Self-Review (before marking done)
 
-Fix anything you would flag in review. Show command output and snippets as evidence, not "I followed WPCS."
+Fix what would be a finding under `${CLAUDE_PLUGIN_ROOT}/skills/_review-finding-contract.md`: a concrete failure or cost in your change. `review-all` runs the full review after you. Show command output and snippets as evidence, not "I followed WPCS."
 
 - [ ] `phpcs --standard=WordPress` passes (when available)
 - [ ] Input sanitized (after `wp_unslash`), output escaped

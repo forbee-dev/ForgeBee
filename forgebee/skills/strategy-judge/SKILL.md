@@ -15,7 +15,7 @@ For each item, weigh the evidence on both sides and rule APPROVE, BLOCK, or FLAG
 
 ## Evaluation Criteria
 
-- **Evidence quality:** data, competitor examples, audience research, and proven frameworks are strong. "I think", "usually", "most companies" are weak. Speculation counts as no evidence.
+- **Evidence quality:** data, competitor examples, audience research, and proven frameworks are strong. "I think", "usually", "most companies" are weak. Speculation counts as no evidence. So does an `[assumption]` or a claim with no source.
 - **Market reality:** does the argument match how this market works? Real examples? Timeline realistic for the team?
 - **Strategic coherence:** does the artifact connect brand → audience → content → distribution? Would a marketing leader approve it?
 

@@ -1,6 +1,46 @@
 # Review Finding Contract (shared)
 
-> Canonical output format for every `review-*` skill. `review-all` and `/audit-self` read it to aggregate findings across domains. Findings are concrete, severity-tagged, and machine-parseable.
+> Canonical rules and output format for every `review-*` skill. `review-all` and `/audit-self` read it to aggregate findings across domains. Findings are concrete, verified, severity-tagged, and machine-parseable.
+
+## Scope (which diff)
+
+Review the whole change, not the last commit.
+
+1. The caller gave a range, a base, or a file list → use it. A forked skill sees no conversation; the skill arguments carry it.
+2. Else resolve the base branch and diff the working tree against it:
+   ```bash
+   BASE=$(git merge-base HEAD "$(git symbolic-ref -q --short refs/remotes/origin/HEAD || echo main)")
+   git diff "$BASE"          # commits on the branch + staged + unstaged
+   git status --porcelain    # untracked files are part of the change: read them
+   ```
+3. Empty (work is on the base branch, tree clean) → `git diff HEAD~1`.
+
+State the range you reviewed in the first line of the report.
+
+## Connected code
+
+A diff shows what changed, not what it breaks. For each changed function, hook, route, schema, or exported name, read its callers and the code it calls (`rg` the name, scoped). Report an issue when the diff **causes or exposes** it, also when the broken line is in an unchanged file: cite that line and name the changed line that breaks it. Do not report old defects the diff does not touch.
+
+## Verify before you report
+
+A finding is a claim. Before you report a Critical or High finding, try to disprove it: read the full code path, look for a guard upstream, a framework default, a test that covers it. Report it only when it survives. A finding you could not confirm from the code gets `[unverified]` at the start of its title, is at most Medium, and names the check that would confirm it. Never invent a finding to seem rigorous; a clean result is a valid result.
+
+## What counts as a finding
+
+A finding names a concrete failure or cost: an input that breaks it, a caller that fails, a user who is blocked, a query that repeats. "Could be cleaner" with no cost is not a finding. A preference the project's own code does not follow is not a finding. `/team` and `/workflow` fix every finding at every severity, so each weak one costs a fix round.
+
+## Lanes (no double report)
+
+Each defect has one owner. Outside your lane, report only Critical or High.
+
+| Lane | Owner |
+|------|-------|
+| Logic, error handling, dead code, single-function over-engineering | `review-code` |
+| Cross-file architecture, module boundaries, coupling | `review-best-practices` |
+| Naming, imports, type and framework conventions | `review-code-style` |
+| Comments, docblocks, README, doc padding (P7) | `review-docs` |
+| Injection, auth, secrets, access control | `review-security` (`review-wordpress` on WP code, `review-prompt` on LLM code) |
+| N+1, caching, hot paths | `review-performance` (`review-database` for schema and migrations) |
 
 ## Severity (CLAUDE.md P6 — the only allowed vocabulary)
 

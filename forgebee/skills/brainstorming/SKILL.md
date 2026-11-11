@@ -93,7 +93,7 @@ Track as tasks, in order:
 
 After approval and commit:
 1. Stop brainstorming. Do not re-open decisions.
-2. Invoke `/plan` (or `/workflow` if the user asked for the full pipeline) with the spec path.
+2. Invoked by `/workflow --strict` → return the spec path to `/workflow`; its Plan phase loads the spec. Otherwise invoke `/plan` (or `/workflow` if the user asked for the full pipeline) with the spec path.
 3. Downstream skills treat the spec as authoritative. Disagreements start a new conversation, not a silent scope change.
 
 The gate is opt-in because most changes do not need a design phase and only the user knows which do. To propose making it default, raise a `/learn` candidate.

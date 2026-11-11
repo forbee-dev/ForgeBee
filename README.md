@@ -3,89 +3,68 @@
   <img src="https://img.shields.io/badge/Codex-Compatible-10B981?style=for-the-badge&logoColor=white" alt="Codex" />
   <img src="https://img.shields.io/badge/Cursor-Compatible-1F2937?style=for-the-badge&logoColor=white" alt="Cursor" />
   <img src="https://img.shields.io/badge/Gemini-Compatible-4285F4?style=for-the-badge&logoColor=white" alt="Gemini" />
-  <img src="https://img.shields.io/badge/version-7.1.1-blue?style=for-the-badge" alt="Version" />
+  <img src="https://img.shields.io/badge/version-8.0.0-blue?style=for-the-badge" alt="Version" />
   <img src="https://img.shields.io/badge/license-MIT-green?style=for-the-badge" alt="License" />
 </p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/agents-46-orange?style=for-the-badge" alt="Agents" />
   <img src="https://img.shields.io/badge/commands-39-red?style=for-the-badge" alt="Commands" />
-  <img src="https://img.shields.io/badge/hooks-25-blueviolet?style=for-the-badge" alt="Hooks" />
-  <img src="https://img.shields.io/badge/skills-35-teal?style=for-the-badge" alt="Skills" />
-</p>
-
-<p align="center">
-  <sub>46 agents = <strong>26 framework-agnostic</strong> (code, growth, debate, planning) + <strong>20 stack specialists</strong> (WordPress, Next.js, Supabase, mobile, n8n, LLM apps, WooCommerce)</sub>
+  <img src="https://img.shields.io/badge/skills-34-teal?style=for-the-badge" alt="Skills" />
+  <img src="https://img.shields.io/badge/hooks-27-blueviolet?style=for-the-badge" alt="Hooks" />
 </p>
 
 <h1 align="center">ForgeBee</h1>
 
 <p align="center">
   <strong>A colony of AI agents forging your product</strong><br/>
-  46 specialist agents. 35 skills. 39 slash commands. 28 lifecycle hooks.<br/>
-  Three execution modes: inline skills, context:fork, subagents.<br/>
-  Adaptive pipeline. Karpathy principles. Adversarial debate. Continuous learning.<br/>
-  <em>Works with Claude Code, Codex, Cursor, Gemini, OpenClaw, and OpenCode.</em>
+  ForgeBee turns Claude Code into a delivery team.<br/>
+  It checks the ticket against your code, writes a spec you approve,<br/>
+  builds with specialist agents, and reviews its own work until it is clean.
 </p>
 
 <p align="center">
   <a href="#quick-start">Quick Start</a> &nbsp;&bull;&nbsp;
+  <a href="#how-it-works">How It Works</a> &nbsp;&bull;&nbsp;
+  <a href="#which-command-do-i-use">Which Command</a> &nbsp;&bull;&nbsp;
   <a href="#commands">Commands</a> &nbsp;&bull;&nbsp;
   <a href="#agents">Agents</a> &nbsp;&bull;&nbsp;
   <a href="#hooks">Hooks</a> &nbsp;&bull;&nbsp;
   <a href="#continuous-learning">Learning</a> &nbsp;&bull;&nbsp;
   <a href="#growth-os">Growth OS</a> &nbsp;&bull;&nbsp;
-  <a href="#project-management">PM System</a> &nbsp;&bull;&nbsp;
-  <a href="#openclaw">OpenClaw</a> &nbsp;&bull;&nbsp;
-  <a href="#opencode">OpenCode</a>
+  <a href="#other-harnesses">Other Harnesses</a>
 </p>
 
 ---
 
-## Why ForgeBee?
+## The problem ForgeBee solves
 
-Claude Code and OpenClaw are powerful out of the box. ForgeBee makes them **opinionated and structured** — so your agent plans before it codes, debates before it ships, and verifies before it marks anything "done."
+A coding agent does what the ticket says. That is the problem.
+
+A ticket is written by someone who did not read your code. It names the wrong file, assumes a field that does not exist, or suggests a fix that your codebase already has in another form. The agent takes all of it as true, builds on it, and reports "done".
+
+ForgeBee changes the order of work:
+
+1. **Goal first.** It extracts the goal and the outcome. Every other statement in the ticket is a claim to check.
+2. **Evidence before code.** It checks each claim against your code and tells you which ones are false.
+3. **A spec you approve.** One page: the approach, the files, and acceptance criteria that each name a command to verify them.
+4. **Specialists build.** A WordPress task goes to a WordPress agent, not to a generalist.
+5. **Review until clean.** It runs your tests, reviews the whole change, fixes every finding, and reviews again. After three rounds without a clean result, it stops and asks you.
 
 | Without ForgeBee | With ForgeBee |
 |:--|:--|
-| Agent jumps straight into coding | Agent plans, debates requirements, then codes |
-| "It should work" | Evidence-based verification with actual test output |
-| Single-agent, single-pass | 46 agents + 35 skills working in parallel with blind review |
-| Manual project tracking | Automated state.yaml + markdown dashboards |
-| No marketing workflow | Full 9-phase Growth OS with 11 marketing agents + 3 strategy debate agents |
-| Every session starts from scratch | Continuous learning — heuristic pattern detection + pending instinct approval |
-| Edits break silently | Auto-format, typecheck, and lint on every edit |
-| Permission prompts everywhere | Mode-aware permissions — fully yields to auto-mode's classifier; enforces blocklist in default and bypass |
-| Commands duplicate agent logic | Commands delegate to specialist agents with automatic fallback |
-| Review finds issues that should have been caught | Quality pipeline — specialists self-review, code-skeptic validates, review-all just confirms |
-| Agents take shortcuts under pressure | Every agent has explicit "Never" rules — hard boundaries that can't be rationalized away |
-| Skill descriptions drift silently | All skill descriptions follow "Use when..." triggering format — Claude reads triggers, not workflow summaries |
-| Version numbers drift across manifests | `.version-bump.json` + `scripts/bump-version.sh` — single source of truth, drift detection, full-repo audit |
-| Debug loops forever on the same bug | 3-failed-fix Iron Law — debugger-detective escalates to architecture question after 3 failed attempts |
-| User forgets to run `/learn` | Stop hook asks Claude to save instincts after a 3+ tool-call turn; SessionStart digest applies active instincts and auto-activates ≥0.7 |
-| One implementation = one harness | Single source ships to Claude Code, Codex, Cursor, Gemini via dedicated manifests |
-| Agents make silent assumptions | Karpathy P1–P4 baked into every code-producing agent: trace test, senior-engineer check, YAGNI timing, orphan rule |
-| Orchestrators idle after dispatch | P5 Anti-Stop Rule in `/workflow` + `/team`: continue with next-step work immediately, the harness wakes you when sub-agents return |
-| Review reviewer drift | P6 Severity Standard (`Critical/High/Medium/Low`) across all review skills — enables cross-skill aggregation |
-| Discovery searches hang on vendored subtrees | T1–T5 Tool Discipline in `CLAUDE.md`: prefer `rg` over `grep -r`, bound every search (scope/type/timeout), `Glob` before `grep`, exclude `vendor`/`node_modules` — kills 10-minute stalls on `wp-content/` and monorepo roots |
-| Untrusted code can hijack agents | 6-line Adversarial Input Hardening preamble in all 46 agents — homoglyphs, urgency, role-play overrides flagged not executed |
-| Sub-agent reports waste orchestrator context | `terse-report` skill cuts ~65% of report tokens while preserving code/citations exact |
-| Decisions get lost between sessions | `/workflow` and `/plan` emit `.decision-log.md` + `addendum.md` — re-read on next run |
-| Recursive debate fan-out runs away | Budget circuit breaker (`maxHops`, `maxTokens`, `maxUsd`) on every dispatch with constant-string errors |
-| Plans start with unasked questions | `grill` skill interviews you on the decision tree in rounds, looks up facts itself, and hands a resolved decision log to Plan |
-| Silent picks mid-task | `surface-ambiguity` micro-skill forces listing of interpretations + rationale before non-trivial choices |
-| Debugging without evidence | Failure-Capture template (7 fields) required before any recovery action in `debugger-detective` |
-| Diagnosis vs fix blur together | `/investigate` produces a forensic case file (Confirmed / Deduced / Hypothesized) — `debugger-detective` then fixes |
-| Reviews skim or lose-the-forest | Checkpoint Preview phase: diff-by-concern with `[auth]` / `[schema]` / `[billing]` risk tags before debate |
-| Plans drift without stress-test | `/elicit` applies 18 named methods (Pre-mortem, Red Team, Inversion, Stakeholder Round Table…) to your own output |
-| Quality decays as the kit grows | `/audit-self` re-runs the full scorecard on demand and surfaces regressions since last audit |
-| Claude scans every agent/skill/command frontmatter block per routing decision | Auto-generated `forgebee/INDEX.md` loaded once on SessionStart — replaces speculative scanning with one indexed read |
+| The agent builds what the ticket says | The agent checks the ticket against the code first, and reports the false premises |
+| "It should work" | Each acceptance criterion has a verify command and its output |
+| One generalist, one pass | 46 specialists, routed by stack, with model and effort chosen per task |
+| Review reads the last commit | Review reads the whole branch, the callers of changed code, and runs the checks |
+| A finding is an opinion | A Critical or High finding must survive an attempt to disprove it |
+| Review, fix, hope | Review, fix, review again, until zero findings, with a cap of three rounds |
+| Every session starts from zero | Learned instincts and code learnings load at session start |
+| Risky commands run | A permission guard and a secret scanner block them before they run |
 
 ---
 
 ## Quick Start
-
-**Two commands. That's it.**
 
 ```bash
 # Inside Claude Code:
@@ -93,14 +72,27 @@ Claude Code and OpenClaw are powerful out of the box. ForgeBee makes them **opin
 /plugin install forgebee@forbee-dev
 ```
 
-Then edit `CLAUDE.md` with your project details and start working. Hooks activate automatically, commands are available immediately.
+Then give it work:
 
-**Orchestrator mode (default).** The main conversation runs as `forgebee:orchestrator` for the whole session. It plans, routes each request to a `forgebee:` specialist, and reviews their reports. Tiny changes that need no specialty (up to 3 lines, up to 2 edits per request) it makes itself, because a subagent would cost more than the change. Bigger edits by the main thread are blocked, except for orchestration files (`docs/pm`, `docs/planning`, `docs/learnings`, `TASKS.md`, `CLAUDE.md`, `.claude/`). Subagents edit as usual.
+```
+/team PROJ-142: the newsletter block ignores the "hide on mobile" setting
+```
 
-To work without orchestration, start with `claude --agent forgebee:direct`, or set `"agent": "forgebee:direct"` in your own `settings.json` (your setting overrides the plugin default).
+ForgeBee reads the ticket, checks its claims against your code, and shows you a spec. You approve. It builds, reviews, and reports.
+
+Hooks start automatically. Edit `CLAUDE.md` with your stack and conventions to give the agents your project rules.
 
 <details>
-<summary><strong>Install from local directory</strong></summary>
+<summary><strong>Requirements</strong></summary>
+
+- Claude Code 2.1.281+ (orchestrator mode needs an empty-prompt main-thread agent; `--fable` needs 2.1.257+)
+- Node.js 18+ (all hooks are plain Node.js: no bash, no python, no jq, no dependencies)
+- Agent Teams: set `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`
+
+</details>
+
+<details>
+<summary><strong>Install from a local directory</strong></summary>
 
 ```bash
 git clone git@github.com:forbee-dev/ForgeBee.git
@@ -109,151 +101,242 @@ claude --plugin-dir ./ForgeBee/forgebee
 
 </details>
 
-<details>
-<summary><strong>Requirements</strong></summary>
+---
 
-- Claude Code 2.1.281+ (orchestrator mode needs an empty-prompt main-thread agent; `--fable` needs 2.1.257+)
-- Node.js 18+ (all hooks are pure Node.js — no bash, no python, no jq)
-- Agent Teams: set `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`
+## How It Works
 
-</details>
+### The main thread is an orchestrator
+
+With ForgeBee installed, the main conversation does not write product code. It plans, routes each task to the specialist that fits your stack, and checks the reports. A hook enforces this: it blocks main-thread edits larger than three lines. Specialists run in their own context, so your main conversation stays small.
+
+```mermaid
+flowchart LR
+    U(["You"]) --> O["Orchestrator<br/>plans, routes, checks reports"]
+    O -->|"task + spec + acceptance criteria"| A1["wordpress-backend"]
+    O -->|"task + spec + acceptance criteria"| A2["nextjs-frontend"]
+    O -->|"task + spec + acceptance criteria"| A3["database-specialist"]
+    A1 -->|"evidence + status"| O
+    A2 -->|"evidence + status"| O
+    A3 -->|"evidence + status"| O
+    O --> R["review-all<br/>runs checks, reviews the whole change"]
+    R -->|"findings"| O
+    O --> U
+```
+
+Each dispatch gets a model tier: `haiku` for mechanical edits, `sonnet` when the plan is clear, `opus` for design, security, and unclear bugs. To work without orchestration, start with `claude --agent forgebee:direct`.
+
+### `/team` — from ticket to reviewed code
+
+`/team` is the default flow for a ticket, a bug, a feature, or a refactor.
+
+```mermaid
+flowchart TD
+    T(["Ticket, prompt, or instruction"]) --> U["1. Understand<br/>goal + outcome<br/>all other statements = claims"]
+    U --> R["2. Research<br/>check each claim against the code<br/>find the smallest change that works"]
+    R --> G{"Unknowns the code<br/>cannot answer?"}
+    G -->|"yes"| GR["3. Grill<br/>questions with a recommended answer"]
+    G -->|"no"| S
+    GR --> S["4. Spec<br/>claims rejected, approach,<br/>acceptance criteria + verify lines"]
+    S --> AP{{"You approve"}}
+    AP --> B["5. Build<br/>leaf specialists, in parallel where possible"]
+    B --> L["6. Review loop"]
+    L --> D(["Report: outcome met, evidence, rejected claims"])
+```
+
+A small change (one or two files) gets a short spec in chat. A larger change gets a spec file in `docs/planning/specs/`, written by the `spec-writer` agent.
+
+### The review loop
+
+One loop replaces a stack of gates. `review-all` runs your test, lint, and build commands, checks each acceptance criterion, reads the callers of changed code, and verifies each serious finding before it reports it.
+
+```mermaid
+flowchart TD
+    A["review-all on the full change<br/>(branch diff + uncommitted + untracked)"] --> B{"Zero findings,<br/>checks pass,<br/>confidence High?"}
+    B -->|"yes"| DONE(["Done"])
+    B -->|"no"| C["Fix every finding<br/>Critical, High, Medium, and Low"]
+    C --> N{"Round 3<br/>finished?"}
+    N -->|"no"| A
+    N -->|"yes"| H(["Stop. Report the cause.<br/>You decide the next step."])
+```
+
+Three rounds should leave nothing significant. If findings remain, the loop itself has a defect, and ForgeBee reports which one: a gap in the spec, fixes that introduce new defects, a reviewer and a fixer that disagree, the wrong agent, or no checks to run.
+
+### `/workflow` — when the work needs a recorded design
+
+Use `/workflow` when the work needs an architecture decision, or when it changes auth, payments, or the data model. It has two planned stops for you: the Execution Plan and the Checkpoint.
+
+```mermaid
+flowchart LR
+    G["Grill"] --> P["Plan"] --> RD["Requirements<br/>Debate*"] --> AR["Architect<br/>(ADR)"] --> EP{{"Execution Plan<br/>you approve"}}
+    EP --> EX["Execute"] --> RL["Review loop"] --> SP["Skeptic<br/>Pass*"] --> V["Verify"] --> CP{{"Checkpoint<br/>you approve"}} --> DL["Deliver"]
+```
+
+<sub>* Critical tier only: auth, payments, data model, security. The debate roles run blind: the Advocate and the Skeptic never see the case of the other, and a Judge rules.</sub>
+
+---
+
+## Which command do I use?
+
+| You have | Run |
+|:--|:--|
+| A ticket, a bug, a feature request, a refactor | `/team` |
+| Work that needs an architecture decision, or touches auth, payments, or the data model | `/workflow` |
+| A bug with a clear cause | `/debug` |
+| A bug with an unclear cause | `/investigate`, then `/debug` |
+| A change to check before you push | `/review-all` |
+| A plan to stress-test | `/grill` before the plan, `/elicit` after it |
+| An idea to validate | `/idea` |
+| A marketing campaign or strategy | `/growth` |
+| One piece of content | `/content` |
+
+You do not have to remember this. A hook reads each prompt and proposes the route.
 
 ---
 
 ## Commands
 
-Invoke with a slash: `/review`, `/debug`, `/workflow`, etc.
+39 slash commands. Invoke with a slash: `/team`, `/review`, `/debug`.
 
-### Planning
+### Build
 
-| Command | Description |
-|:--------|:------------|
-| `/plan` | Phased planning: Brief &rarr; Requirements &rarr; Architecture &rarr; Sprint Stories |
+| Command | What it does |
+|:--------|:-------------|
+| `/team` | **Default ticket-to-code flow.** Understand &rarr; Research &rarr; Grill (unknowns only) &rarr; Spec (your approval) &rarr; Build &rarr; Review loop. `--grill` forces the interview. `--fable` runs Opus-tier agents on Fable, with a fallback to Opus |
+| `/workflow` | **Full pipeline** for work that needs an ADR or touches auth, payments, or the data model. Grill &rarr; Plan &rarr; Architect &rarr; Execution Plan &rarr; Execute &rarr; Review loop &rarr; Verify &rarr; Checkpoint &rarr; Deliver. Flags: `--strict` (design spec first), `--scrum` (full sprint stories), `--grill` / `--no-grill`, `--skip-checkpoint`, `--fable` |
 
-### Development
+### Plan
 
-| Command | Description |
-|:--------|:------------|
-| `/review` | Multi-dimensional code review (structure, security, perf, correctness) |
-| `/debug` | Delegates to `debugger-detective` agent; systematic reproduce &rarr; isolate &rarr; fix |
-| `/architect` | Architecture decisions with trade-off matrices and ADR generation |
-| `/refactor` | Safe refactoring with test verification at each step |
-| `/test` | Delegates to `test-engineer` agent; unit &rarr; integration &rarr; e2e |
+| Command | What it does |
+|:--------|:-------------|
+| `/plan` | Phased planning: Brief &rarr; Requirements &rarr; Architecture &rarr; Sprint Stories. Checks the premises of the request against the code |
+| `/idea` | Idea &rarr; validate &rarr; blind debate &rarr; MVP scope &rarr; roadmap |
+| `/architect` | Architecture decisions with trade-off matrices and an ADR |
+| `/grill` | Interviews you on a plan in rounds, one recommended answer per question, until every decision is settled or accepted as a risk |
+| `/elicit` | Stress-tests a finished plan or design with one of 18 named methods (`pre-mortem`, `red-team`, `inversion`, `stakeholder-round-table`, …) |
+
+### Develop
+
+| Command | What it does |
+|:--------|:-------------|
+| `/review` | Focused code review with `file:line` references and fixes |
+| `/debug` | Reproduce &rarr; isolate &rarr; fix, with a hard stop after three failed fixes |
+| `/investigate` | Forensic case file: each finding is Confirmed, Deduced, or Hypothesized. No code changes |
+| `/refactor` | Refactoring with test verification at each step |
+| `/test` | Unit, integration, and e2e tests |
 | `/docs` | API docs, READMEs, ADRs, guides |
-| `/security` | Delegates to `security-auditor` agent; OWASP Top 10 + anti-rationalization gate |
+| `/security` | OWASP Top 10 audit |
 | `/perf` | Profile &rarr; optimize &rarr; measure |
-| `/migrate` | Version/framework migration with rollback plans + anti-rationalization gate |
-| `/deploy` | Pre-flight checks, rollout, post-deploy verification + anti-rationalization gate |
+| `/migrate` | Version and framework migrations with a rollback plan |
+| `/deploy` | Pre-flight checks, rollout, post-deploy verification |
 | `/browser-debug` | Console, network, rendering, Core Web Vitals |
-| `/codemaps` | Token-lean architecture docs for AI context consumption |
-| `/design-system` | `audit` a Figma page against code, `onboard` a new component, or audit `tokens` — code-first, Figma is derived |
+| `/codemaps` | Token-lean architecture docs for AI context |
+| `/design-system` | Audit a Figma page against code, onboard a component, or audit tokens. Code is the source; Figma is derived |
 
 ### Growth & Marketing
 
-| Command | Description |
-|:--------|:------------|
-| `/growth` | **9-phase Growth OS** with adversarial debate (16 agents) |
-| `/content` | Quick content production without full pipeline |
-| `/gtm` | Go-to-market planning with launch checklists |
-| `/seo` | Technical SEO audit + keyword research |
+| Command | What it does |
+|:--------|:-------------|
+| `/growth` | **9-phase Growth OS** with a blind strategy debate |
+| `/content` | One piece of content, or a small batch |
+| `/gtm` | Go-to-market plan |
+| `/seo` | Technical SEO audit and keyword research |
 | `/social` | Platform playbooks, hook formulas, content calendars |
-| `/launch` | Product Hunt / HN / press launch execution |
-| `/competitive` | FIA battlecards + niche intelligence |
-| `/landing` | Conversion-optimized landing page (HTML + Tailwind) |
-| `/payments` | Stripe / LemonSqueezy / Paddle integration |
+| `/launch` | Product Hunt, Hacker News, and press launch |
+| `/competitive` | Battlecards and niche intelligence |
+| `/landing` | Conversion-focused landing page |
+| `/payments` | Stripe, LemonSqueezy, or Paddle integration |
 | `/analytics` | Event tracking, dashboards, metrics framework |
 
 ### Learning
 
-| Command | Description |
-|:--------|:------------|
-| `/learn` | Review pending instincts (auto-detected) + analyze observations for new patterns |
+| Command | What it does |
+|:--------|:-------------|
+| `/learn` | Review pending instincts and extract new patterns |
 | `/evolve` | Cluster related instincts into skills, commands, or agents |
-| `/instinct-status` | Show all learned instincts (project + global) with confidence scores |
-| `/instinct-export` | Export instincts to a shareable file |
-| `/instinct-import` | Import instincts from a file |
+| `/instinct-status` | Show learned instincts with confidence scores |
+| `/instinct-export` / `/instinct-import` | Move instincts between machines and teammates |
 
-### Meta
+### Project & Meta
 
-| Command | Description |
-|:--------|:------------|
-| `/workflow` | **Full pipeline**: Grill (when the spec is ambiguous or touches auth/payments/data; `--grill` / `--no-grill`) &rarr; Plan &rarr; Debate &rarr; Architect &rarr; **Implementation Plan** (lightweight default, `--scrum` for full sprint stories) &rarr; Execute &rarr; **Spec Compliance** &rarr; **Checkpoint Preview** (default, `--skip-checkpoint` to opt out) &rarr; Code Debate &rarr; Deliver. Pass `--strict` to require a design spec via `brainstorming` before any code. Pass `--fable` (also on `/team`) to run Opus-tier agents on Fable, with a fallback to Opus when Fable is unavailable. Auto-offers `/elicit` methods at phase boundaries |
-| `/investigate` | Forensic diagnosis — produces a case file with Confirmed / Deduced / Hypothesized grading. Hand off to `debugger-detective` for the fix. Different from `/debug` (which fixes directly) |
-| `/grill` | Interview the user on a plan in rounds, one recommended answer per question, until every decision is settled or accepted as a risk. Output feeds `/plan`. Before the plan, not after |
-| `/elicit` | Stress-test the most recent plan or design with one of 18 named reasoning methods (`pre-mortem`, `red-team`, `inversion`, `stakeholder-round-table`, `tree-of-thoughts`, …). Applied to OUTPUT, not requirements |
-| `/audit-self` | Re-run the ForgeBee quality scorecard across all skills, agents, and commands. Detects regressions since last audit. Timestamped findings |
-| `/team` | Multi-agent orchestration with dependency graphs + checkpoints at 3+ agents |
-| `/idea` | Idea &rarr; validate &rarr; debate &rarr; MVP &rarr; roadmap |
+| Command | What it does |
+|:--------|:-------------|
 | `/pm` | Project dashboard from `state.yaml` |
-| `/audit` | Governance audit trail — permission decisions, debate rulings, verification results |
+| `/audit` | Query the governance audit trail: permission decisions, dispatches, verification results |
+| `/audit-self` | Score every ForgeBee skill, agent, and command against a quality scorecard |
+| `/release` | Pre-flight gate, version bump, changelog, tag, and PR |
 
 ---
 
 ## Agents
 
-46 specialist agents + 35 skills for Claude Code's Agent Teams. Use them directly or let `/team` and `/workflow` orchestrate automatically.
+46 specialist agents. Use one directly, or let `/team` and `/workflow` dispatch them. The orchestrator prefers the stack specialist: a WordPress plugin task goes to `wordpress-backend`, not to `backend-engineer`. An agent or skill in your own project (`.claude/agents/`, `.claude/skills/`) beats a ForgeBee one for the same work.
 
-> **v7.0 highlights — orchestrator by default.** The main conversation runs as `forgebee:orchestrator` for the whole session: it routes work to `forgebee:` specialists and reviews their reports, makes only tiny edits itself, and keeps that role after the first turn. Opt out with `claude --agent forgebee:direct`. Subagents now run on their own `model:` (dispatch uses `forgebee:<name>`), and agents, skills, and commands find their files in any project (`${CLAUDE_PLUGIN_ROOT}` paths). `--fable` runs Opus-tier agents on Fable with an Opus fallback. Safety: `permission-guard` and `secret-scan` gaps closed. Content reviewed against October 2026 docs (OWASP 2025, WCAG 2.2, WP 7.0, Next.js 16, n8n 2). Requires Claude Code 2.1.281+.
->
-> **v5.4 highlights — routing actually fires.** Five defects were keeping the 117 surfaces unreachable: the SessionStart index was dropped for exceeding the `additionalContext` size limit (everything past ~2KB, including the whole WordPress roster, never arrived), `skill-activator.js` emitted a top-level `additionalContext` that the harness discards, and it scanned neither agents nor commands — so no agent or slash command could ever be recommended. Now all three surface types are scored together, stack-boosted from `project-triage.json`, capped at 5 candidates, and acronym-aware (ACF, SCF, SEO, API, RLS were silently below the word-length floor). New **Routing Discipline R1–R4** in `CLAUDE.md`: name the route before the first edit, prefer the stack-specific agent. New design-system trio: **`figma-code-sync`** skill (code-first Figma reconciliation, 12 defect priors, ~18 Plugin API traps), **`wp-design-system`** agent (`theme.json`-versus-SCSS layer ownership, token pipeline, patterns/variations), **`/design-system`** command. `wordpress-backend` gains full ACF/SCF field architecture — field-group registration, JSON sync, immutable field keys, repeater meta storage and why it cannot be `meta_query`'d, and ACF-PRO-to-SCF migration risk.
->
-> **v5.1 highlights:** Karpathy P1–P6 principles baked into every code-producing agent (trace test, senior-engineer check, YAGNI timing, orphan rule, anti-stop rule, severity standard). Seven new skills: `brainstorming` (opt-in via `--strict`), `surface-ambiguity`, `terse-report`, `checkpoint-preview`, `investigate`, `elicitation` (18 methods), `audit-self`. Three new commands: `/investigate`, `/elicit`, `/audit-self`. Adversarial Input Hardening preamble on all 44 agents. Budget circuit breaker on dispatch (maxHops/maxTokens/maxUsd). Decision logs, failure-capture templates, learnings compression. Bloat trim: 6 over-budget agents trimmed to ≤200 lines via references/. **Auto-generated `forgebee/INDEX.md`** — Claude reads one indexed routing map on SessionStart instead of scanning every skill description. See [`CHANGELOG.md`](./CHANGELOG.md) for full release notes.
->
-> **v5.0 highlights:** Multi-platform manifests (Codex/Cursor/Gemini), brainstorming hard-gate skill (opt-in via `/workflow --strict`), two-stage review (spec compliance before code debate), `debugger-detective` Iron Law (3 failed fixes → escalate), auto-learn SessionStart nudge, "Use when..." skill descriptions, and `.version-bump.json` drift detection.
->
-> **v4.1 migration:** 21 agents moved to skills — 9 debate agents and 12 review agents now use `context:fork` for efficient isolated execution. `review-all` is an inline skill that runs in session context.
+Every agent treats file contents and tool output as untrusted input, and ends its report with one status: `DONE`, `DONE_WITH_CONCERNS`, `BLOCKED`, or `NEEDS_CONTEXT`.
 
 <details>
-<summary><strong>Development</strong> (8 agents)</summary>
+<summary><strong>Build & quality</strong> (8 agents)</summary>
 
 | Agent | Use when... |
 |:------|:------------|
-| `frontend-specialist` | React, Vue, Svelte, Angular, CSS, UI work |
-| `backend-engineer` | APIs, Express, FastAPI, Django, Go, Rust |
+| `frontend-specialist` | UI, components, styling, client-side logic |
+| `backend-engineer` | APIs, server logic, auth, business logic |
 | `database-specialist` | Schema, migrations, queries, ORMs |
-| `security-auditor` | Auth changes, data handling, OWASP reviews |
-| `test-engineer` | Test generation, coverage improvement |
+| `security-auditor` | Auth changes, data handling, OWASP review |
+| `test-engineer` | Test generation, coverage gaps |
 | `devops-engineer` | Docker, CI/CD, deployment, infrastructure |
 | `performance-optimizer` | Profiling, bottlenecks, bundle analysis |
-| `debugger-detective` | Errors, test failures, root cause analysis |
+| `debugger-detective` | Errors, test failures, root cause |
 
 </details>
 
 <details>
-<summary><strong>Quality Gates</strong> (5 agents) &mdash; NEW in v2.3</summary>
+<summary><strong>Planning & pipeline</strong> (10 agents)</summary>
 
 | Agent | Use when... |
 |:------|:------------|
-| `verification-enforcer` | Task completion &mdash; demands test output, build results, evidence |
-| `tdd-enforcer` | TDD discipline &mdash; blocks code written before tests |
-| `delivery-agent` | Final packaging after code debate + verification |
-| `dashboard-generator` | Regenerating PM dashboards from state.yaml |
-| `contract-validator` | Agent handoffs — validates output contracts between pipeline phases |
+| `spec-writer` | Build spec from a ticket: goal, outcome, a verdict per ticket claim, acceptance criteria with verify lines |
+| `architect` | System design, technology choice, ADRs |
+| `ux-designer` | User flows, wireframes, accessibility requirements |
+| `scrum-master` | Story decomposition and sprint planning (`/workflow --scrum`) |
+| `deep-researcher` | Library APIs and technical questions, with dated sources |
+| `verification-enforcer` | Proof of completion: test, lint, and build output with exit codes |
+| `tdd-enforcer` | RED-GREEN-REFACTOR discipline |
+| `delivery-agent` | Changelog, docs updates, deployment readiness |
+| `dashboard-generator` | PM dashboards from `state.yaml` |
+| `session-librarian` | Session history, `CLAUDE.md` curation |
 
 </details>
 
 <details>
-<summary><strong>Dev Debate</strong> (6 context:fork skills)</summary>
+<summary><strong>WordPress</strong> (8 agents)</summary>
 
-| Skill | Role |
-|:------|:-----|
-| `requirements-advocate` | Defends planning artifacts (blind, isolated) |
-| `requirements-skeptic` | Challenges planning artifacts (blind, isolated) |
-| `requirements-judge` | Rules: approve / block / flag |
-| `code-advocate` | Defends implementation (blind, isolated) |
-| `code-skeptic` | Challenges implementation (blind, isolated) |
-| `code-judge` | Rules: approve / block / flag |
+| Agent | Use when... |
+|:------|:------------|
+| `wordpress-backend` | Plugin logic, REST endpoints, hooks, ACF/SCF field architecture |
+| `wordpress-frontend` | Block and classic themes, template hierarchy, `theme.json` |
+| `wordpress-content` | Block patterns, ACF-driven content, custom post types |
+| `wordpress-security` | Sanitization, escaping, nonces, capability checks, WPCS |
+| `wordpress-seo` | Yoast and RankMath, sitemaps, schema |
+| `phpunit-engineer` | `WP_UnitTestCase`, factories, REST and AJAX tests |
+| `woocommerce-cro` | Checkout, product pages, cart recovery |
+| `wp-design-system` | `theme.json` tokens, Figma variables to presets, patterns as components |
 
 </details>
 
 <details>
-<summary><strong>Strategy Debate</strong> (3 context:fork skills)</summary>
+<summary><strong>Next.js, mobile, data, automation</strong> (9 agents)</summary>
 
-| Skill | Role |
-|:------|:-----|
-| `strategy-advocate` | Defends marketing strategy (blind, isolated) |
-| `strategy-skeptic` | Challenges marketing strategy (blind, isolated) |
-| `strategy-judge` | Rules: approve / block / flag |
+| Agent | Use when... |
+|:------|:------------|
+| `nextjs-frontend` | App Router, Server and Client Components, Server Actions |
+| `nextjs-content` | MDX content collections, static generation |
+| `nextjs-seo` | Metadata API, `sitemap.ts`, OG images, JSON-LD |
+| `saas-cro` | SaaS landing, pricing, and signup conversion |
+| `supabase-specialist` | Schemas, RLS policies, Edge Functions, Auth |
+| `ios-expert` | Swift, SwiftUI, Xcode, App Store |
+| `flutter-expert` | Dart, Flutter, cross-platform UI |
+| `n8n-builder` | n8n workflows, webhooks, integrations |
+| `llm-app-engineer` | Agents, tool calling, RAG, structured output, prompt evals |
 
 </details>
 
@@ -262,92 +345,77 @@ Invoke with a slash: `/review`, `/debug`, `/workflow`, etc.
 
 | Agent | Use when... |
 |:------|:------------|
-| `brand-strategist` | Brand positioning, archetypes, voice |
+| `brand-strategist` | Positioning, archetypes, voice |
 | `market-intel` | Competitive research, battlecards |
 | `audience-architect` | ICPs, personas, buyer journeys |
-| `content-strategist` | Pillars, topic clusters, hub-and-spoke, content ideas, angle mining, editorial calendar |
-| `hook-engineer` | Scroll-stopping hooks, pattern interrupts |
+| `content-strategist` | Pillars, topic clusters, editorial calendar |
+| `hook-engineer` | Hooks and pattern interrupts |
 | `engagement-strategist` | Community, reciprocity loops, DM flows |
-| `content-creator` | Platform-native posts, threads, scripts, long-form blogs, landing copy |
-| `growth-engineer` | Growth loops, flywheels, funnels, CRO audits, conversion optimization |
-| `marketing-analyst` | Marketing KPIs, attribution, A/B testing |
-| `seo-specialist` | Keyword strategy, pillar/cluster SEO |
+| `content-creator` | Posts, threads, scripts, blogs, landing copy |
+| `growth-engineer` | Growth loops, funnels, CRO |
+| `marketing-analyst` | KPIs, attribution, A/B significance |
+| `seo-specialist` | Keyword strategy, on-page and technical SEO |
 | `email-strategist` | Automation flows, segmentation, deliverability |
 
 </details>
 
-<details>
-<summary><strong>Design, Research & Platform</strong> (9 agents)</summary>
+---
 
-| Agent | Use when... |
-|:------|:------------|
-| `ux-designer` | User flows, wireframes, accessibility |
-| `scrum-master` | Sprint planning, story decomposition |
-| `deep-researcher` | Documentation, APIs, technical questions |
-| `session-librarian` | Session history, context management |
-| `supabase-specialist` | Supabase auth, RLS, edge functions |
-| `ios-expert` | Swift, SwiftUI, Xcode, App Store |
-| `flutter-expert` | Dart, Flutter, cross-platform |
-| `n8n-builder` | n8n workflows, API integrations |
-| `llm-app-engineer` | LangChain/LangGraph, LlamaIndex, provider SDKs, RAG, prompt evals |
+## Skills
+
+34 skills. An inline skill runs in your session and sees its context. A `context: fork` skill runs isolated, which keeps a reviewer or a debater independent.
+
+<details>
+<summary><strong>Review</strong> (13 skills)</summary>
+
+All review skills share one contract: review the whole branch, read the callers of changed code, verify a serious finding before you report it, and name a concrete failure for each finding. Each skill has a method, not only a checklist.
+
+| Skill | Type | Method |
+|:------|:-----|:-------|
+| `review-all` | Inline | The pre-push gate. Runs the checks, checks the spec, routes deep passes by risk, reports a verdict and a confidence level |
+| `review-security` | fork | Traces each entry point to each sink it reaches |
+| `review-code` | fork | Walks each changed function with inputs that break code |
+| `review-performance` | fork | Counts queries and calls per request or per item |
+| `review-database` | fork | Searches the code for each changed table and column; states lock time and rollback |
+| `review-api` | fork | Walks each route from authentication to response; finds consumers of a changed contract |
+| `review-tests` | fork | Maps each changed branch to the test that fails without it |
+| `review-accessibility` | fork | Name, role, and keyboard access per interactive element (WCAG 2.2 AA) |
+| `review-wordpress` | fork | Nonce, capability, sanitization, and escaping per entry point; ACF/SCF checks |
+| `review-prompt` | fork | Trust boundaries in LLM code: injection, tool arguments, output handling |
+| `review-best-practices` | fork | Dependency direction between layers; abstractions with one user |
+| `review-code-style` | fork | The project's own conventions, learned from neighbour files |
+| `review-docs` | fork | Docs that still describe old behaviour; padded comments |
 
 </details>
 
 <details>
-<summary><strong>WordPress Specialists</strong> (8 agents) &mdash; NEW in v3.0</summary>
+<summary><strong>Debate</strong> (8 fork skills)</summary>
 
-| Agent | Use when... |
-|:------|:------------|
-| `wordpress-backend` | WordPress PHP backend, REST endpoints, ACF/SCF field architecture, hooks |
-| `wordpress-frontend` | WordPress theme dev, block themes, template hierarchy |
-| `wordpress-content` | WordPress Gutenberg content, block patterns, ACF content |
-| `wordpress-security` | WordPress security audit, sanitization, WPCS |
-| `wordpress-seo` | WordPress SEO, Yoast/RankMath, XML sitemaps |
-| `phpunit-engineer` | WordPress PHPUnit testing, WP_UnitTestCase |
-| `woocommerce-cro` | WooCommerce checkout/product page CRO |
-| `wp-design-system` | `theme.json` token architecture, Figma-to-presets pipeline, patterns/variations as design-system components |
+| Skill | Role |
+|:------|:-----|
+| `requirements-advocate` / `requirements-skeptic` / `requirements-judge` | Blind debate on planning artifacts (`/workflow` Critical tier) |
+| `code-skeptic` / `code-judge` | Skeptic Pass on finished code (`/workflow` Critical tier) |
+| `strategy-advocate` / `strategy-skeptic` / `strategy-judge` | Blind debate on marketing strategy (`/growth`) |
 
 </details>
 
 <details>
-<summary><strong>Next.js Specialists</strong> (3 agents) &mdash; NEW in v3.0</summary>
+<summary><strong>Discipline & setup</strong> (13 inline skills)</summary>
 
-| Agent | Use when... |
-|:------|:------------|
-| `nextjs-frontend` | Next.js App Router, Server/Client Components, Supabase SSR |
-| `nextjs-content` | Next.js MDX content, Contentlayer, static generation |
-| `nextjs-seo` | Next.js Metadata API, sitemap.ts, OG image generation |
-
-</details>
-
-<details>
-<summary><strong>CRO Specialists</strong> (1 agent) &mdash; NEW in v3.0</summary>
-
-| Agent | Use when... |
-|:------|:------------|
-| `saas-cro` | SaaS landing page/pricing/signup CRO |
-
-</details>
-
-<details>
-<summary><strong>Review Skills</strong> (12 skills) &mdash; migrated to skills in v4.1</summary>
-
-| Skill | Type | Focus |
-|:------|:-----|:------|
-| `review-all` | **Inline** (session context) | Full pre-push quality gate with severity calibration |
-| `review-code` | context:fork | Logic errors, DRY, error handling, dead code |
-| `review-code-style` | context:fork | Convention adherence, imports, naming, file org |
-| `review-security` | context:fork | OWASP Top 10, injection, auth, secrets |
-| `review-performance` | context:fork | N+1 queries, memory leaks, missing caching |
-| `review-accessibility` | context:fork | WCAG 2.2 AA compliance |
-| `review-api` | context:fork | API design, validation, rate limiting, REST consistency |
-| `review-database` | context:fork | Migrations, RLS, schema, query patterns |
-| `review-tests` | context:fork | Coverage, test quality, mocking, structure |
-| `review-docs` | context:fork | Docblocks, comments, parameter docs |
-| `review-best-practices` | context:fork | SOLID, design patterns, architecture health |
-| `review-wordpress` | context:fork | WP coding standards, security, plugin architecture |
-
-`review-all` runs inline for maximum efficiency. For large diffs (>500 lines), it delegates to specialized review skills via `context:fork`.
+| Skill | What it does |
+|:------|:-------------|
+| `grill` | Interviews you on a plan until every decision is settled |
+| `elicitation` | 18 named methods to stress-test a finished plan |
+| `brainstorming` | Hard gate: an approved design spec before any code (`/workflow --strict`) |
+| `surface-ambiguity` | Lists the valid readings and the chosen one before a silent pick |
+| `investigate` | Forensic case file with graded evidence |
+| `checkpoint-preview` | Walks a diff by concern, with risk-tagged hot spots, for a human decision |
+| `terse-report` | Compact agent-to-orchestrator reports |
+| `figma-code-sync` | Reconciles a Figma design system against shipped code |
+| `project-router` | Detects the stack and loads the right conventions |
+| `continuous-learning` | Instincts and code learnings across sessions |
+| `audit-self` | Scores ForgeBee's own surfaces against a scorecard |
+| `forgebee-setup` / `forgebee-help` | Project init and quick reference |
 
 </details>
 
@@ -355,272 +423,164 @@ Invoke with a slash: `/review`, `/debug`, `/workflow`, etc.
 
 ## Hooks
 
-28 hooks run automatically on Claude Code lifecycle events across 10 event types. No invocation needed.
+27 hooks run on Claude Code lifecycle events. You do not invoke them.
 
-**Session & state management:**
-
-| Hook | Event | What it does |
-|:-----|:------|:------------|
-| `session-load` | `SessionStart` | Restores previous session context |
-| `session-save` | `Stop` | Persists session state to JSON snapshot |
-| `project-triage` | `SessionStart` | Auto-detects project type, stack, and conventions |
-| `load-context-rules` | `SessionStart` | Loads contexts and language-specific rules |
-| `task-sync` | `SessionStart` + `Stop` | Bidirectional sync with TASKS.md |
-| `pm-sync` | `SessionStart` + `Stop` | Loads PM state, reports blockers |
-| `context-guard` | `PreCompact` | Backs up critical context before compaction |
-
-**Quality automation:**
+**Safety**
 
 | Hook | Event | What it does |
-|:-----|:------|:------------|
-| `post-edit-format` | `PostToolUse` (Edit) | Auto-formats JS/TS after every edit (Biome or Prettier) |
-| `post-edit-typecheck` | `PostToolUse` (Edit) | Runs `tsc --noEmit` after editing .ts/.tsx files |
-| `post-edit-console-warn` | `PostToolUse` (Edit) | Warns about `console.log` in edited files |
-| `console-log-audit` | `Stop` | Audits all modified files for console.log at session end |
-| `permission-guard` | `PreToolUse` (Bash) | Mode-aware command safety: Tier-0 blocklist in every mode; asks on risk signals in default mode; never approves — Claude Code's permission rules decide the rest |
-| `dev-server-blocker` | `PreToolUse` (Bash) | Blocks `npm run dev` outside tmux |
-| `git-push-reminder` | `PreToolUse` (Bash) | Warns before pushing to main/master |
-| `secret-scan` | `PreToolUse` (Bash) | Blocks commits/pushes that introduce hardcoded secrets (override: `FORGEBEE_ALLOW_SECRET=1`) |
-| `suggest-compact` | `PreToolUse` (Edit\|Write) | Suggests `/compact` at logical breakpoints |
+|:-----|:------|:-------------|
+| `permission-guard` | `PreToolUse` (Bash) | Blocks a fixed list of destructive commands in every permission mode; asks on risk signals in default mode. It never approves a command |
+| `secret-scan` | `PreToolUse` (Bash) | Blocks a commit or push that adds a hardcoded secret (override: `FORGEBEE_ALLOW_SECRET=1`) |
+| `git-push-reminder` | `PreToolUse` (Bash) | Warns before a push to main or master |
+| `dev-server-blocker` | `PreToolUse` (Bash) | Blocks a foreground dev server that would hang the session. Background runs pass |
 
-**Continuous learning:**
+**Orchestration & routing**
 
 | Hook | Event | What it does |
-|:-----|:------|:------------|
-| `observe` | `PreToolUse` + `PostToolUse` (*) | Captures every tool call lifecycle for pattern extraction |
-| `learn-auto` | `Stop` | Once per session, asks Claude to save instincts after a turn with 3+ tool calls |
-| `learn-digest` | `SessionStart` | Auto-activates ≥0.7 candidates, injects active instincts and standing code learnings, lists pending and evolve candidates |
-| `learn-recall` | `UserPromptSubmit` | Injects code learnings from `docs/learnings/` that match the prompt's files or words, once per session |
+|:-----|:------|:-------------|
+| `orchestrator-mode` | `UserPromptSubmit`, `PreToolUse` | Keeps the main thread an orchestrator: re-sends the rules each prompt and blocks main-thread edits over three lines, except orchestration files |
+| `skill-activator` | `UserPromptSubmit` | Reads the prompt and proposes up to three routes (skills, agents, commands), boosted by your stack |
+| `load-index` | `SessionStart` | Loads a digest of the routing index |
+| `project-triage` | `SessionStart` | Detects the project type, stack, and tools |
+| `load-context-rules` | `SessionStart` | Loads the rules for your language |
 
-**Intelligence & governance:**
-
-| Hook | Event | What it does |
-|:-----|:------|:------------|
-| `orchestrator-mode` | `UserPromptSubmit`, `PreToolUse` | When the main thread is `forgebee:orchestrator`: re-sends the orchestrator rules each prompt; blocks main-thread edits and Bash file writes except tiny ones (≤3 lines, ≤2 per request) and orchestration files |
-| `skill-activator` | `UserPromptSubmit` | Intent detection + up to 3 `forgebee:` routing candidates; short follow-ups keep the last routing |
-| `self-improve` | `Stop` | Captures patterns + runs heuristic engine to flag pending instincts |
-| `checkpoint` | `PreCompact` | Saves the active pipeline phase (derived from `state.yaml`) before context compaction, for crash recovery |
-| `audit-trail` | All governance events | Append-only JSONL log of permissions, debates, verifications |
-| `permission-denied-logger` | `PermissionDenied` | Logs auto-mode classifier denials to audit trail |
-
-**Quality gate hooks** (for Agent Teams):
+**Quality**
 
 | Hook | Event | What it does |
-|:-----|:------|:------------|
-| `TaskCompleted` | Task marked done | Verifies completion — accepts config/markdown tasks, demands evidence for code tasks |
-| `TeammateIdle` | Agent going idle | Checks for unclaimed tasks to pick up |
+|:-----|:------|:-------------|
+| `post-edit-format` | `PostToolUse` (Edit, Write) | Formats JS and TS after an edit (Biome or Prettier) |
+| `post-edit-typecheck` | `PostToolUse` (Edit, Write) | Runs `tsc --noEmit` after a `.ts` or `.tsx` edit |
+| `post-edit-console-warn` | `PostToolUse` (Edit, Write) | Warns about `console.log` in an edited file |
+| `console-log-audit` | `Stop` | Checks modified files for `console.log` |
+| `suggest-compact` | `PreToolUse` (Edit, Write) | Suggests `/compact` at a logical breakpoint |
 
-### Platform parity
+**Session, state & governance**
 
-The **skills, agents, and commands** are portable — they ship to Claude Code, Codex, Cursor, and Gemini via the per-IDE manifests. The **hooks above are Claude Code-only**: they key on Claude Code's lifecycle events, so the automatic enforcement they provide does not run on the other harnesses.
+| Hook | Event | What it does |
+|:-----|:------|:-------------|
+| `session-load` / `session-save` | `SessionStart` / `Stop` | Restores and saves session context |
+| `task-sync` | `SessionStart`, `Stop` | Syncs with `TASKS.md` |
+| `pm-sync` | `SessionStart`, `Stop` | Loads PM state, reports blockers and stale features |
+| `checkpoint` | `PreCompact` | Saves the active pipeline phase before compaction |
+| `audit-trail` | `PreToolUse` (Agent), `Stop` | Append-only JSONL log of dispatches (agent, model, effort) and session events |
+| `permission-denied-logger` | `PermissionDenied` | Logs classifier denials to the audit trail |
+| `notification` | `Notification` | Desktop notification when Claude needs you |
 
-| Capability | Claude Code | Codex / Cursor / Gemini |
-|:-----------|:-----------:|:-----------------------:|
-| Skills, agents, commands | ✅ | ✅ (via manifest) |
-| 28 lifecycle hooks (permission-guard, secret-scan, audit-trail, …) | ✅ | ❌ |
-| Governance / audit trail | ✅ | ❌ |
-| Continuous learning (observe → instincts) | ✅ | ❌ |
-| Auto project-triage routing | ✅ | ❌ |
+**Continuous learning**
 
-OpenCode gets skills, agents, commands, and rules through its [own installer](#opencode). It gets no hooks.
-
-On non-Claude harnesses you get the full prompt library; the guardrails, governance, and learning loop are Claude Code-only today.
-
----
-
-## Quality Pipeline
-
-ForgeBee embeds quality checks throughout the development flow so that `/review-all` is a **validation gate**, not a discovery phase.
-
-```
-Specialist agents implement + self-review → report DONE/DONE_WITH_CONCERNS/BLOCKED/NEEDS_CONTEXT
-      │
-      ▼
-Code debate (context:fork skills — blind advocate/skeptic/judge)
-      │
-      ▼
-Workflow/Team quality gate (tests + lint + build must pass)
-      │
-      ▼
-review-all (inline skill — runs in session context, only Critical/High block push)
-```
-
-**How it works:**
-
-- **Every command** has an Objective (what success looks like) and Never rules (hard boundaries)
-- **Every code-producing agent** has a Self-Review section matching review-all's criteria
-- **Agent status protocol** — agents report `DONE`, `DONE_WITH_CONCERNS`, `BLOCKED`, or `NEEDS_CONTEXT`; orchestrators handle each appropriately
-- **Review calibration** — only Critical/High issues block the push; Medium/Low are informational
-- **`/workflow` Work Breakdown** defaults to a lightweight Implementation Plan (ordered workstreams + file scope + agent + acceptance criteria) — `scrum-master` full sprint stories are opt-in via `/workflow --scrum`
-- **`/workflow` code debate** uses `context:fork` skills for blind isolation with less token overhead
-- **`/team` quality gate** invokes review-all as an inline skill (session context, ~93% fewer tokens)
-- **Instruction priority** — CLAUDE.md > Inline skills > Forked skills > Subagents > Defaults
-
-If the pipeline works correctly, `review-all` finds nothing. Issues caught in review-all mean the pipeline leaked.
+| Hook | Event | What it does |
+|:-----|:------|:-------------|
+| `observe` | `PreToolUse`, `PostToolUse` | Records tool calls for pattern detection (never blocks) |
+| `self-improve` | `Stop` | Runs the heuristic engine and flags pending instincts |
+| `learn-auto` | `Stop` | Once per session, asks Claude to save what it learned |
+| `learn-digest` | `SessionStart` | Activates instincts at 0.7 confidence or more and injects them |
+| `learn-recall` | `UserPromptSubmit` | Injects code learnings that match the files or words in your prompt |
 
 ---
 
 ## Continuous Learning
 
-ForgeBee learns from your sessions automatically. Every tool call is observed (PreToolUse + PostToolUse), patterns are detected by a heuristic engine and by a once-per-session Stop ask, and the next session start applies the active instincts.
+ForgeBee learns two things from your sessions, with no setup.
 
+**Instincts** are how you work: one trigger, one action, a confidence score. "When the hook blocks a main-thread edit, dispatch a specialist." They are project-scoped by default and move to global when the same instinct shows up in two projects.
+
+**Code learnings** are what a session worked out about the code: what was decided, what was ruled out, and what to watch out for. They live in `docs/learnings/`, you commit them with the code, and a later prompt that names the same files gets them back.
+
+```mermaid
+flowchart LR
+    A["Tool calls<br/>(observed)"] --> B["Heuristics +<br/>end-of-session ask"]
+    B --> C{"Confidence"}
+    C -->|"0.7 or more"| D["Active instinct"]
+    C -->|"below 0.7"| E["Pending<br/>/learn to review"]
+    E -->|"you approve"| D
+    D --> F["Injected at<br/>session start"]
+    D -->|"/evolve"| G["New skill,<br/>command, or agent"]
 ```
-Session Activity (every tool call)
-      │
-      ▼
-  observations.jsonl (automatic — Pre + Post)
-      │
-      ▼  Stop hooks: heuristics (no API calls) + learn-auto ask → instinct-cli.js add
-  pending-instincts.jsonl + instincts/personal/ (pending < 0.7 ≤ active)
-      │
-      ▼  SessionStart learn-digest (auto-activate ≥0.7, veto) or /learn (review)
-  instincts/personal/ (project-scoped, active) → injected at session start
-      │
-      ▼  /evolve (candidates also in the daily digest)
-  evolved/ → skills, commands, agents
-```
 
-**Key concepts:**
-
-- **Automatic loop** — heuristics and the Stop ask create instincts; the SessionStart digest applies them; `/learn` stays the manual review
-- **Pending instincts** — patterns below 0.7 start in `pending` state and need your approval; ≥0.7 activate automatically with a veto command
-- **Instincts** are atomic patterns: one trigger, one action, confidence-scored (0.3–0.9)
-- **Project-scoped** by default — React patterns stay in your React project, Python conventions in your Python project
-- **Global promotion** — when the same instinct appears in 2+ projects with ≥0.8 confidence, it's promoted to global
-- **Zero-config observation** — the `observe.js` hook captures every tool call silently (3s timeout, never blocks)
-- **Portable** — export/import instincts across machines and teammates
-
-Storage lives at `~/.claude/forgebee-learning/` with per-project isolation via git remote URL hashing.
-
-**Code learnings** store what a session worked out about the code: what was decided, what was ruled out, and what to watch out for. They live in `docs/learnings/` and you commit them with the code. The Stop ask saves one after real digging. The `learn-recall` hook injects it on a later prompt that names the same files or words.
+Instinct storage is at `~/.claude/forgebee-learning/`, isolated per project. `/instinct-export` and `/instinct-import` share instincts with teammates.
 
 ---
 
 ## Growth OS
 
-A 9-phase marketing pipeline with 18 specialist agents, invoked with `/growth`:
+A 9-phase marketing pipeline with 11 specialist agents, invoked with `/growth`. The same rules apply as in code: a market claim, a metric, or a competitor fact needs a source, or it carries the label `[assumption]`.
 
-```
-Brand Foundation ──► Market Intelligence ──► Content Architecture
-        │                    │                       │
-        ▼                    ▼                       ▼
-   Hook & Idea Engine ──► Strategy Debate ──► Execution Plan
-        │                    │                       │
-        ▼                    ▼                       ▼
-  Content Production ──► Distribution & CRO ──► Measure & Optimize
+```mermaid
+flowchart LR
+    P1["1 Brand"] --> P2["2 Market intel<br/>+ audience"] --> P3["3 Content<br/>strategy"] --> P4["4 Hooks"] --> P5["5 Strategy<br/>debate"]
+    P5 --> P6{{"6 Execution Plan<br/>you approve"}} --> P7["7 Production"] --> P8["8 Distribution<br/>+ CRO"] --> P9["9 Measure"]
 ```
 
-The strategy debate phase uses blind Advocate/Skeptic/Judge review — the same pattern as `/workflow`'s code debate, applied to marketing strategy. Catches weak positioning before you invest in execution.
-
-Includes dedicated agents for CRO (conversion rate optimization), email marketing automation, and competitive intelligence.
+The strategy debate is blind: an Advocate and a Skeptic argue the strategy without seeing the case of the other, and a Judge rules. It catches weak positioning before you pay for execution. For a single post, use `/content`.
 
 ---
 
 ## Project Management
 
-ForgeBee tracks features across sessions with a hybrid YAML + Markdown system:
+ForgeBee tracks features across sessions:
 
 ```
 docs/pm/
-├── state.yaml        ← Machine-readable project state
-├── index.md          ← Auto-generated dashboard
-├── decisions.md      ← Decision log from all debates
-└── features/         ← Per-feature detail pages
+├── state.yaml        ← machine-readable project state
+├── index.md          ← generated dashboard
+├── decisions.md      ← decision log
+└── features/         ← one page per feature
 ```
 
-Every `/workflow`, `/growth`, `/idea`, and `/plan` run reads and writes `state.yaml` at each phase transition. The `pm-sync` hook loads state on session start. Run `/pm` anytime for a full status report.
+`/workflow`, `/growth`, `/idea`, and `/plan` update `state.yaml` at each phase transition. The `pm-sync` hook loads it at session start. Run `/pm` for a status report.
 
 ---
 
-## How It Works
+## Under the Hood
 
-ForgeBee is **markdown files and Node.js scripts**. No runtime dependencies, no build step, no bash, no python.
+ForgeBee is Markdown files and Node.js scripts. It has no runtime dependencies and no build step.
 
-- **Commands** are `.md` files — structured prompts that activate workflows
-- **Agents** are `.md` files — specialist definitions with trigger conditions
-- **Skills** are directories with `SKILL.md` + scripts — auto-triggered capabilities
-- **Hooks** are `.js` scripts wired to Claude Code lifecycle events via `hooks.json`
-- **Audit trail** is an append-only JSONL log — every permission, debate, and verification is recorded
+- **Commands** are `.md` files: structured prompts that start a workflow.
+- **Agents** are `.md` files: a specialist definition with its tools and model.
+- **Skills** are directories with a `SKILL.md`.
+- **Hooks** are `.js` scripts wired to Claude Code events in `hooks.json`.
+- **The routing index** (`forgebee/INDEX.md`) is generated from the frontmatter of all of the above.
 
-Claude Code reads them natively. The plugin system handles distribution.
+It tests itself: `npm run check` runs the index, reference, agent-contract, and version checks, plus 17 eval scenarios for the hooks. `npm run eval:golden` feeds planted defects to the review skills and checks that they find them.
 
 <details>
-<summary><strong>Full installed structure</strong></summary>
+<summary><strong>What ForgeBee writes in your project</strong></summary>
 
 ```
 your-project/
 ├── CLAUDE.md                          # Project memory
-├── TASKS.md                           # Auto-managed task tracking
+├── TASKS.md                           # Task tracking
 ├── docs/
-│   ├── pm/                            # Project management
-│   │   ├── state.yaml
-│   │   ├── index.md
-│   │   ├── decisions.md
-│   │   └── features/
-│   ├── marketing/                     # Growth OS outputs
-│   └── planning/                      # Planning artifacts
-│       ├── briefs/
-│       ├── requirements/
-│       └── stories/
+│   ├── pm/                            # Project state and dashboards
+│   ├── planning/                      # Specs, briefs, requirements, decision logs
+│   ├── learnings/                     # Code learnings (commit these)
+│   └── marketing/                     # Growth OS outputs
 └── .claude/
-    ├── settings.json
     ├── sessions/                      # Session snapshots
-    ├── session-cache/                 # Skill manifest + session state
+    ├── session-cache/                 # Triage result and session state
     ├── audit/                         # Governance audit trail (JSONL)
-    └── learnings/
-        ├── learnings.md              # Auto-captured patterns
-        └── pending-instincts.jsonl   # Heuristic-detected candidates
+    └── learnings/                     # Pending instincts
 
-~/.claude/forgebee-learning/           # Continuous learning (persists globally)
-├── projects.json                      # Project registry
-├── instincts/personal/                # Global learned instincts
-└── projects/<hash>/                   # Per-project isolation
-    ├── observations.jsonl             # Tool call observations
-    └── instincts/personal/            # Project-scoped instincts
+~/.claude/forgebee-learning/           # Instincts (global, isolated per project)
 ```
 
 </details>
 
 ---
 
-## CLAUDE.md &mdash; Project Memory
+## Other Harnesses
 
-The installed `CLAUDE.md` is a structured template Claude reads at the start of every session. Fill in your stack, conventions, key components, and team contacts.
+The skills, agents, and commands are portable. **The hooks are Claude Code only**, so the guardrails, orchestrator mode, and the learning loop do not run elsewhere.
 
-The `self-improve` hook appends patterns to the **Learned Patterns** section automatically. The continuous learning system goes further — observing every tool call and building project-scoped instincts with confidence scoring that persist across sessions.
-
----
-
-## OpenClaw
-
-ForgeBee is fully compatible with [OpenClaw](https://github.com/openclaw/openclaw). All 46 agents and 39 commands convert to OpenClaw skills.
-
-```bash
-# Clone ForgeBee
-git clone git@github.com:forbee-dev/ForgeBee.git
-
-# Install for OpenClaw
-node ForgeBee/openclaw/install-openclaw.js
-```
-
-This converts every agent and command into `SKILL.md` files in `~/.openclaw/workspace/skills/forgebee-*`. Skills auto-trigger based on their descriptions — the same ones optimized from the [Superpowers trigger pattern](#why-forgebee).
+| Capability | Claude Code | Codex / Cursor / Gemini | OpenCode / OpenClaw |
+|:-----------|:-----------:|:-----------------------:|:-------------------:|
+| Skills, agents, commands | ✅ | ✅ (manifest) | ✅ (installer) |
+| Hooks: guards, routing, orchestrator mode | ✅ | ❌ | ❌ |
+| Audit trail | ✅ | ❌ | ❌ |
+| Continuous learning | ✅ | ❌ | ❌ |
 
 <details>
-<summary><strong>How the conversion works</strong></summary>
-
-- Each agent becomes `forgebee-<agent-name>/SKILL.md`
-- Each command becomes `forgebee-cmd-<command-name>/SKILL.md` (user-invocable)
-- YAML frontmatter maps: `name` + `description` + `metadata.openclaw`
-- Agent body instructions transfer directly (markdown is markdown)
-- Model preferences are noted but OpenClaw handles model selection through its own config
-
-</details>
-
----
-
-## OpenCode
-
-ForgeBee converts to [OpenCode](https://opencode.ai) format. Skills, agents, commands, and rules work. Hooks do not.
+<summary><strong>OpenCode</strong></summary>
 
 ```bash
 # Global install (default target: ~/.config/opencode)
@@ -630,10 +590,7 @@ node ForgeBee/opencode/install-opencode.js
 node ForgeBee/opencode/install-opencode.js ./.opencode
 ```
 
-<details>
-<summary><strong>How the conversion works</strong></summary>
-
-- Each skill goes to `skills/forgebee-<name>/` with the whole skill directory. The `name:` field matches the directory.
+- Each skill goes to `skills/forgebee-<name>/` with the whole skill directory.
 - Each agent goes to `agents/forgebee-<name>.md` with `mode: subagent`. The `tools:` list becomes a `permission:` map.
 - `orchestrator` and `direct` are skipped. They need Claude Code hooks.
 - Each command goes to `commands/<name>.md`. Only `description`, `agent`, and `subtask` stay.
@@ -641,11 +598,9 @@ node ForgeBee/opencode/install-opencode.js ./.opencode
 - `forgebee:<name>` references become `forgebee-<name>`.
 - The installer writes `forgebee/.opencode-install.json`. A reinstall deletes only the paths in that file.
 
-**Not converted:** hooks. Orchestrator mode, guards, learning, and PM sync do not run on OpenCode.
+**Existing files.** The installer keeps your own files. If a skill, agent, or command already exists at the target, it skips that file and lists it in the summary.
 
-**Existing files.** The installer keeps your own files. If a skill, agent, or command already exists at the target, it skips that file and lists it in the summary. It does not overwrite it.
-
-**Rules.** The installer does not edit `opencode.json`. Add this entry yourself. Use the absolute path the installer prints. Do not use `~`.
+**Rules.** The installer does not edit `opencode.json`. Add this entry yourself, with the absolute path the installer prints:
 
 ```json
 {
@@ -653,11 +608,21 @@ node ForgeBee/opencode/install-opencode.js ./.opencode
 }
 ```
 
-Add `rules/php/conventions.md`, `rules/python/conventions.md`, or `rules/typescript/conventions.md` for your stack. Do not load `rules/common/hooks.md`. It documents Claude Code hooks.
+Add `rules/php/conventions.md`, `rules/python/conventions.md`, or `rules/typescript/conventions.md` for your stack. OpenCode reads `CLAUDE.md` when no `AGENTS.md` exists.
 
-OpenCode reads `CLAUDE.md` when no `AGENTS.md` exists.
+**Models.** The installer drops `model:` from agents, because Claude aliases such as `opus` are not valid in OpenCode. To pin a model, add `model: provider/model-id` to the agent file.
 
-**Models.** The installer drops `model:` from agents. Claude aliases such as `opus` are not valid in OpenCode. Subagents use the model of the calling agent. To pin a model, add `model: provider/model-id` to the agent file.
+</details>
+
+<details>
+<summary><strong>OpenClaw</strong></summary>
+
+```bash
+git clone git@github.com:forbee-dev/ForgeBee.git
+node ForgeBee/openclaw/install-openclaw.js
+```
+
+Each agent becomes `forgebee-<agent-name>/SKILL.md` and each command becomes `forgebee-cmd-<command-name>/SKILL.md` in `~/.openclaw/workspace/skills/`. OpenClaw selects the model through its own config.
 
 </details>
 
@@ -665,16 +630,16 @@ OpenCode reads `CLAUDE.md` when no `AGENTS.md` exists.
 
 ## Contributing
 
-Contributions welcome! ForgeBee is markdown surfaces and Node.js scripts. See **[CONTRIBUTING.md](./CONTRIBUTING.md)** for the surface contracts (agent/skill/command structure, the load-bearing Status + adversarial-hardening contract, the model-tier policy, output modes) and **[ARCHITECTURE.md](./ARCHITECTURE.md)** for how the pieces fit together.
+ForgeBee is Markdown surfaces and Node.js scripts. See **[CONTRIBUTING.md](./CONTRIBUTING.md)** for the surface contracts and **[ARCHITECTURE.md](./ARCHITECTURE.md)** for how the pieces fit together.
 
-1. Fork the repo
-2. Add your command (`forgebee/commands/your-command.md`), agent (`forgebee/agents/your-agent.md`), or skill (`forgebee/skills/your-skill/SKILL.md`) — follow the contract in CONTRIBUTING.md
-3. Run `node scripts/build-index.js` to regenerate the routing index
-4. Run `npm run check` — index sync + persona references + agent contract + version sync + eval must all pass (CI gates the PR on this)
-5. If you added/removed a surface, update the count strings in the manifests + READMEs (versions sync via `bump-version.sh`; counts are manual). Cut releases with `/release`.
-6. Open a PR
+1. Fork the repo.
+2. Add your command (`forgebee/commands/`), agent (`forgebee/agents/`), or skill (`forgebee/skills/<name>/SKILL.md`). Follow the contract in CONTRIBUTING.md.
+3. Run `node scripts/build-index.js` to regenerate the routing index.
+4. Run `npm run check`. CI gates the PR on it.
+5. If you added or removed a surface, update the counts in the manifests and READMEs.
+6. Open a PR.
 
-**Release notes:** see [`CHANGELOG.md`](./CHANGELOG.md). The `v5.1.0` entry is the canonical reference for all the discipline patterns (Karpathy P1-P6, prompt defense, budget circuit breaker, terse-report, etc.).
+Release notes are in [`CHANGELOG.md`](./CHANGELOG.md).
 
 ---
 

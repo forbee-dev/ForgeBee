@@ -25,20 +25,22 @@ async function main() {
   try {
     toolInput = JSON.parse(input);
   } catch (e) {
-    process.stdout.write(input);
     process.exit(0);
   }
 
   const command = toolInput?.tool_input?.command;
 
   if (!command) {
-    process.stdout.write(input);
+    process.exit(0);
+  }
+
+  // A background run does not block the session
+  if (toolInput?.tool_input?.run_in_background === true) {
     process.exit(0);
   }
 
   // Check if already in tmux
   if (process.env.TMUX) {
-    process.stdout.write(input);
     process.exit(0);
   }
 
@@ -96,7 +98,6 @@ async function main() {
     }
   }
 
-  process.stdout.write(input);
   process.exit(0);
 }
 

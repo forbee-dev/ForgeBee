@@ -158,6 +158,42 @@ try {
     assert.ok(out.additionalContext.includes('main'));
   });
 
+  test('dev-server-blocker: blocks a foreground dev server, allows a background run', () => {
+    const p = newProject();
+    const bg = run(H('dev-server-blocker.js'), { tool_input: { command: 'npm run dev', run_in_background: true } }, p);
+    assert.strictEqual(bg.status, 0);
+    if (!process.env.TMUX) {
+      assert.strictEqual(run(H('dev-server-blocker.js'), { tool_input: { command: 'npm run dev' } }, p).status, 2);
+    }
+  });
+
+  test('warn-only hooks: silent stdout when there is nothing to say (no stdin echo)', () => {
+    const p = newProject();
+    const js = path.join(p, 'clean.js');
+    fs.writeFileSync(js, 'let a = 1;\n');
+    assert.strictEqual(run(H('git-push-reminder.js'), { tool_input: { command: 'git push origin feat/x' } }, p).stdout, '');
+    assert.strictEqual(run(H('dev-server-blocker.js'), { tool_input: { command: 'ls' } }, p).stdout, '');
+    assert.strictEqual(run(H('post-edit-console-warn.js'), { tool_input: { file_path: js } }, p).stdout, '');
+    assert.strictEqual(run(H('post-edit-format.js'), { tool_input: { file_path: js } }, p).stdout, '');
+  });
+
+  test('Stop hooks create no docs/ dirs in the project', () => {
+    const p = newProject();
+    run(H('self-improve.js'), { session_id: 's1' }, p);
+    run(H('audit-trail.js'), { hook_event_name: 'Stop', session_id: 's1' }, p);
+    assert.ok(!fs.existsSync(path.join(p, 'docs')), 'docs/ created');
+  });
+
+  test('pm-sync: a done feature with an old date is not stale', () => {
+    const p = newProject();
+    fs.mkdirSync(path.join(p, 'docs/pm'), { recursive: true });
+    const state = f => `project:\n  updated: 2000-01-01\nfeatures:\n  - id: feat-1\n    phase: done\n    updated: 2000-01-01\n${f}`;
+    fs.writeFileSync(path.join(p, 'docs/pm/state.yaml'), state(''));
+    assert.ok(!run(H('pm-sync.js'), { hook_event_name: 'Stop' }, p).stdout.includes('Stale'));
+    fs.writeFileSync(path.join(p, 'docs/pm/state.yaml'), state('  - id: feat-2\n    phase: execution\n    updated: 2000-01-01\n'));
+    assert.ok(run(H('pm-sync.js'), { hook_event_name: 'Stop' }, p).stdout.includes('Stale'));
+  });
+
   test('pm-sync: Stop emits systemMessage', () => {
     const p = newProject();
     fs.mkdirSync(path.join(p, 'docs/pm'), { recursive: true });

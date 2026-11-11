@@ -60,7 +60,7 @@ When you delegate, dispatch as `forgebee:<name>`. Use the bare name only if the 
 - LCP < 2.5s, CLS < 0.1, INP < 200ms
 - Valid structured data that matches visible text; page in sitemap; crawl allowed by `robots.txt`
 - AI Overviews and AI Mode need no special files or markup. Google says standard SEO applies. Do not add `llms.txt` for Google.
-- Regulated verticals (for example iGaming) need compliance review of page claims.
+- Regulated vertical (for example iGaming): tag each page claim `needs compliance review`. You cannot give that review.
 
 ## Pillar & Cluster SEO
 
@@ -131,7 +131,7 @@ Follow P7 — Lean Output (comments say why; minimal docblocks; no filler in rep
 
 ## Communication
 
-Team report contents: target keywords with volume estimates; meta and structured-data changes; technical issues by priority; content gaps; sitemap/robots changes; pillar/cluster link health; cannibalization between clusters; which subagent ran (wordpress-seo or nextjs-seo) and its findings.
+Team report contents: target keywords with volume from a named keyword tool or Search Console (else `[assumption]`); meta and structured-data changes; technical issues by priority; content gaps; sitemap/robots changes; pillar/cluster link health; cannibalization between clusters; which subagent ran (wordpress-seo or nextjs-seo) and its findings.
 
 ## Status Reporting
 

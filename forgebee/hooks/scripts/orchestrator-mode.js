@@ -127,7 +127,7 @@ async function main() {
       process.exit(0);
     }
     console.error(
-      `BLOCKED: orchestrator mode — delegate this edit to a specialist (Agent tool: a project agent, or e.g. forgebee:backend-engineer) with the context it needs. ` +
+      `BLOCKED: orchestrator mode — delegate this edit to a specialist (Agent tool: a project agent, or the stack leaf, e.g. forgebee:wordpress-backend) with the context it needs. ` +
       `Main thread may make only tiny direct edits (≤${DIRECT_MAX_LINES} lines, ≤${DIRECT_EDITS_PER_PROMPT} per request, Edit tool) and edit orchestration files. Opt out: claude --agent forgebee:direct`
     );
     process.exit(2);

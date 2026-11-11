@@ -19,13 +19,13 @@ Take an unexplained symptom (crash log, stack trace, "this used to work"), produ
 
 ## Delegation
 
-This command invokes the `investigate` skill (`${CLAUDE_PLUGIN_ROOT}/skills/investigate/SKILL.md`). The skill enforces the discipline (stronghold first, evidence grading, never-erase hypotheses) and produces a case file at `docs/planning/investigations/YYYY-MM-DD-<topic>.md`.
+This command follows the `investigate` skill. Read `${CLAUDE_PLUGIN_ROOT}/skills/investigate/SKILL.md` and follow it. Do not call the Skill tool: the name `investigate` resolves to this command. The skill enforces the discipline (stronghold first, evidence grading, never-erase hypotheses) and produces a case file at `docs/planning/investigations/YYYY-MM-DD-<topic>.md`.
 
 **Dispatch:**
-1. Parse the user's symptom description and any provided artifacts (logs, stack frames, error text)
+1. Parse the user's symptom description and any provided artifacts (logs, stack frames, error text). The reporter's suspected cause is a hypothesis (H-NNN), not a confirmed fact
 2. Confirm the stronghold evidence with the user before opening the case file
-3. Invoke the `investigate` skill
-4. When the skill produces a clear hypothesis ready to test: hand off to `debugger-detective` for the fix
+3. Run the skill process
+4. When the skill produces a clear hypothesis ready to test: dispatch `forgebee:debugger-detective` with the case file path for the fix
 
 **Output:** Path to the case file + a one-line summary of the leading hypothesis.
 

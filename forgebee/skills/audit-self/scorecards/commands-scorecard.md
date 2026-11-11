@@ -18,7 +18,7 @@ For each command in `forgebee/commands/`, score Y/N on these questions:
 ### <command-name>
 - Structure: <items 1-3 Y/N>
 - Delegation: <items 4-5 Y/N>
-- Quality: <items 6-7 Y/N>
+- Quality: <item 6 Y/N>
 - Overlaps: <items 7-8 mapping>
 - Length: <line count>
 - Issues: <concrete bullets>

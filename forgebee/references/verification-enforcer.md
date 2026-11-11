@@ -11,8 +11,9 @@ Run every command below with `set -o pipefail`. Without it, `echo $?` after `| t
 ### Step 1: Identify What Changed
 
 ```bash
-git diff --stat HEAD~1
-git diff --name-only HEAD~1
+BASE=$(git merge-base HEAD "$(git symbolic-ref -q --short refs/remotes/origin/HEAD || echo main)")
+git diff --stat "$BASE"
+git status --porcelain
 ```
 
 | Change type | Evidence required |
@@ -68,7 +69,7 @@ Every criterion needs its own evidence. "Implied by other tests" is not evidence
 
 ### Step 4: Check for Regressions
 
-Judge by exit code first, counts second. Do not grep stdout for "FAIL": "0 failed" matches it. Compare the exit code and the passed and failed counts with the baseline run before the change. Take failing test names from the runner summary.
+Judge by exit code first, counts second. Do not grep stdout for "FAIL": "0 failed" matches it. Compare the exit code and the passed and failed counts with the baseline: the pass count in an earlier Verification Report for this work, if one exists. Take failing test names from the runner summary.
 
 ### Step 5: Verdict
 

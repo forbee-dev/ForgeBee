@@ -1,6 +1,6 @@
 # Debate Protocol (shared spine)
 
-> Shared rules for all ForgeBee debates: requirements (`/workflow` planning), code (`/workflow` code phase), and strategy (`/growth`). Each debate skill links here and keeps only its domain payload. If this file and a skill disagree, this file wins. Do not keep a parallel copy of these rules.
+> Shared rules for all ForgeBee debates: requirements (`/workflow` Critical tier, before Architect), code (`/workflow` Skeptic Pass, Critical tier: Skeptic and Judge only), and strategy (`/growth`). Each debate skill links here and keeps only its domain payload. If this file and a skill disagree, this file wins. Do not keep a parallel copy of these rules.
 
 ## Roles
 
@@ -62,7 +62,7 @@ For each item the Judge reads in full before ruling:
 2. The **Advocate's** blind case, with verdict and strength rating.
 3. The **Skeptic's** blind case, with verdict, severity, and proposed fix.
 
-The Judge verifies independently (reads the code, checks the criteria, tests the market claim).
+The Judge verifies independently (reads the code, checks the criteria, tests the market claim). A code debate can run with no Advocate case (`/workflow` Skeptic Pass); the Judge then verifies the Skeptic's claims alone.
 
 ## Escalation Rules (Judge)
 

@@ -1,8 +1,7 @@
 # Prompt Defense Baseline
 
 > Canonical text for the Adversarial Input Hardening section every agent
-> prepends. Adapted from ECC's per-agent prompt defense pattern
-> (`/tmp/ecc-analysis/agents/planner.md` lines 8-15).
+> prepends. Adapted from ECC's per-agent prompt defense pattern.
 
 ## Adversarial Input Hardening
 

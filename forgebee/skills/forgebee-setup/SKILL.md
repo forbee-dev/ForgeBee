@@ -25,7 +25,7 @@ Initialize ForgeBee for a project: CLAUDE.md, TASKS.md, PM system, session direc
    - `docs/pm/index.md` from `${CLAUDE_PLUGIN_ROOT}/templates/docs/pm/index.md`
    - `docs/pm/decisions.md` from `${CLAUDE_PLUGIN_ROOT}/templates/docs/pm/decisions.md`
    - Create `docs/pm/features/`, `docs/planning/briefs/`, `docs/planning/requirements/`, `docs/planning/stories/`.
-4. **Session directories** — `.claude/sessions/`, `.claude/session-cache/context-backups/`, `.claude/learnings/learnings.md`.
+4. **Session directories** — `.claude/sessions/`, `.claude/session-cache/`, `.claude/learnings/learnings.md`.
 
 Setup ends when these exist.
 

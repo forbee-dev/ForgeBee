@@ -26,14 +26,12 @@ async function main() {
   try {
     toolInput = JSON.parse(input);
   } catch (e) {
-    process.stdout.write(input);
     process.exit(0);
   }
 
   const filePath = toolInput?.tool_input?.file_path;
 
   if (!filePath) {
-    process.stdout.write(input);
     process.exit(0);
   }
 
@@ -54,8 +52,6 @@ async function main() {
         additionalContext: report.join('\n'),
       },
     });
-  } else {
-    process.stdout.write(input);
   }
   process.exit(0);
 }

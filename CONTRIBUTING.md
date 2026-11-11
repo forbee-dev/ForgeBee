@@ -37,10 +37,12 @@ Copy the closest existing agent (e.g. `backend-engineer.md`) as a template.
 
 Frontmatter: `name`, `description` ("Use when …"), `version`, and `context: fork`
 for skills that should run in an isolated subagent (all `review-*` and debate
-skills). Review skills MUST emit the shared
-[`_review-finding-contract.md`](./forgebee/skills/_review-finding-contract.md)
+skills). Review skills MUST follow the shared
+[`_review-finding-contract.md`](./forgebee/skills/_review-finding-contract.md):
+its rules (merge-base scope, connected code, verify before report, lanes) and its
 format (severity block + 0-100 score + machine-parseable footer) so `review-all`
-and `/audit-self` can aggregate. Debate skills follow
+and `/audit-self` can aggregate. A review skill has a `## Method` (how to find
+defects), not only a checklist. Debate skills follow
 [`_debate-protocol.md`](./forgebee/skills/_debate-protocol.md).
 
 ### A command (`forgebee/commands/<name>.md`)
@@ -56,6 +58,34 @@ Frontmatter: `name`, `description`, `allowed-tools`. Every command MUST have
 
 Don't duplicate a sibling's methodology — reference it. Add a "When to use X vs Y"
 note when a command is easily confused with another (`/review` vs `/review-all`).
+
+## Writing hooks
+
+### Hook behavior
+
+- Exit 0 lets the tool use proceed. A non-zero code other than 2 is a non-blocking error
+- Exit code 2 from PreToolUse hooks BLOCKS the tool use
+- PreToolUse hooks receive JSON on stdin with `tool_name` and `tool_input`
+- PostToolUse hooks receive JSON on stdin with `tool_name`, `tool_input`, and `tool_response`
+- Stop hooks run after each Claude response
+- SessionStart hooks run once when a session begins
+- Never echo the input JSON to stdout. Claude Code parses stdout as hook output; SessionStart and UserPromptSubmit stdout goes into context
+
+### Hook best practices
+
+- Keep hooks fast (<5s for sync, <10s for async)
+- Use `async: true` for non-blocking observation hooks
+- Never modify the input JSON — only read it
+- Fail silently (|| true) for non-critical operations
+- Use stderr (>&2) for warnings/messages to the user
+- stdout is hook output: a JSON decision or context text
+
+### Auto-accept permissions
+
+- Permission decisions from hooks bypass user prompts
+- Use allowlist patterns for known-safe commands
+- Use blocklist patterns for known-dangerous commands
+- Cache permission decisions with TTL for unknown commands
 
 ## Model-tier policy
 

@@ -41,7 +41,6 @@ Apply the matching scorecard to each item. Most items are FINE; put detail on pr
 - Prompt defense baseline in all agents
 - "Use when..." descriptions across skills
 - Persona ↔ references/ symmetry (`node scripts/check-references.js`)
-- `--skip-checkpoint` rate from `.claude/audit/skip-checkpoint.jsonl`: flag if >50% across the last 10 `/workflow` runs (sticky-alias drift)
 
 ### Step 4: Regression detection
 - Read the most recent `docs/planning/audit-*.md` (or audit-skills.md / audit-agents-*.md / audit-commands.md if no timestamped one exists).
@@ -94,7 +93,7 @@ Single pass, not a fix loop. Write the file and stop when all hold:
 2. **Regression step run:** every prior issue classified Fixed / Persistent (Step 4). Skipping this invalidates the run.
 3. **Findings written:** the timestamped file exists with Inventory Delta and Snapshot populated.
 
-Do not re-score FINE items, fix what you find (recommend in the Top 10; fixing is a separate `/workflow` or `/review` run), or restart when new issues appear mid-audit (capture them; the next audit covers later changes). Cap detail at the top ~20 problem items.
+Do not re-score FINE items, fix what you find (recommend in the Top 10; fixing is a separate `/team` or `/review` run), or restart when new issues appear mid-audit (capture them; the next audit covers later changes). Cap detail at the top ~20 problem items.
 
 If coverage cannot complete (stale INDEX.md, missing scorecard), stop and report the blocker. Do not present a partial audit as whole.
 

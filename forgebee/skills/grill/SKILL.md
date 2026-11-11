@@ -19,8 +19,8 @@ Interview the user about a plan until every decision in it is settled or accepte
 ## When this fires
 
 - The user runs `/grill [topic]` or says "grill me", "interview me on this".
-- `/workflow` Grill phase (on by default for an ambiguous spec or auth/payments/data).
-- `/team` Step 2 (Medium/Large tier or ambiguous task, max 2 rounds).
+- `/workflow` Grill phase (on for an ambiguous spec or the Critical tier).
+- `/team` Step 3 (only unknowns the code cannot answer, max 2 rounds).
 
 ## The decision tree
 
@@ -54,7 +54,7 @@ The user can answer "Q1 yes, Q3 B" or "accept all recommendations".
 ## Facts are yours, decisions are theirs
 
 - A question that the codebase, docs, or tools can answer is a fact. Look it up with read-only checks. Do not ask the user.
-- For a slow lookup, dispatch `deep-researcher` or an Explore agent. Only the questions downstream of that lookup wait. Ask the rest of the frontier now.
+- For a slow lookup, dispatch `forgebee:deep-researcher` or an Explore agent. Only the questions downstream of that lookup wait. Ask the rest of the frontier now.
 - If the evidence contradicts what the user said, show both and ask which one is right.
 - A choice between valid options is a decision. Put it to the user and wait. Do not pick for them.
 

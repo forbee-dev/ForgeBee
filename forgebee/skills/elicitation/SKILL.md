@@ -8,14 +8,14 @@ version: 1.0.0
 
 ## Objective
 
-After you produce a plan, design, or architecture decision, apply one of 18 named reasoning methods to challenge it. `brainstorming` runs upfront on the idea; debate triads run on agreed requirements; **elicitation runs on your own artifact** mid-flow, for example after an ADR and before it ships. It targets CLAUDE.md P2: agents that do not surface trade-offs or push back.
+After you produce a plan, design, or architecture decision, apply one of 18 named reasoning methods to challenge it. `brainstorming` runs upfront on the idea; the requirements debate runs on agreed requirements; **elicitation runs on your own artifact** mid-flow, for example after an ADR and before it ships. It targets CLAUDE.md P2: agents that do not surface trade-offs or push back.
 
 Adapted from BMAD's bmad-advanced-elicitation skill + methods catalog.
 
 ## When this fires
 
 - User invokes `/elicit`, optionally with a method (`/elicit pre-mortem`).
-- `/workflow` offers 2-3 methods at the end of Plan and Architect phases.
+- `/workflow` offers a method with the Execution Plan.
 - You are about to commit to a heavy decision and offer the method library.
 
 ## Method Catalog
@@ -46,7 +46,7 @@ Adapted from BMAD's bmad-advanced-elicitation skill + methods catalog.
 4. Output findings and concrete actions.
 
 ### Auto-offer at workflow phase boundaries
-After `/workflow` Plan or Architect:
+After `/plan`, or with the `/workflow` Execution Plan:
 ```
 Want to stress-test this before moving on? Try:
 - `/elicit pre-mortem` — assume the project failed; what went wrong?
@@ -88,4 +88,4 @@ Skip is the default. Elicitation is a tool, not a gate.
 - Never give a finding that does not map to a specific element of the artifact.
 - Never use elicitation as a delay. Pick a method, run it fast (~5-10 min), output actions.
 - Never exceed 2 methods per artifact.
-- Never apply elicitation to requirements. The debate triads handle those.
+- Never apply elicitation to requirements. `grill` and the requirements debate handle those.

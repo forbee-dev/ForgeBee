@@ -1,7 +1,7 @@
 ---
 name: design-system
 description: Design system operations — audit a Figma component page against code, onboard a newly built component, or audit token drift
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Task
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Task, Skill
 ---
 
 # Design System Command
@@ -47,9 +47,9 @@ Parse the first argument. When it is absent, infer from the request and state th
 
 - **Audit** — run Part A: production reference → source (plus neighbours) → programmatic node dump → value-by-value diff → fix deviations only → verify → record. Run the free checks first; they need no source access.
 - **Onboard** — run Part B, then Part A against the new page. Transcription errors surface only in that second pass.
-- **Tokens** — dispatch `wp-design-system` for layer ownership, the `theme.json`-versus-SCSS collision check, unused-token census, and hardcoded values bypassing presets.
+- **Tokens** — dispatch `forgebee:wp-design-system` for layer ownership, the `theme.json`-versus-SCSS collision check, unused-token census, and hardcoded values bypassing presets.
 
-**4. On a WordPress project, resolve layer ownership before changing any type, colour, or spacing value.** Core blocks take `theme.json` presets; custom blocks take their own stylesheet. Dispatch `wp-design-system` when this is in doubt — a value fixed in the wrong layer looks correct and is not.
+**4. On a WordPress project, resolve layer ownership before changing any type, colour, or spacing value.** Core blocks take `theme.json` presets; custom blocks take their own stylesheet. Dispatch `forgebee:wp-design-system` when this is in doubt — a value fixed in the wrong layer looks correct and is not.
 
 **5. Record.** Repo audit file carries the full detail with `file:line` per claim. The Figma doc note gets a status line under ~400 characters pointing at that file. One writer per file.
 

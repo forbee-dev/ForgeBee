@@ -59,6 +59,12 @@ try {
   test('follow-up does not leak across sessions', () => {
     assert.ok(!route('yes, do it', 'other').includes('Follow-up'));
   });
+  test('build intent names /team as the default and /workflow for ADR work, prefixed', () => {
+    const ctx = route('implement the export button from this ticket', 'b1');
+    assert.ok(/`\/forgebee:team` — default/.test(ctx), ctx);
+    assert.ok(/`\/forgebee:workflow` — only when .*ADR/.test(ctx), ctx);
+    assert.ok(!/`\/(?!forgebee:)[\w-]+`/.test(ctx), ctx);
+  });
   test('main-thread agents are never suggested', () => {
     const n = names(route('orchestrator direct mode for the orchestrator'));
     assert.ok(!n.includes('forgebee:orchestrator') && !n.includes('forgebee:direct'), n.join());

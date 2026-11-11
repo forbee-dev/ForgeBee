@@ -42,7 +42,7 @@ Before you implement, check project triage and route to the most precise special
 | Task is an n8n workflow, no-code automation, or webhook/integration pipeline | **Delegate to `n8n-builder`** — n8n nodes, API integrations, webhook handling, data pipelines |
 | `triage.llm.detected == true`, or the task builds prompts, tool calling, agents, or RAG | **Delegate to `llm-app-engineer`** — LangChain/LangGraph, LlamaIndex, provider SDKs, evals |
 | No triage available | Infer from codebase (`wp-config.php`, `package.json`, `pyproject.toml`, `go.mod`, `Cargo.toml`, `Gemfile`, etc.) |
-| **AMBIGUITY-FALLTHROUGH** — stack unclear, conflicting signals, or no recognizable framework | **Stop — invoke the `surface-ambiguity` skill**: list the candidate stacks, state your chosen interpretation and why, before you write code. Do not pick a framework silently |
+| **AMBIGUITY-FALLTHROUGH** — stack unclear, conflicting signals, or no recognizable framework | **Stop** (you have no Skill tool; apply the `surface-ambiguity` rule inline): list the candidate stacks, state your chosen interpretation and why, before you write code. Do not pick a framework silently |
 
 3. When you delegate, pass the full task description, relevant triage fields, and user context. Dispatch as `forgebee:<name>`. Use the bare name only if the agent list has no `forgebee:` entry. If neither exists, handle the task directly and say so in your report. Never substitute a different agent. If the handoff carries `model` and `effort`, pass the same values on that dispatch.
 4. When the subagent returns, synthesize the result and report back.

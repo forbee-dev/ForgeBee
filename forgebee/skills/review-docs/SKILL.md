@@ -7,7 +7,7 @@ version: 1.1.0
 
 Review the changed code and docs for documentation that is missing, wrong, or padded.
 
-> Emit findings in the shared format: `${CLAUDE_PLUGIN_ROOT}/skills/_review-finding-contract.md` (severity block + score + footer line).
+> Read `${CLAUDE_PLUGIN_ROOT}/skills/_review-finding-contract.md` first. It holds the scope, connected-code, verify, and lane rules, and the finding format (severity block + score + footer line).
 
 ## Scope
 
@@ -21,9 +21,13 @@ Own documentation at and above the API surface: public docblocks, module and REA
 
 ## Steps
 
-1. Run `git diff HEAD`. If empty, run `git diff HEAD~1`.
-2. Read surrounding files for context, but report only on changed lines.
+1. Resolve the diff per the contract **Scope** section.
+2. Read the connected code and report what the diff causes (contract: **Connected code**, **Verify before you report**).
 3. Detect the docblock standard: WPCS (`phpcs.xml*` with `WordPress`), ESLint JSDoc rules, Python docstring linters. It decides what is required.
+
+## Method
+
+For each changed public name, option, endpoint, or behavior: `rg` it in the README, `docs/`, and docblocks. A doc that still describes the old behavior is the finding, at the doc's line. This is the check a diff-only read misses.
 
 ## Checklist
 
