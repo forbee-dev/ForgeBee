@@ -24,6 +24,14 @@
 </p>
 
 <p align="center">
+  <a href="docs/assets/forgebee-promo.mp4">
+    <img src="docs/assets/forgebee-promo.gif" alt="ForgeBee checks a ticket against the code, then works in five steps: goal, evidence, spec, build, review" width="800" />
+  </a>
+  <br/>
+  <a href="docs/assets/forgebee-promo.mp4">Watch with sound</a>
+</p>
+
+<p align="center">
   <a href="#quick-start">Quick Start</a> &nbsp;&bull;&nbsp;
   <a href="#how-it-works">How It Works</a> &nbsp;&bull;&nbsp;
   <a href="#which-command-do-i-use">Which Command</a> &nbsp;&bull;&nbsp;
