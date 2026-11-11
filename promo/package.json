@@ -1,0 +1,15 @@
+{
+  "name": "forgebee-promo",
+  "private": true,
+  "scripts": {
+    "studio": "remotion studio src/index.ts",
+    "audio": "node make-audio.js",
+    "render": "node make-audio.js && remotion render src/index.ts Promo ../docs/assets/forgebee-promo.mp4 && remotion render src/index.ts Promo ../docs/assets/forgebee-promo.gif --codec=gif --every-nth-frame=2 --scale=0.5"
+  },
+  "dependencies": {
+    "@remotion/cli": "^4.0.542",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "remotion": "^4.0.542"
+  }
+}
