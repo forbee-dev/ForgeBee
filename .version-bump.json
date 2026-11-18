@@ -44,7 +44,8 @@
       "inject-principles.js",
       "inject-prompt-defense.js",
       "sync-manifests.yml",
-      "docs/learnings"
+      "docs/learnings",
+      "promo"
     ]
   }
 }
