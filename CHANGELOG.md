@@ -10,6 +10,32 @@ The format roughly follows [Keep a Changelog](https://keepachangelog.com/) and t
 
 ---
 
+## [8.1.0] — 2026-11-18
+
+**Theme: a failing test is evidence, and a test must earn its run time.** Agents look for the cause in product code before they touch a test. New tests follow risk, not habit.
+
+### Changed
+
+- **Failing test rule.** An agent finds the root cause in product code first. It edits a test only with stated proof (`file:line`): the task changes the asserted behavior, or the test is wrong. No weaker assertion, skip, longer timeout, retry, or delete to get a pass.
+- **Tests by risk.** A test is written for new non-trivial logic, money/auth/data paths, a bug fix (one regression test), or an explicit request. No test for markup, styles, copy, config, glue code, or renames. The agent reports `Tests: none — <reason>`. This replaces "new features require tests" and "do not skip tests because the change is small".
+- **No default coverage or test-ratio thresholds.** `test-engineer` and `tdd-enforcer` check coverage only against a threshold from triage or `CLAUDE.md`. The 80/75/90/80 and 60% defaults are removed.
+- **E2E only for critical journeys** (login, signup, checkout, main conversion form). Extend an existing spec before a new file.
+- **Related tests in the loop, full suite one time.** Implementers and review rounds run only the tests related to the change. `/team` runs the full suite at loop exit or in round 3 ("final gate"); `/workflow` leaves it to the Verify phase. `review-all` run alone still runs the full suite.
+- `test-engineer` reports missing test infrastructure and sets it up only when the task asks for it.
+
+### Added
+
+- **`rules/common/testing.md`**: the full test policy. `rules/common/general.md` and `contexts/dev.md` carry the short form, inside the session hook budget.
+- **`review-tests` finding classes:** `Test Tampering` (`High`) and `Needless Test` (`Medium`).
+- **`/test prune [path]`**: lists low-value tests, slowest first, with a keep/delete/merge verdict. It changes nothing without approval.
+- **`## Test Policy` block** in 11 stack agents, and the policy in each `/team` and `/workflow` implementer handoff.
+
+### Fixed
+
+- `review-all` stops at a failing check and does not review a build that fails.
+
+---
+
 ## [8.0.0] — 2026-11-11
 
 **Theme: the ticket is a claim, not a fact.** `/team` is now the default ticket-to-code flow and builds from a spec that is checked against the code. One review loop replaces the stacked gates. A plugin-wide audit applied the same rules to every agent, command, skill, and hook.

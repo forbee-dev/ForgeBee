@@ -1,6 +1,6 @@
 ---
 name: review-tests
-description: Use when reviewing test suites for coverage gaps, brittle mocks, missing edge cases, or untested code paths — runs after new code or before merging.
+description: Use when reviewing tests for coverage gaps, brittle mocks, test tampering, needless tests, or untested code paths — runs after new code or before merging.
 context: fork
 version: 1.0.0
 ---
@@ -15,12 +15,12 @@ Find untested code paths and weak tests in the diff (contract **Scope**) or the 
 
 ## Run Tests First
 
-1. Run the project's test suite.
-2. Run coverage if available.
+1. Run the tests related to the diff.
+2. Run coverage only when the project sets a threshold.
 
 ## Method
 
-1. **Map each new or changed branch in the diff to the test that exercises it.** No test → coverage gap.
+1. **Map each new or changed branch in the diff to the test that exercises it.** No test, and the branch needs one (new non-trivial logic, money/auth/data path, bug fix) → coverage gap. Markup, styles, copy, config, and glue code need no test.
 2. **Mutation check, in your head:** for each mapped branch, would the test fail if the condition were inverted, the branch deleted, or the return value changed? If not, the test asserts nothing about it.
 3. **A bug fix needs a regression test** that fails on the old code. None → `High`.
 4. No suite in the repo → say so once; do not list every function as untested.
@@ -28,9 +28,19 @@ Find untested code paths and weak tests in the diff (contract **Scope**) or the 
 ## Checks
 
 ### Coverage Gaps (High priority)
-- New functions, routes, or components in the diff with no test.
+- New or changed logic in the diff that needs a test and has none.
 - Route handlers: success, 400, 401/403, 404, 500 cases.
 - Edge cases: null, empty, boundary values, concurrency.
+
+### Test Tampering (High)
+- The diff weakens an assertion, adds a skip or `only`, raises a timeout, adds a retry, or deletes a test.
+- No stated evidence that the behavior change is intended or the test was wrong.
+- Check the product code for the real cause. Name it in the finding.
+
+### Needless Test (Medium)
+- A new test for markup, styles, copy, config, or glue code.
+- A test that asserts mocks, or duplicates existing coverage.
+- An e2e test for a thing a unit test can prove, or for a non-critical journey.
 
 ### Test Quality
 - Test passes with the feature code deleted (asserts a mock, not behavior).
@@ -74,7 +84,8 @@ End with critical untested paths and next tests to add in one line each, then th
 ## Never
 
 - Never approve tests that pass without the feature code.
-- Never ignore missing null, empty, or error-path coverage.
+- Never ignore missing null, empty, or error-path coverage in logic that needs a test.
+- Never approve a test change that hides a product bug.
 - Never approve tests with hardcoded timing/sleep dependencies.
 
 ## Communication

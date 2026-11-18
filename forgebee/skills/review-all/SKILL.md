@@ -51,9 +51,9 @@ Project preferences:
 
 ## Step 2 — Run the checks
 
-A review that runs nothing is an opinion. Resolve the project's test, lint, type-check, and build commands (`.claude/session-cache/project-triage.json`, else `package.json` scripts, `composer.json`, `phpunit.xml`, `Makefile`) and run them.
+A review that runs nothing is an opinion. Resolve the project's test, lint, type-check, and build commands (`.claude/session-cache/project-triage.json`, else `package.json` scripts, `composer.json`, `phpunit.xml`, `Makefile`) and run them. Tests: `/team` or `/workflow` called this round without "final gate" → run only the tests related to the diff. Else (run alone, or "final gate") → run the full suite. Related tests not found → run the full suite.
 
-- A failing check is a `High` finding, with the failing output.
+- A failing check is a `High` finding, with the failing output. Stop there: skip Steps 3-6 and report it with verdict `NEEDS FIXES`. Do not review a build that fails.
 - No command discoverable → say "no test/lint/build command found" in the report. Do not invent one. Confidence is then at most Medium.
 - The caller passed fresh evidence for the same tree (a `verification-enforcer` report) → use it and do not run the checks again.
 
@@ -92,7 +92,7 @@ Delegate to the `context: fork` review skills with the Skill tool. Send all of t
 | Diff touches… | Delegate to |
 |---|---|
 | DB-heavy code, hot loops, render paths | `review-performance` |
-| new code paths or changed test files (or new code with no tests) | `review-tests` |
+| new code paths or changed test files (or new non-trivial logic with no test) | `review-tests` |
 | UI components, markup, interaction | `review-accessibility` |
 | other WordPress plugin/theme files | `review-wordpress` |
 

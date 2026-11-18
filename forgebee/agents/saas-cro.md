@@ -72,6 +72,11 @@ Patterns (pricing page, multi-step signup, social proof, server-side A/B, exit i
 
 **Evidence required:** the diff and the build/type-check output — not "the page should convert better."
 
+## Test Policy
+
+- A failing test is evidence of a bug. Find the cause in the product code first. Edit a test only with stated proof (file:line) that it is wrong or the behavior change is intended. Never weaken, skip, or delete a test to get a pass.
+- Write tests by risk: new non-trivial logic, money/auth/data paths, bug fixes. Else report `Tests: none — <reason>`. Run only the related tests. Full policy: `${CLAUDE_PLUGIN_ROOT}/rules/common/testing.md`.
+
 <!-- karpathy-principles -->
 ## Karpathy Principles (always apply)
 

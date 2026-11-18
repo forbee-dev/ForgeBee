@@ -81,6 +81,11 @@ Show the user the spec summary: goal, outcome, **ticket claims rejected**, appro
 
 Dispatch the spec's workstreams. Each agent gets: the spec path, its workstream, the files it owns, its acceptance criteria with verify lines, and `responseStyle: "orchestrator"`. Agents do not share your conversation; the spec carries the context.
 
+Test policy (every implementer handoff):
+- A failing test is evidence of a bug. Find the cause in product code first. Edit a test only with stated proof (file:line) that it is wrong or the behavior change is intended.
+- Write tests by risk: new non-trivial logic, money/auth/data paths, bug fixes. Else report `Tests: none — <reason>`.
+- Run only the related tests. The final gate runs the full suite.
+
 - **Agent names:** dispatch `forgebee:<name>`. A project agent or skill (`.claude/agents/`, `.claude/skills/`) beats a ForgeBee one for the same work; dispatch it by its bare name. If neither exists, stop and report. Never substitute a different agent.
 - **Leaf agents:** dispatch the stack leaf (`forgebee:wordpress-backend`, not `forgebee:backend-engineer`). A router loads two agent definitions and the per-dispatch model does not reach the inner agent.
 - **Model tier:** pass the workstream's tier as `model` and `effort` on the Agent call: `mechanical` → `haiku`/`low`, `implement` → `sonnet`/`medium`, `design` → `opus`/`high`. Do not set `name`: Claude Code drops `effort` when `name` is set. `--fable`: use `model: "fable"` where the dispatch would run on Opus; if rejected, re-dispatch once on `opus` and say so.
@@ -109,9 +114,10 @@ When all workstreams report `DONE`:
 
 **Each round:**
 
-1. Invoke the `review-all` skill (`Skill({ skill: "review-all" })`) on the **full change**, with the spec path. From round 2, pass the previous round's findings. `review-all` runs the project's test, lint, and build commands, checks every acceptance criterion, and reports findings, a verdict, and a confidence level.
-2. **Exit when:** zero findings of any severity, checks pass, and confidence is High. Go to Step 7.
+1. Invoke the `review-all` skill (`Skill({ skill: "review-all" })`) on the **full change**, with the spec path. From round 2, pass the previous round's findings. `review-all` runs the tests related to the change, plus the lint and build commands, checks every acceptance criterion, and reports findings, a verdict, and a confidence level.
+2. **Exit when:** zero findings of any severity, checks pass, and confidence is High. Then run the full suite one time, unless this round ran as "final gate". A failure is a `High` finding: fix it and run the suite again. Then go to Step 7.
 3. **Else fix everything** — Critical, High, Medium, and Low. Batch the findings per owning agent: one dispatch per agent, the finding blocks verbatim (`file:line`, issue, fix), the spec path, and "fix these, change nothing else". Then start the next round.
+4. On round 3, pass "final gate" to `review-all`: it runs the full suite.
 
 **Findings that are not code fixes:**
 - An agent reports a finding is a false positive → read the code yourself. Confirmed false → drop it and list it in the final report with the reason. Not confirmed → it stays open.

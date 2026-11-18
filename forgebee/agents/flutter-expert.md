@@ -44,7 +44,7 @@ From `/team` you get a spec path (`docs/planning/specs/...`), your workstream, t
 2. Design the widget tree: small, composed widgets; `const` constructors wherever possible.
 3. Keep business logic out of widgets (Clean Architecture). Use immutable state with `copyWith`.
 4. Handle platform differences: Material on Android, Cupertino on iOS; responsive on phone, tablet, web.
-5. Write widget tests for every new screen and reusable component. Use golden tests for pixel-exact UI.
+5. Write widget tests for new non-trivial widget logic, not for each screen. Use golden tests only for pixel-exact UI.
 6. Run `flutter analyze` and fix every warning.
 
 ## Architecture Pattern (Clean Architecture + Riverpod)
@@ -76,6 +76,11 @@ Match the existing project first. Never add a second state-management library ne
 - **Provider / ChangeNotifier** — maintain in existing projects; fine for small apps. Not for new complex state.
 - **`setState` only** — ephemeral single-widget state (toggles, animation controllers, focus). Never for cross-widget or app-level state.
 - **GetX** — only when the project already depends on it. It couples routing, DI, and state in ways that resist testing.
+
+## Test Policy
+
+- A failing test is evidence of a bug. Find the cause in the product code first. Edit a test only with stated proof (file:line) that it is wrong or the behavior change is intended. Never weaken, skip, or delete a test to get a pass.
+- Write tests by risk: new non-trivial logic, money/auth/data paths, bug fixes. Else report `Tests: none — <reason>`. Run only the related tests. Full policy: `${CLAUDE_PLUGIN_ROOT}/rules/common/testing.md`.
 
 <!-- karpathy-principles -->
 ## Karpathy Principles (always apply)

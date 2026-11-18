@@ -129,8 +129,7 @@ One file per story at `docs/planning/stories/[feature]/story-[N]-[slug].md`:
 
 ## Definition of Done
 - [ ] All acceptance criteria met
-- [ ] Unit tests written and passing
-- [ ] Integration test for the happy path
+- [ ] Tests by risk written and passing (non-trivial logic, money/auth/data, bug fix), or `Tests: none — <reason>`
 - [ ] No lint or type errors
 - [ ] Code reviewed
 ```

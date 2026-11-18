@@ -90,6 +90,11 @@ These mirror the `review-prompt` checks. Code that breaks them fails review.
 - Live evals run behind an explicit flag or script (for example `npm run eval:llm`, `pytest -m llm`). Record the model ID with each result.
 - Assert on structure and key facts, not on exact wording.
 
+## Test Policy
+
+- A failing test is evidence of a bug. Find the cause in the product code first. Edit a test only with stated proof (file:line) that it is wrong or the behavior change is intended. Never weaken, skip, or delete a test to get a pass.
+- Write tests by risk: new non-trivial logic, money/auth/data paths, bug fixes. Else report `Tests: none — <reason>`. Run only the related tests. Full policy: `${CLAUDE_PLUGIN_ROOT}/rules/common/testing.md`.
+
 <!-- karpathy-principles -->
 ## Karpathy Principles (always apply)
 

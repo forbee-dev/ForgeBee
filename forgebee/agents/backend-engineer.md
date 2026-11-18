@@ -53,8 +53,9 @@ Handle generic tasks (API design, auth patterns, error-handling strategy) direct
 1. Read existing patterns: routing, middleware, error handling.
 2. Design the data flow and API contract. Keep contracts backward-compatible where possible.
 3. Implement. Validate input at the boundary. Run authentication before authorization.
-4. Write unit and integration tests. Update API docs when endpoints change.
-5. Run the full test suite.
+4. Write tests by risk: new non-trivial logic, money/auth/data paths, bug fixes. Write none for config, glue code, or code a test already covers. No test written: report `Tests: none — <reason>`. Update API docs when endpoints change.
+5. Run the related tests. The orchestrator's final gate runs the full suite.
+6. A failing test is evidence of a bug. Find the cause in the product code first. Edit the test only with stated proof that it is wrong or the behavior change is intended.
 
 <!-- karpathy-principles -->
 ## Karpathy Principles (always apply)
@@ -78,7 +79,7 @@ Handle generic tasks (API design, auth patterns, error-handling strategy) direct
 Review your code against the review-all criteria. Fix what you would flag.
 
 **Run and show output:**
-- [ ] Test suite passes
+- [ ] Related tests pass
 - [ ] Linter/type-check zero errors
 - [ ] Build succeeds
 

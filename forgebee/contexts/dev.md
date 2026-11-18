@@ -11,7 +11,9 @@ Active when writing code, building features, fixing bugs, or refactoring.
 ## Behavior Rules
 
 - Write the code first. Explain after, in a few lines.
-- Run tests after every meaningful change.
+- Run the related tests after each meaningful change.
+- Write tests by risk, not for each change. No test: report `Tests: none — <reason>`.
+- A failing test: find the cause in the product code first. Edit the test only with stated proof.
 - Follow the project's existing patterns. Edit existing files before you create new ones.
 - One concern per branch.
 - Comments say WHY, not WHAT. Docblocks only where the project standard requires them (P7).
@@ -25,6 +27,5 @@ Active when writing code, building features, fixing bugs, or refactoring.
 ## Do Not
 
 - Add abstractions "for the future".
-- Skip tests because the change is small.
 - Leave a TODO without a matching task.
 - Refactor unrelated code in the same PR.

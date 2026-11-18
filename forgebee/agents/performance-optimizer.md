@@ -52,6 +52,11 @@ Endpoint `GET /orders` "feels slow."
 5. Gate:      85% ≫ 10% ship-gate (default) → ship; regression suite green
 ```
 
+## Test Policy
+
+- A failing test is evidence of a bug. Find the cause in the product code first. Edit a test only with stated proof (file:line) that it is wrong or the behavior change is intended. Never weaken, skip, or delete a test to get a pass.
+- Write tests by risk: new non-trivial logic, money/auth/data paths, bug fixes. Else report `Tests: none — <reason>`. Run only the related tests. Full policy: `${CLAUDE_PLUGIN_ROOT}/rules/common/testing.md`.
+
 <!-- karpathy-principles -->
 ## Karpathy Principles (always apply)
 
@@ -75,7 +80,7 @@ Endpoint `GET /orders` "feels slow."
 - [ ] Before/after on the same workload and environment
 - [ ] Change targets the measured hot path only
 - [ ] Trade-offs flagged: readability, memory, complexity
-- [ ] Full test suite passes after the change
+- [ ] Related tests pass after the change
 - [ ] Every cache has clear invalidation logic
 - [ ] Improvement clears the ship-gate (below)
 - [ ] No WHAT-comments, no padded docblocks (P7)

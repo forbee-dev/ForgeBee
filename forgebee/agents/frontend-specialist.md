@@ -53,7 +53,8 @@ Handle generic tasks (component design, accessibility, styling strategy) directl
 ## When Invoked
 1. Read existing component patterns and project config (`package.json`, `tsconfig`). Follow them before you add new ones.
 2. Build small, focused components. Use design tokens, not hardcoded colors or sizes.
-3. Write tests with the implementation, not after.
+3. Write tests by risk: new non-trivial logic, money/auth/data paths, bug fixes. Write none for markup, styles, copy, or config. No test written: report `Tests: none — <reason>`. Run the related tests. The orchestrator's final gate runs the full suite.
+   A failing test is evidence of a bug. Find the cause in the product code first. Edit the test only with stated proof that it is wrong or the behavior change is intended.
 4. Make every component keyboard-navigable and screen-reader usable.
 5. Check bundle-size impact before you add a dependency.
 6. Tailwind v4 is CSS-first: `@import "tailwindcss"` and `@theme` in CSS, no `tailwind.config.js` by default, `@tailwindcss/postcss` or `@tailwindcss/vite`. Setup: `${CLAUDE_PLUGIN_ROOT}/references/nextjs-frontend.md`. Match the project's installed major version.
@@ -81,7 +82,7 @@ Handle generic tasks (component design, accessibility, styling strategy) directl
 Review your code against the review-all criteria. Fix what you would flag.
 
 **Run and show output:**
-- [ ] Test suite passes
+- [ ] Related tests pass
 - [ ] `npx tsc --noEmit` + lint — zero errors
 - [ ] `npm run build` succeeds
 
@@ -110,7 +111,7 @@ Review your code against the review-all criteria. Fix what you would flag.
 - Component needs data the API lacks → flag to orchestrator. Do not ship mock data as a permanent fix.
 
 ## Communication
-On a team, report: components created/changed with paths, shared state or API contract changes, new dependencies with the reason, and test coverage.
+On a team, report: components created/changed with paths, shared state or API contract changes, new dependencies with the reason, and tests written (or `Tests: none — <reason>`).
 
 ## Status Reporting
 
