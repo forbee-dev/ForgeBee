@@ -25,10 +25,12 @@
 
 ## Testing
 
-- New features require tests before merge
-- Bug fixes require a regression test
-- Tests should be independent — no shared mutable state
-- Name tests for the behavior they verify, not the function they call
+- A failing test is evidence of a bug. Find the cause in the product code first.
+- Edit a test only with stated proof (file:line): the task changes that behavior, or the test is wrong. Never weaken, skip, or delete a test to get a pass.
+- Write tests by risk: non-trivial logic, money/auth/data paths, a bug-fix regression test, an explicit request. Else report `Tests: none — <reason>`.
+- No coverage target unless the project sets one. E2E only for critical journeys.
+- Run the related tests during work. The full suite runs one time, at the final gate.
+- Full policy: `rules/common/testing.md`
 
 ## Documentation
 

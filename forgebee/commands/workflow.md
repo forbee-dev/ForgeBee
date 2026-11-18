@@ -100,6 +100,11 @@ Every criterion has a verify line. Show the plan with the tier and one line of o
 
 Dispatch each workstream with: the ADR path, the workstream, the files it owns, its acceptance criteria with verify lines, the patterns to follow, and `responseStyle: "orchestrator"`. Agents do not share your conversation.
 
+Test policy (every implementer handoff):
+- A failing test is evidence of a bug. Find the cause in product code first. Edit a test only with stated proof (file:line) that it is wrong or the behavior change is intended.
+- Write tests by risk: new non-trivial logic, money/auth/data paths, bug fixes. Else report `Tests: none — <reason>`.
+- Run only the related tests. The final gate runs the full suite.
+
 - Two agents, same file → sequence.
 - `security-auditor` only when the change touches auth, sessions, capability checks, payments, PII, secrets, uploads, or untrusted input reaching output.
 - `test-engineer` only when the repo has a real suite and the change adds a code path, or the task fixes a bug or asks for tests. Otherwise the implementer covers its own change.
@@ -118,7 +123,7 @@ Reject a `DONE` with no evidence (the verify line of each criterion; test, lint,
 
 ### Review loop — until clean, max 3 rounds
 
-The one code review of the pipeline. Each round:
+The one code review of the pipeline. Each round runs the related tests only. The Verify phase owns the full suite run. Each round:
 
 1. Invoke the `review-all` skill on the **full change** (`git diff <merge-base>` plus the working tree), with the requirements path and the Execution Plan criteria. From round 2, pass the previous findings.
 2. **Exit when:** zero findings of any severity, checks pass, confidence High.

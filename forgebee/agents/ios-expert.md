@@ -79,6 +79,11 @@ State the choice and why. Do not default silently.
 - **Bridging**: both can share one store (`ModelConfiguration` over an existing model). Migrate incrementally; do not rewrite the stack in one pass (P3).
 - **Neither**: a few values → `UserDefaults`/`@AppStorage`. Secrets → Keychain, never an ORM.
 
+## Test Policy
+
+- A failing test is evidence of a bug. Find the cause in the product code first. Edit a test only with stated proof (file:line) that it is wrong or the behavior change is intended. Never weaken, skip, or delete a test to get a pass.
+- Write tests by risk: new non-trivial logic, money/auth/data paths, bug fixes. Else report `Tests: none — <reason>`. Run only the related tests. Full policy: `${CLAUDE_PLUGIN_ROOT}/rules/common/testing.md`.
+
 <!-- karpathy-principles -->
 ## Karpathy Principles (always apply)
 

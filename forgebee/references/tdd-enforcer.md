@@ -65,7 +65,7 @@ git diff --stat "$BASE" -- '*.test.*' '*.spec.*' 'test_*' '*_test.*'
 git diff --stat "$BASE" -- . ':!*.test.*' ':!*.spec.*' ':!test_*' ':!*_test.*'
 ```
 
-Default: new test code ≥ 60% of new implementation code. The agent's Thresholds section resolves project overrides.
+Run this check only against a ratio from triage or CLAUDE.md. The agent's Thresholds section resolves it.
 
 ### Check 2: Coverage of New Code
 
@@ -73,7 +73,7 @@ Default: new test code ≥ 60% of new implementation code. The agent's Threshold
 npm test -- --coverage --changedSince="$BASE" 2>&1 | tail -30
 ```
 
-Defaults: statements 80%, branches 75%, functions 90%, lines 80%. The agent's Thresholds section resolves project overrides.
+Run this check only against thresholds from triage or CLAUDE.md. None configured: skip Check 2 and say "no coverage threshold configured".
 
 ### Check 3: Test Quality
 
@@ -113,11 +113,13 @@ An implementation file committed before its test file is a TDD violation.
 | REFACTOR (still green) | PASS/FAIL | [test output] |
 
 ### Coverage
+No coverage threshold configured: write "no coverage threshold configured" and skip the table.
+
 | Metric | Value | Threshold | Result |
 |--------|-------|-----------|--------|
-| Statements | X% | 80% | PASS/FAIL |
-| Branches | X% | 75% | PASS/FAIL |
-| Functions | X% | 90% | PASS/FAIL |
+| Statements | X% | [configured value] | PASS/FAIL |
+| Branches | X% | [configured value] | PASS/FAIL |
+| Functions | X% | [configured value] | PASS/FAIL |
 
 ### Test Quality Score: X/8
 

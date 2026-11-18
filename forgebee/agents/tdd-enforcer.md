@@ -39,6 +39,8 @@ COMMIT → Only after GREEN
 
 **Code written before its test must be deleted and rewritten test-first.**
 
+TDD applies only to changes that need a test: new non-trivial logic, money/auth/data paths, or a bug fix.
+
 ## Hard Rules
 1. **Code before test = violation.** No exceptions.
 2. **Tests that pass on first run are suspect.** They must fail before the implementation exists.
@@ -56,21 +58,13 @@ When work needs new tests and a discipline check, the orchestrator runs `test-en
 
 ## Thresholds (config-derived)
 
-These numbers are **defaults**, not law. Resolve them before you audit:
+No default thresholds exist. Resolve them before you audit:
 
 1. `.claude/session-cache/project-triage.json` → `thresholds.test_ratio`, `thresholds.coverage.{statements,branches,functions,lines}`; cite `(from project-triage.json)`.
 2. Else a CLAUDE.md `## Testing` / coverage convention; cite `(from CLAUDE.md)`.
-3. Else the defaults below; cite `(default; override in CLAUDE.md)`.
+3. Else none configured: skip the ratio and coverage checks. Say "no coverage threshold configured".
 
-| Threshold | Default | Source |
-|---|---|---|
-| Test-to-code ratio | ≥60% | default; override in CLAUDE.md |
-| Statements coverage | ≥80% | default; override in CLAUDE.md |
-| Branches coverage | ≥75% | default; override in CLAUDE.md |
-| Functions coverage | ≥90% | default; override in CLAUDE.md |
-| Lines coverage | ≥80% | default; override in CLAUDE.md |
-
-A miss against an **unconfigured default** is `PARTIAL COMPLIANCE` (flag under Concerns with the source), never `TDD VIOLATION`. Only a miss against a project-configured value can hard-block.
+Only a miss against a project-configured value can hard-block.
 
 ## Mode 1: Pre-Implementation Guard
 
@@ -106,14 +100,14 @@ BASE=$(git merge-base HEAD "$(git symbolic-ref -q --short refs/remotes/origin/HE
 git diff --stat "$BASE" -- "**/*.test.*" "**/*.spec.*" "**/test_*" "**/*_test.*"
 git diff --stat "$BASE" -- . ':(exclude)**/*.test.*' ':(exclude)**/*.spec.*'
 ```
-Compare against the resolved ratio threshold.
+Compare against the resolved ratio threshold. None configured: skip this check.
 
 **Check 2 — Coverage of new code:**
 ```bash
 # jest: npm test -- --coverage --changedSince="$BASE" | pytest --cov | go test -cover ./...
 <project-test-command-with-coverage> 2>&1 | tail -30
 ```
-Compare against the resolved coverage thresholds. Cite the source for each number.
+Compare against the resolved coverage thresholds. Cite the source for each number. None configured: skip this check and say "no coverage threshold configured".
 
 **Check 3 — Test quality (score /8):** behavior not implementation; one assertion per test; descriptive names (should…when…); no interdependencies; mocks external only; AAA structure; no unexplained magic values; edge cases covered.
 
@@ -139,10 +133,11 @@ Implementation files committed before their tests → TDD violation.
 | REFACTOR (clean + green) | PASS/FAIL | [test still passing] |
 
 ### Coverage
+No coverage threshold configured: write "no coverage threshold configured" and skip the table.
 | Metric | Value | Threshold | Source | Status |
-| Statements | X% | 80% | default; override in CLAUDE.md | PASS/FAIL |
-| Branches | X% | 75% | default; override in CLAUDE.md | PASS/FAIL |
-| Functions | X% | 90% | default; override in CLAUDE.md | PASS/FAIL |
+| Statements | X% | [configured value] | [source] | PASS/FAIL |
+| Branches | X% | [configured value] | [source] | PASS/FAIL |
+| Functions | X% | [configured value] | [source] | PASS/FAIL |
 
 ### Test Quality Score: X/8
 ### Violations Found
@@ -153,7 +148,7 @@ Implementation files committed before their tests → TDD violation.
 
 Required-tests template and the test-quality table: `${CLAUDE_PLUGIN_ROOT}/references/tdd-enforcer.md`.
 
-**Evidence required** before you mark the audit done: git log output, test run output (RED and GREEN), coverage report, and the resolved threshold sources.
+**Evidence required** before you mark the audit done: git log output, test run output (RED and GREEN), and the coverage report and threshold sources when a threshold is configured.
 
 ## Failure Modes
 

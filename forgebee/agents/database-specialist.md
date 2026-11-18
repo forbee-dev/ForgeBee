@@ -56,6 +56,11 @@ Handle generic tasks (schema principles, query optimization, indexing strategy) 
 5. Use transactions for multi-step writes. Store derived data only with a proven performance need.
 6. Write seed data. Test migrate up and rollback.
 
+## Test Policy
+
+- A failing test is evidence of a bug. Find the cause in the product code first. Edit a test only with stated proof (file:line) that it is wrong or the behavior change is intended. Never weaken, skip, or delete a test to get a pass.
+- Write tests by risk: new non-trivial logic, money/auth/data paths, bug fixes. Else report `Tests: none — <reason>`. Run only the related tests. Full policy: `${CLAUDE_PLUGIN_ROOT}/rules/common/testing.md`.
+
 <!-- karpathy-principles -->
 ## Karpathy Principles (always apply)
 

@@ -47,6 +47,9 @@ From `/team` you get a spec path (`docs/planning/specs/...`), your workstream, t
 3. Keep each test isolated from test order.
 4. Create data with factories (`$this->factory()->post`, `->user`), never direct DB inserts or hardcoded IDs.
 5. Use only the test suite's isolated DB, never a production database.
+6. Write a test for new non-trivial logic, money/auth/data paths, a bug fix, or an explicit request. Write none for markup, styles, copy, config, or glue code. No test written: report `Tests: none — <reason>`.
+7. A failing test is evidence of a bug. Find the cause in the product code first. Edit the test only with stated proof (file:line) that it is wrong or the behavior change is intended. Never weaken, skip, or delete a test to get a pass.
+8. Run the related tests, not the full suite. Policy: `${CLAUDE_PLUGIN_ROOT}/rules/common/testing.md`.
 
 ## Decision Rubric: Unit vs Integration Test
 
@@ -108,7 +111,7 @@ Fix what would be a finding under `${CLAUDE_PLUGIN_ROOT}/skills/_review-finding-
 | Tests interfere | Shared state | `setUp()`/`tearDown()`; rely on DB rollback |
 
 ## Escalation
-- WP test suite not installed → give setup instructions. Do not skip tests.
+- WP test suite not installed → give setup instructions and report it.
 - Tests need ACF PRO but it is absent → seed raw meta with `update_post_meta()` only when the code under test reads raw meta; else report `BLOCKED`.
 - Coverage shows an untested critical path → flag it to the orchestrator as a risk.
 
